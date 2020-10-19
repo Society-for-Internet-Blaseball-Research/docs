@@ -56,12 +56,12 @@ paths:
         - name: ids
           in: query
           description: IDs of bonus results to return
-          required: true
           style: form
           explode: false
           schema:
             type: string
             format: uuid
+          required: true
       responses:
         '200':
           description: OK
@@ -597,7 +597,7 @@ paths:
         - League
   /api/getTribute:
     get:
-      summary: Your GET endpoint
+      summary: Get Hall of Flame players
       tags:
         - Global
       responses:
@@ -760,7 +760,7 @@ paths:
       description: Returns a list of players on the Hall of Flame leaderboard.
   /api/getIdols:
     get:
-      summary: Your GET endpoint
+      summary: Get Idol board
       tags:
         - Global
       responses:
@@ -859,6 +859,30 @@ paths:
                       playerId: 4bf352d2-6a57-420a-9d45-b23b2b947375
       operationId: getIdols
       description: Returns a list of the top 20 players on the Idol leaderboard.
+  /database/eventResults:
+    get:
+      summary: List event results (election Tidings)
+      tags:
+        - Elections
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventResult'
+      operationId: GetEventResults
+      description: Get the results of one or more election events. Returns an array. Use commas to separate multiple bonus IDs.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: ids
+          description: IDs of event results to return (comma-separated)
+          required: true
 components:
   schemas:
     BonusResult:
@@ -1002,6 +1026,7 @@ components:
         - totalVotes
       x-tags:
         - Elections
+      description: Represents the outcome message of a single passed decree after the election.
     Division:
       type: object
       additionalProperties: false
@@ -1592,6 +1617,11 @@ components:
         voteCount:
           type: integer
           description: Total votes cast in this election
+        eventResults:
+          type: array
+          description: IDs of "event results" (listed as "Tidings") on the website
+          items:
+            type: string
       required:
         - id
         - bonusResults
@@ -1601,6 +1631,7 @@ components:
         - totalBonusVotes
         - totalDecreeVotes
         - voteCount
+        - eventResults
     OffseasonSetup:
       type: object
       additionalProperties: false
@@ -2983,7 +3014,7 @@ components:
       x-tags:
         - Global
     IdolItem:
-      title: Idol Item
+      title: Idol
       type: object
       description: ''
       properties:
@@ -3003,6 +3034,24 @@ components:
           deprecated: true
       x-tags:
         - Global
+    EventResult:
+      title: Event Result
+      type: object
+      properties:
+        id:
+          type: string
+          description: The internal ID of this event result
+        msg:
+          type: string
+          description: The message displayed on the Blaseball website
+      x-examples:
+        ascension_10:
+          id: ascension_10
+          msg: |-
+            The Baltimore Crabs have been Called Up.
+            Good Luck on your Journey!
+            They shall be replaced in the ILB by the Tokyo Lift.
+      description: Represents a general (usually story-related) event after the election (eg. the Crabs ascending).
 tags:
   - name: Players
   - name: Teams

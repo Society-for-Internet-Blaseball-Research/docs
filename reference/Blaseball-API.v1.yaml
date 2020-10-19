@@ -3052,6 +3052,8 @@ components:
             Good Luck on your Journey!
             They shall be replaced in the ILB by the Tokyo Lift.
       description: Represents a general (usually story-related) event after the election (eg. the Crabs ascending).
+      x-tags:
+        - Elections
 tags:
   - name: Players
   - name: Teams

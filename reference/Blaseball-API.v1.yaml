@@ -34,7 +34,10 @@ paths:
   /database/allTeams:
     get:
       summary: Get all teams
-      description: Returns a list of team definitions for every team in the league.
+      description: |-
+        Returns a list of team definitions for every team in the league - as well as some teams outside the league (notably the *Baltimore Crabs*, ID `8d87c468-699a-47a8-b40d-cfb73a5660ad`, and *The Hall Stars*, ID `c6c01051-cdd4-47d6-8a98-bb5b754f937f`).
+
+        Note that *THE SHELLED ONE'S PODS* (ID `40b9ec2a-cb43-4dbb-b836-5accb62e7c20`) has been deleted from the server and will not be returned by this endpoint.
       operationId: allTeams
       responses:
         '200':
@@ -124,7 +127,10 @@ paths:
   /database/games:
     get:
       summary: Get game details by date
-      description: 'Returns the last broadcast game update for a given game day and season. Completed games will show the final update of the game, currently running games will show the update present on www.blaseball.com, and future games will show a placeholder update if the game is already scheduled.'
+      description: |-
+        Returns the last broadcast game update for a given game day and season. Completed games will show the final update of the game (generally "Game over."), currently running games will show the update present on www.blaseball.com, and future games (beyond the next game) will be missing data about pitchers and odds.
+
+        This endpoint can return all regular-season games (up to Day 99 - so `98` here) of the current season, even ones that haven't started. New season schedules will become available once the simulation phase changes to `1` (at around Monday 1 AM Pacific). Postseason games are never available more than a single game in advance. 
       operationId: gameByDate
       parameters:
         - name: season
@@ -402,7 +408,7 @@ paths:
   /database/season:
     get:
       summary: Get season details
-      description: Returns inforation for a given season number (zero indexed).
+      description: Returns information for a given season number (zero indexed).
       operationId: season
       parameters:
         - name: number
@@ -487,7 +493,10 @@ paths:
   /events/streamData:
     get:
       summary: Live data stream
-      description: 'This is the endpoint that the site uses to stream live game data to the www.blaseball.com site. It uses [Server Sent Events](https://en.wikipedia.org/wiki/Server-sent_events). Every few seconds it sends a single `data` event.'
+      description: |-
+        This is the endpoint that the site uses to stream live game data to the www.blaseball.com site. It uses [Server Sent Events](https://en.wikipedia.org/wiki/Server-sent_events). Every few seconds it sends a single `data` event.
+
+        Of the fields in the `value` object, it'll only send the children (ie. `games`, `leagues`, `temporal` and `fights`) that have changed since the last stream update. If no objects have updated (eg. between games or during siestas), the stream will not send any data at all, and will generally time out after a minute or so. On the first update after connecting, it will send all fields, though.
       operationId: streamData
       responses:
         '200':
@@ -524,7 +533,10 @@ paths:
   /database/team:
     get:
       summary: Get team details
-      description: 'Returns limited stats, player IDs, and other information for a given team ID. Limited to a single team ID.'
+      description: |-
+        Returns limited stats, player IDs, and other information for a given team ID. Limited to a single team ID.
+
+        Note that the *THE SHELLED ONE'S PODS* team (ID `40b9ec2a-cb43-4dbb-b836-5accb62e7c20`) has been deleted from the server and will not be returned by this endpoint.
       operationId: team
       parameters:
         - name: id
@@ -1031,7 +1043,7 @@ components:
       type: object
       additionalProperties: false
       title: Division
-      description: ''
+      description: A single team division (eg. Wild High or Chaotic Good)
       properties:
         id:
           type: string
@@ -1290,10 +1302,10 @@ components:
           type: string
           format: uuid
           nullable: true
-          description: ID of the pitcher for the away team.
+          description: ID of the pitcher for the away team. `null` for future games.
         awayPitcherName:
           type: string
-          description: Name of the pitcher for the away team
+          description: Name of the pitcher for the away team. `null` for future games.
         awayBatter:
           type: string
           nullable: true
@@ -1314,13 +1326,13 @@ components:
           description: Nickname of the away team
         awayTeamColor:
           type: string
-          description: Thene color of the away team
+          description: Primary theme color of the away team
         awayTeamEmoji:
           type: string
           description: Emoji of the away team
         awayOdds:
           type: number
-          description: Calculated odds of the away team winning
+          description: Calculated odds of the away team winning. Zero for future games.
           minimum: 0
           maximum: 1
           format: double
@@ -1338,10 +1350,10 @@ components:
           type: string
           format: uuid
           nullable: true
-          description: ID of the pitcher for the home team
+          description: ID of the pitcher for the home team. `null` for future games.
         homePitcherName:
           type: string
-          description: Name of the pitcher for the home team
+          description: Name of the pitcher for the home team. `null` for future games.
         homeBatter:
           type: string
           nullable: true
@@ -1361,13 +1373,13 @@ components:
           description: Nickname of the home team
         homeTeamColor:
           type: string
-          description: Theme color of the home team
+          description: Primary theme color of the home team
         homeTeamEmoji:
           type: string
           description: Emoji of the home team
         homeOdds:
           type: number
-          description: Calculated odds of the home team winning
+          description: Calculated odds of the home team winning. Zero for future games.
           minimum: 0
           maximum: 1
           format: double
@@ -1387,7 +1399,7 @@ components:
           example: 7
         isPostseason:
           type: boolean
-          description: Whether this game takes place in the postseason (day >= 99)
+          description: Whether this game takes place in the postseason (day >= 99). Wild card games are considered postseason here.
         day:
           type: integer
           description: Day (zero-indexed)
@@ -1404,7 +1416,7 @@ components:
           description: Whether this game is finished
         finalized:
           type: boolean
-          description: Unknown (similar to `gameComplete`?)
+          description: Unknown (equal to `gameComplete`?)
         gameStart:
           type: boolean
           description: |
@@ -1456,6 +1468,34 @@ components:
           type: integer
           description: The amount of bases for the away team to run (including home base)
           example: 4
+        repeatCount:
+          type: integer
+          description: 'Unknown, related to the Repeating modifier?'
+        awayTeamSecondaryColor:
+          type: string
+          description: Secondary theme color of the away team
+        homeTeamSecondaryColor:
+          type: string
+          description: Secondary theme color of the home team
+        homeBalls:
+          type: integer
+          description: How many balls to a walk for the home team (usually 4)
+          example: 4
+        awayBalls:
+          type: integer
+          description: How many balls to a walk for the away team (usually 4)
+          example: 4
+        homeOuts:
+          type: integer
+          description: How many outs to an half-inning for the home team (usually 3)
+          example: 3
+        awayOuts:
+          type: integer
+          description: How many outs to an half-inning for the away team (usually 3)
+          example: 3
+        playCount:
+          type: integer
+          description: Increases by one every game update. Useful for chronological sorting or deduplication.
       required:
         - id
         - basesOccupied
@@ -1512,6 +1552,14 @@ components:
         - baserunnerCount
         - homeBases
         - awayBases
+        - repeatCount
+        - awayTeamSecondaryColor
+        - homeTeamSecondaryColor
+        - homeBalls
+        - awayBalls
+        - homeOuts
+        - awayOuts
+        - playCount
     League:
       type: object
       additionalProperties: false
@@ -2061,6 +2109,23 @@ components:
           description: Game-long player attributes
           items:
             $ref: '#/components/schemas/Attribute'
+        hitStreak:
+          type: integer
+          description: The player's current hit streak (only applicable in-game)
+        consecutiveHits:
+          type: integer
+        hittingRating:
+          type: number
+          description: The player's "hitting rating" (batting stars divided by five)
+        pitchingRating:
+          type: number
+          description: The player's "pitching rating" (pitching stars divided by five)
+        baserunningRating:
+          type: number
+          description: The player's "baserunning rating" (baserunning stars divided by five)
+        defenseRating:
+          type: number
+          description: The player's "defense rating" (defense stars divided by five)
       required:
         - id
         - name
@@ -2104,6 +2169,12 @@ components:
         - seasAttr
         - weekAttr
         - gameAttr
+        - hitStreak
+        - consecutiveHits
+        - hittingRating
+        - pitchingRating
+        - baserunningRating
+        - defenseRating
     PlayoffMatchup:
       type: object
       additionalProperties: false
@@ -2263,6 +2334,8 @@ components:
       additionalProperties: false
       title: Simulation Data
       x-examples: {}
+      x-tags:
+        - Global
       properties:
         id:
           type: string
@@ -2343,7 +2416,15 @@ components:
           example: Rest in Violence
         attr:
           type: array
-          description: 'Various attributes, major league events, and unlocks'
+          description: 'Various attributes, major league events, and unlocks. Often used as "feature flags" in the frontend code.'
+          example:
+            - OPENED_BOOK
+            - UNLOCKED_PEANUTS
+            - EAT_THE_RICH
+            - UNLOCKED_INTERVIEWS
+            - UNLOCKED_IDOLS
+            - PARTY_TIME
+            - UNLOCKED_HALL
           items:
             type: string
             enum:
@@ -2354,14 +2435,12 @@ components:
               - UNLOCKED_IDOLS
               - PARTY_TIME
               - UNLOCKED_HALL
-          example:
-            - OPENED_BOOK
-            - UNLOCKED_PEANUTS
-            - EAT_THE_RICH
-            - UNLOCKED_INTERVIEWS
-            - UNLOCKED_IDOLS
-            - PARTY_TIME
-            - UNLOCKED_HALL
+        agitations:
+          type: integer
+          description: 'Unknown, but very ominous.'
+        salutations:
+          type: integer
+          description: 'Unknown, but very ominous.'
       required:
         - id
         - day
@@ -2382,8 +2461,8 @@ components:
         - subEraColor
         - subEraTitle
         - attr
-      x-tags:
-        - Global
+        - agitations
+        - salutations
     Standings:
       type: object
       properties:
@@ -2410,6 +2489,9 @@ components:
       additionalProperties: false
       description: ''
       title: Stream Data
+      x-examples: {}
+      x-tags:
+        - Global
       properties:
         value:
           type: object
@@ -2468,11 +2550,14 @@ components:
                 - leagues
             temporal:
               $ref: '#/components/schemas/Temporal'
+            fights:
+              type: object
+              properties:
+                bossFights:
+                  type: array
+                  items: {}
       required:
         - value
-      x-examples: {}
-      x-tags:
-        - Global
     Subleague:
       type: object
       additionalProperties: false
@@ -2504,121 +2589,6 @@ components:
       description: ''
       x-tags:
         - Teams
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: ID of this team
-        lineup:
-          type: array
-          description: List of players in the lineup (batters)
-          items:
-            type: string
-            format: uuid
-        rotation:
-          type: array
-          description: List of players in the rotation (pitchers)
-          items:
-            type: string
-            format: uuid
-        bullpen:
-          type: array
-          description: 'List of players in the bullpen (FK, aka. "Shadows")'
-          items:
-            type: string
-            format: uuid
-        bench:
-          type: array
-          description: 'List of players on the bench (FK, aka. "Shadows")'
-          items:
-            type: string
-            format: uuid
-        fullName:
-          type: string
-          description: Full name of the team (location + nickname)
-        location:
-          type: string
-          description: Location of this team
-        mainColor:
-          type: string
-          description: Primary team color
-        nickname:
-          type: string
-          description: Nickname of the team
-        secondaryColor:
-          type: string
-          description: Secondary team color
-        shorthand:
-          type: string
-          description: Team abbreviation (unused)
-        emoji:
-          type: string
-          description: Team emoji
-        slogan:
-          type: string
-          description: Team slogal
-        shameRuns:
-          type: integer
-        totalShames:
-          type: integer
-        totalShamings:
-          type: integer
-          description: ''
-        seasonShames:
-          type: integer
-          description: ''
-        seasonShamings:
-          type: integer
-          description: ''
-        championships:
-          type: integer
-          description: Amount of ILB championships this team has won
-        rotationSlot:
-          type: integer
-        weekAttr:
-          type: array
-          description: Team attributes expiring at the end of the week (9 game days)
-          items:
-            $ref: '#/components/schemas/Attribute'
-        gameAttr:
-          type: array
-          description: Team attributes expiring after this game
-          items:
-            $ref: '#/components/schemas/Attribute'
-        seasAttr:
-          type: array
-          description: Team attributes expiring after this season
-          items:
-            $ref: '#/components/schemas/Attribute'
-        permAttr:
-          type: array
-          description: Permanent team attributes
-          items:
-            $ref: '#/components/schemas/Attribute'
-      required:
-        - id
-        - lineup
-        - rotation
-        - bullpen
-        - bench
-        - fullName
-        - location
-        - mainColor
-        - nickname
-        - secondaryColor
-        - shorthand
-        - emoji
-        - slogan
-        - shameRuns
-        - totalShames
-        - totalShamings
-        - seasonShames
-        - seasonShamings
-        - championships
-        - weekAttr
-        - gameAttr
-        - seasAttr
-        - permAttr
       title: Team
       x-examples:
         Kansas City Breath Mints (2020-09-26):
@@ -2674,9 +2644,133 @@ components:
           weekAttr: []
           gameAttr: []
           rotationSlot: 99
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of this team
+        lineup:
+          type: array
+          description: List of players in the lineup (batters)
+          items:
+            type: string
+            format: uuid
+        rotation:
+          type: array
+          description: List of players in the rotation (pitchers)
+          items:
+            type: string
+            format: uuid
+        bullpen:
+          type: array
+          description: 'List of players in the bullpen (FK, aka. "Shadows")'
+          items:
+            type: string
+            format: uuid
+        bench:
+          type: array
+          description: 'List of players on the bench (FK, aka. "Shadows")'
+          items:
+            type: string
+            format: uuid
+        fullName:
+          type: string
+          description: Full name of the team (location + nickname)
+        location:
+          type: string
+          description: Location of this team
+        mainColor:
+          type: string
+          description: Primary team color
+        nickname:
+          type: string
+          description: Nickname of the team
+        secondaryColor:
+          type: string
+          description: Secondary team color
+        shorthand:
+          type: string
+          description: Team abbreviation (unused)
+        emoji:
+          type: string
+          description: Team emoji
+        slogan:
+          type: string
+          description: Team slogal
+        shameRuns:
+          type: integer
+          description: How many runs this team was shamed by in their last game. Translates to the amount of negative runs induced by the Shame Pit of Targeted Shame.
+        totalShames:
+          type: integer
+        totalShamings:
+          type: integer
+          description: ''
+        seasonShames:
+          type: integer
+          description: ''
+        seasonShamings:
+          type: integer
+          description: ''
+        championships:
+          type: integer
+          description: Amount of ILB championships this team has won
+        rotationSlot:
+          type: integer
+          description: 'Seems to constantly increase once per game day. Potentially related to pitcher rotations, actual use unknown.'
+        weekAttr:
+          type: array
+          description: Team attributes expiring at the end of the week (9 game days)
+          items:
+            $ref: '#/components/schemas/Attribute'
+        gameAttr:
+          type: array
+          description: Team attributes expiring after this game
+          items:
+            $ref: '#/components/schemas/Attribute'
+        seasAttr:
+          type: array
+          description: Team attributes expiring after this season
+          items:
+            $ref: '#/components/schemas/Attribute'
+        permAttr:
+          type: array
+          description: Permanent team attributes
+          items:
+            $ref: '#/components/schemas/Attribute'
+        teamSpirit:
+          type: integer
+          description: Unknown what this does.
+      required:
+        - id
+        - lineup
+        - rotation
+        - bullpen
+        - bench
+        - fullName
+        - location
+        - mainColor
+        - nickname
+        - secondaryColor
+        - shorthand
+        - emoji
+        - slogan
+        - shameRuns
+        - totalShames
+        - totalShamings
+        - seasonShames
+        - seasonShamings
+        - championships
+        - rotationSlot
+        - weekAttr
+        - gameAttr
+        - seasAttr
+        - permAttr
+        - teamSpirit
     Temporal:
       type: object
       additionalProperties: false
+      x-tags:
+        - Global
       properties:
         doc:
           type: object
@@ -2702,20 +2796,18 @@ components:
               description: Maximum tier of squirrel in the store
             gamma:
               type: integer
-              description: '0 if the Peanut is speaking, 1 if the Hall Monitor is speaking, historically been 500000000'
+              description: '-1 if the "Site Announcer" is speaking, 0 if the Peanut is speaking, 1 if the Hall Monitor is speaking, 2 if the Boss is speaking, has historically been 500000000'
             delta:
               type: boolean
               description: Whether to show sponsor item in the store
             epsilon:
               type: boolean
-              description: Whether the Peanut or the Hall Monitor is speaking on-screen
+              description: Whether a Big Deal (speaker) is speaking on-screen
             zeta:
               type: string
-              description: Last line said by the Peanut or the Hall Monitor
+              description: Last line said by the speaker
       required:
         - doc
-      x-tags:
-        - Global
     TickerMessage:
       type: object
       additionalProperties: false
@@ -2797,6 +2889,10 @@ components:
     PlayerStatsheet:
       type: object
       additionalProperties: false
+      x-tags:
+        - Players
+        - Statsheets
+      title: Player Statsheet
       properties:
         id:
           type: string
@@ -2849,6 +2945,14 @@ components:
           type: integer
         wins:
           type: integer
+        hitByPitch:
+          type: integer
+        hitBatters:
+          type: integer
+        quadruples:
+          type: integer
+        pitchesThrown:
+          type: integer
       required:
         - playerId
         - teamId
@@ -2873,10 +2977,6 @@ components:
         - walks
         - walksIssued
         - wins
-      x-tags:
-        - Players
-        - Statsheets
-      title: Player Statsheet
     SeasonStatsheet:
       type: object
       additionalProperties: false
@@ -2937,7 +3037,7 @@ components:
 
         Currently known values:
         - 0: Void (unused)
-        - 1: Sunny (unused, Season 1 games retroactively assigned this)
+        - **1: Sun 2** (Since Season 11, Season 1 games retroactively assigned this, formerly Sunny)
         - 2: Overcast (unused)
         - 3: Rainy (unused
         - 4: Sandstorm (unused)
@@ -2950,6 +3050,7 @@ components:
         - **11: Birds** (since Season 3)
         - **12: Feedback** (since Season 4)
         - **13: Reverb** (since Season 5)
+        - **14: Black Hole** (since Season 11)
       minimum: 0
       maximum: 13
       example: 11
@@ -2957,49 +3058,16 @@ components:
         - Games
     Attribute:
       type: string
-      enum:
-        - EXTRA_STRIKE
-        - SHAME_PIT
-        - HOME_FIELD
-        - FIREPROOF
-        - ALTERNATE
-        - SOUNDPROOF
-        - SHELLED
-        - REVERBERATING
-        - BLOOD_DONOR
-        - BLOOD_THIEF
-        - BLOOD_PITY
-        - BLOOD_WINNER
-        - BLOOD_FAITH
-        - BLOOD_LAW
-        - BLOOD_CHAOS
-        - RETURNED
-        - INWARD
-        - MARKED
-        - PARTY_TIME
-        - LIFE_OF_PARTY
-        - DEBT
-        - SPICY
-        - HEATING_UP
-        - ON_FIRE
-        - HONEY_ROASTED
-        - FIRST_BORN
-        - SUPERALLERGIC
-        - EXTRA_BASE
-        - BLESS_OFF
-        - NON_IDOLIZED
-        - GRAVITY
-        - ELECTRIC
-        - DOUBLE_PAYOUTS
-        - FIRE_PROTECTOR
-        - RECEIVER
-        - FLICKERING
       x-examples: {}
-      description: Visible on the team/player pages.
+      description: |-
+        ID of a team or player's attribute, visible on their pages.
+
+        See https://github.com/xSke/blaseball-site-files/blob/main/data/attributes.json for a full list, extracted from the site's JS.
       title: Team/Player Attribute
       x-tags:
         - Teams
         - Players
+      example: SHELLED
     TributeItem:
       title: Tribute Item
       type: object

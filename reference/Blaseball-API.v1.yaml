@@ -1,0 +1,3013 @@
+openapi: 3.0.0
+info:
+  title: Blaseball API
+  description: Unofficial documentation for the Blaseball website API.
+  version: 1.0.0
+  contact:
+    name: The Game Band
+  termsOfService: 'https://www.blaseball.com/tos'
+externalDocs:
+  description: A GitHub repository with separate Markdown documents explaining each API endpoint.
+  url: 'https://github.com/Society-for-Internet-Blaseball-Research/blaseball-api-spec'
+servers:
+  - url: 'https://www.blaseball.com'
+    description: Main website
+  - url: 'https://cors-proxy.blaseball-reference.com'
+    description: CORS proxy run by SIBR
+paths:
+  /database/allDivisions:
+    get:
+      summary: Get all divisions
+      description: Returns a list of each division and its member teams.
+      operationId: allDivisions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Division'
+      tags:
+        - League
+  /database/allTeams:
+    get:
+      summary: Get all teams
+      description: Returns a list of team definitions for every team in the league.
+      operationId: allTeams
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+      tags:
+        - Teams
+  /database/bonusResults:
+    get:
+      summary: List bonus (blessing) results
+      description: Get the results of one or more bonuses (blessings). Returns an array. Use commas to separate multiple bonus IDs.
+      operationId: bonusResults
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of bonus results to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BonusResult'
+      tags:
+        - Elections
+  /database/decreeResults:
+    get:
+      summary: List decree results
+      description: Get the results of one or more decrees.
+      operationId: decreeResults
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of decree results to return (comma-separated)
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DecreeResult'
+      tags:
+        - Elections
+  /database/division:
+    get:
+      summary: Get division details
+      description: Returns information for a given division ID.
+      operationId: division
+      parameters:
+        - name: id
+          in: query
+          description: ID of division to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Division'
+      tags:
+        - League
+  /database/games:
+    get:
+      summary: Get game details by date
+      description: 'Returns the last broadcast game update for a given game day and season. Completed games will show the final update of the game, currently running games will show the update present on www.blaseball.com, and future games will show a placeholder update if the game is already scheduled.'
+      operationId: gameByDate
+      parameters:
+        - name: season
+          in: query
+          description: Season (zero-indexed)
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: day
+          in: query
+          description: Day (zero-indexed)
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+      tags:
+        - Games
+  '/database/gameById/{gameId}':
+    get:
+      summary: Get game details by ID
+      description: 'Returns the last broadcast game update for a given game ID. Completed games will show the final update of the game, currently running games will show the update present on www.blaseball.com, and future games will show a placeholder update if the game is already scheduled.'
+      operationId: gameById
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+      tags:
+        - Games
+    parameters:
+      - schema:
+          type: string
+          format: uuid
+        name: gameId
+        in: path
+        required: true
+  /database/gameStatsheets:
+    get:
+      summary: List game statsheets
+      description: Get the statsheets for one or more games. Returns an array. Use commas to separate multiple game statsheet IDs.
+      operationId: gameStatsheets
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of game statsheets to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GameStatsheet'
+      tags:
+        - Statsheets
+        - Games
+  /database/globalEvents:
+    get:
+      summary: Get global events
+      description: An array of messages that make up the content of the ticker at the top of the Blaseball site after logging in.
+      operationId: globalEvents
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TickerMessage'
+      tags:
+        - Global
+  /database/league:
+    get:
+      summary: Get league details
+      description: Returns information for a given league ID.
+      operationId: league
+      parameters:
+        - name: id
+          in: query
+          description: ID of league to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/League'
+      tags:
+        - League
+  /database/offseasonRecap:
+    get:
+      summary: Get election results
+      description: Information about the decrees and bonuses that passed for a given season number (zero indexed).
+      operationId: offseasonRecap
+      parameters:
+        - name: season
+          in: query
+          description: Season index (zero-based)
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OffseasonRecap'
+      tags:
+        - Elections
+  /database/offseasonSetup:
+    get:
+      summary: Get election details
+      description: List of decrees and blessings for the end of the current season
+      operationId: offseasonSetup
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OffseasonSetup'
+      tags:
+        - Elections
+  /database/players:
+    get:
+      summary: List player stats
+      description: Get one or more player objects. Returns an array. Use commas to separate multiple player IDs.
+      operationId: players
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of players to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+      tags:
+        - Players
+  /database/playerSeasonStats:
+    get:
+      summary: List player statsheets
+      description: 'Get the statsheets for one or more players. Returns an array. Use commas to separate multiple player statsheet IDs. Keep in mind that each player statsheet is associated with a particular game, so the listed stats are only for that game.'
+      operationId: playerStatsheets
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of player statsheets to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerStatsheet'
+      tags:
+        - Statsheets
+        - Players
+  /database/playoffMatchups:
+    get:
+      summary: List playoff matchup details
+      description: Get information about one or more playoff matchups. Returns an array. Use commas to separate multiple playoff matchup IDs.
+      operationId: playoffMatchups
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of playoff matchups to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayoffMatchup'
+      tags:
+        - League
+        - Global
+  /database/playoffRound:
+    get:
+      summary: Get playoff round details
+      description: Information about a specific round in the playoffs.
+      operationId: playoffRound
+      parameters:
+        - name: id
+          in: query
+          description: ID of playoff round to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayoffRound'
+      tags:
+        - Games
+        - League
+  /database/playoffs:
+    get:
+      summary: Get playoff details
+      description: Get details about the playoffs for a given season number (zero indexed).
+      operationId: playoffs
+      parameters:
+        - name: number
+          in: query
+          description: Season index (zero-based)
+          required: true
+          schema:
+            type: string
+            minimum: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Playoffs'
+      tags:
+        - Games
+        - League
+  /database/season:
+    get:
+      summary: Get season details
+      description: Returns inforation for a given season number (zero indexed).
+      operationId: season
+      parameters:
+        - name: number
+          in: query
+          description: Season index (zero-based)
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+      tags:
+        - League
+  /database/seasonStatsheets:
+    get:
+      summary: List season statsheets
+      description: Get the statsheets for one or more seasons. Returns an array. Use commas to separate multiple season statsheet IDs. Only contains the latest team statsheet for each team.
+      operationId: seasonStatsheets
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of season statsheets to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeasonStatsheet'
+      tags:
+        - Statsheets
+        - League
+  /database/simulationData:
+    get:
+      summary: Get simulation data
+      description: 'Get current data about the simulation, ie day, season, time to next cycle, etc.'
+      operationId: simulationData
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SimulationData'
+      tags:
+        - Global
+  /database/standings:
+    get:
+      summary: Get standings details
+      description: Returns information for a given standings ID from the season object.
+      operationId: standings
+      parameters:
+        - name: id
+          in: query
+          description: ID of standings to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Standings'
+      tags:
+        - League
+  /events/streamData:
+    get:
+      summary: Live data stream
+      description: 'This is the endpoint that the site uses to stream live game data to the www.blaseball.com site. It uses [Server Sent Events](https://en.wikipedia.org/wiki/Server-sent_events). Every few seconds it sends a single `data` event.'
+      operationId: streamData
+      responses:
+        '200':
+          description: OK
+          content:
+            text/event-stream:
+              schema:
+                $ref: '#/components/schemas/StreamData'
+              examples: {}
+      tags:
+        - Global
+  /database/subleague:
+    get:
+      summary: Get subleague details
+      description: Returns information for a given subleague ID. Limited to a single subleague ID.
+      operationId: subleague
+      parameters:
+        - name: id
+          in: query
+          description: ID of subleague to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subleague'
+      tags:
+        - League
+  /database/team:
+    get:
+      summary: Get team details
+      description: 'Returns limited stats, player IDs, and other information for a given team ID. Limited to a single team ID.'
+      operationId: team
+      parameters:
+        - name: id
+          in: query
+          description: ID of team to return
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+      tags:
+        - Teams
+  /database/teamStatsheets:
+    get:
+      summary: List team statsheets
+      description: 'Get the statsheets for one or more teams. Returns an array. Use commas to separate multiple team statsheet IDs. Keep in mind that a team statsheet is associated with a particular game, so the player stats are only for that game and the list of players are only those who played in that game.'
+      operationId: teamStatsheets
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of team statsheets to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamStatsheet'
+      tags:
+        - Statsheets
+        - Teams
+  /database/tiebreakers:
+    get:
+      summary: Get tiebreaker details
+      description: 'Returns inforation for a given tiebreaker ID from the league object. Each of the ids in `order` is an ID for a team object. This represents the "Divine Favor" ranking. (Note: the tiebreaker object is returned inside a single-element array, even though the endpoint''s argument only accepts one ID.)'
+      operationId: tiebreakers
+      parameters:
+        - name: id
+          in: query
+          description: ID of tiebreakers to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tiebreakers'
+                minItems: 1
+                maxItems: 1
+      tags:
+        - League
+  /api/getTribute:
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Global
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TributeItem'
+              examples:
+                Hall of Flame leaderboard (2020-09-26):
+                  value:
+                    - playerId: d74a2473-1f29-40fa-a41e-66fa2281dfca
+                      peanuts: 11171444
+                    - playerId: 493a83de-6bcf-41a1-97dd-cc5e150548a3
+                      peanuts: 11160776
+                    - playerId: 8604e861-d784-43f0-b0f8-0d43ea6f7814
+                      peanuts: 8305777
+                    - playerId: bd4c6837-eeaa-4675-ae48-061efa0fd11a
+                      peanuts: 4386343
+                    - playerId: 7310c32f-8f32-40f2-b086-54555a2c0e86
+                      peanuts: 4040777
+                    - playerId: 14d88771-7a96-48aa-ba59-07bae1733e96
+                      peanuts: 3946121
+                    - playerId: 98a98014-9636-4ece-a46a-4625b47c65d5
+                      peanuts: 3775486
+                    - playerId: afc90398-b891-4cdf-9dea-af8a3a79d793
+                      peanuts: 3036491
+                    - playerId: f7715b05-ee69-43e5-a0e5-8e3d34270c82
+                      peanuts: 3025777
+                    - playerId: 70ccff1e-6b53-40e2-8844-0a28621cb33e
+                      peanuts: 2901596
+                    - playerId: f8c20693-f439-4a29-a421-05ed92749f10
+                      peanuts: 2898010
+                    - playerId: 31f83a89-44e3-47b7-8c9e-0dfdcd8bd30f
+                      peanuts: 2878444
+                    - playerId: 25376b55-bb6f-48a7-9381-7b8210842fad
+                      peanuts: 2870705
+                    - playerId: 3d4545ed-6217-4d7a-9c4a-209265eb6404
+                      peanuts: 2855932
+                    - playerId: a311c089-0df4-46bd-9f5d-8c45c7eb5ae2
+                      peanuts: 2854999
+                    - playerId: 4941976e-31fc-49b5-801a-18abe072178b
+                      peanuts: 2627500
+                    - playerId: 18798b8f-6391-4cb2-8a5f-6fb540d646d5
+                      peanuts: 2440333
+                    - playerId: 33fbfe23-37bd-4e37-a481-a87eadb8192d
+                      peanuts: 1559222
+                    - playerId: cd68d3a6-7fbc-445d-90f1-970c955e32f4
+                      peanuts: 1463800
+                    - playerId: bd9d1d6e-7822-4ad9-bac4-89b8afd8a630
+                      peanuts: 1418700
+                    - playerId: bd8d58b6-f37f-48e6-9919-8e14ec91f92a
+                      peanuts: 1235010
+                    - playerId: 15ae64cd-f698-4b00-9d61-c9fffd037ae2
+                      peanuts: 1061888
+                    - playerId: a5adc84c-80b8-49e4-9962-8b4ade99a922
+                      peanuts: 1058800
+                    - playerId: a1628d97-16ca-4a75-b8df-569bae02bef9
+                      peanuts: 1057111
+                    - playerId: f44a8b27-85c1-44de-b129-1b0f60bcb99c
+                      peanuts: 829565
+                    - playerId: 25f3a67c-4ed5-45b6-94b1-ce468d3ead21
+                      peanuts: 724468
+                    - playerId: d744f534-2352-472b-9e42-cd91fa540f1b
+                      peanuts: 672700
+                    - playerId: 2b1cb8a2-9eba-4fce-85cf-5d997ec45714
+                      peanuts: 588444
+                    - playerId: 2ae8cbfc-2155-4647-9996-3f2591091baf
+                      peanuts: 584900
+                    - playerId: 76c4853b-7fbc-4688-8cda-c5b8de1724e4
+                      peanuts: 526500
+                    - playerId: 262c49c6-8301-487d-8356-747023fa46a9
+                      peanuts: 439444
+                    - playerId: be35caba-b16a-4e0d-b927-4da857f4cdb5
+                      peanuts: 399800
+                    - playerId: 472f50c0-ef98-4d05-91d0-d6359eec3946
+                      peanuts: 378333
+                    - playerId: 248ccf3d-d5f6-4b69-83d9-40230ca909cd
+                      peanuts: 347600
+                    - playerId: 90c6e6ca-77fc-42b7-94d8-d8afd6d299e5
+                      peanuts: 295475
+                    - playerId: bd549bfe-b395-4dc0-8546-5c04c08e24a5
+                      peanuts: 295111
+                    - playerId: d1a7c13f-8e78-4d2e-9cae-ebf3a5fcdb5d
+                      peanuts: 272500
+                    - playerId: 8e1fd784-99d5-41c1-a6c5-6b947cec6714
+                      peanuts: 256500
+                    - playerId: a071a713-a6a1-4b4c-bb3f-45d9fba7a08c
+                      peanuts: 237000
+                    - playerId: 3afb30c1-1b12-466a-968a-5a9a21458c7f
+                      peanuts: 227820
+                    - playerId: f9c0d3cb-d8be-4f53-94c9-fc53bcbce520
+                      peanuts: 227800
+                    - playerId: c83a13f6-ee66-4b1c-9747-faa67395a6f1
+                      peanuts: 219600
+                    - playerId: f967d064-0eaf-4445-b225-daed700e044b
+                      peanuts: 215600
+                    - playerId: 40db1b0b-6d04-4851-adab-dd6320ad2ed9
+                      peanuts: 215333
+                    - playerId: 2ca0c790-e1d5-4a14-ab3c-e9241c87fc23
+                      peanuts: 197684
+                    - playerId: 43bf6a6d-cc03-4bcf-938d-620e185433e1
+                      peanuts: 179500
+                    - playerId: c86b5add-6c9a-40e0-aa43-e4fd7dd4f2c7
+                      peanuts: 176333
+                    - playerId: b3d518b9-dc68-4902-b68c-0022ceb25aa0
+                      peanuts: 169444
+                    - playerId: 57448b62-f952-40e2-820c-48d8afe0f64d
+                      peanuts: 146600
+                    - playerId: 3064c7d6-91cc-4c2a-a433-1ce1aabc1ad4
+                      peanuts: 144500
+                    - playerId: 7b0f91aa-4d66-4362-993d-6ff60f7ce0ef
+                      peanuts: 141116
+                    - playerId: b4505c48-fc75-4f9e-8419-42b28dcc5273
+                      peanuts: 136000
+                    - playerId: 773712f6-d76d-4caa-8a9b-56fe1d1a5a68
+                      peanuts: 135800
+                    - playerId: 5b9727f7-6a20-47d2-93d9-779f0a85c4ee
+                      peanuts: 131900
+                    - playerId: bca38809-81de-42ff-94e3-1c0ebfb1e797
+                      peanuts: 130222
+                    - playerId: 05bd08d5-7d9f-450b-abfa-1788b8ee8b91
+                      peanuts: 126900
+                    - playerId: 1ba715f2-caa3-44c0-9118-b045ea702a34
+                      peanuts: 124389
+                    - playerId: 8ba7e1ff-4c6d-4963-8e0f-7096d14f4b12
+                      peanuts: 121000
+                    - playerId: ef32eb48-4866-49d0-ae58-9c4982e01142
+                      peanuts: 119700
+                    - playerId: 03097200-0d48-4236-a3d2-8bdb153aa8f7
+                      peanuts: 117898
+                    - playerId: c73d59dd-32a0-49ce-8ab4-b2dbb7dc94ec
+                      peanuts: 114830
+                    - playerId: 495a6bdc-174d-4ad6-8d51-9ee88b1c2e4a
+                      peanuts: 113270
+                    - playerId: c83f0fe0-44d1-4342-81e8-944bb38f8e23
+                      peanuts: 112820
+                    - playerId: b86237bb-ade6-4b1d-9199-a3cc354118d9
+                      peanuts: 112787
+                    - playerId: 6fc3689f-bb7d-4382-98a2-cf6ddc76909d
+                      peanuts: 111222
+                    - playerId: 4bda6584-6c21-4185-8895-47d07e8ad0c0
+                      peanuts: 109111
+                    - playerId: 70a458ed-25ca-4ff8-97fc-21cbf58f2c2a
+                      peanuts: 109111
+                    - playerId: d5b6b11d-3924-4634-bd50-76553f1f162b
+                      peanuts: 109111
+                    - playerId: ab9eb213-0917-4374-a259-458295045021
+                      peanuts: 109111
+                    - playerId: 64b055d1-b691-4e0c-8583-fc08ba663846
+                      peanuts: 109111
+                    - playerId: 0fe896e1-108c-4ce9-97be-3470dde73c21
+                      peanuts: 109111
+                    - playerId: 80a2f015-9d40-426b-a4f6-b9911ba3add8
+                      peanuts: 109111
+      operationId: getTribute
+      description: Returns a list of players on the Hall of Flame leaderboard.
+  /api/getIdols:
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Global
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IdolItem'
+              examples:
+                Response after Season 6:
+                  value:
+                    - playerId: de21c97e-f575-43b7-8be7-ecc5d8c4eaff
+                    - playerId: 04e14d7b-5021-4250-a3cd-932ba8e0a889
+                    - playerId: 86d4e22b-f107-4bcf-9625-32d387fcb521
+                    - playerId: 5ff66eae-7111-4e3b-a9b8-a9579165b0a5
+                    - playerId: 083d09d4-7ed3-4100-b021-8fbe30dd43e8
+                    - playerId: 667cb445-c288-4e62-b603-27291c1e475d
+                    - playerId: 84a2b5f6-4955-4007-9299-3d35ae7135d3
+                    - playerId: 3af96a6b-866c-4b03-bc14-090acf6ecee5
+                    - playerId: 7aeb8e0b-f6fb-4a9e-bba2-335dada5f0a3
+                    - playerId: 9820f2c5-f9da-4a07-b610-c2dd7bee2ef6
+                    - playerId: f7847de2-df43-4236-8dbe-ae403f5f3ab3
+                    - playerId: 1f159bab-923a-4811-b6fa-02bfde50925a
+                    - playerId: 338694b7-6256-4724-86b6-3884299a5d9e
+                    - playerId: 4b3e8e9b-6de1-4840-8751-b1fb45dc5605
+                    - playerId: f0bcf4bb-74b3-412e-a54c-04c12ad28ecb
+                    - playerId: 5bcfb3ff-5786-4c6c-964c-5c325fcc48d7
+                    - playerId: 0bb35615-63f2-4492-80ec-b6b322dc5450
+                    - playerId: 740d5fef-d59f-4dac-9a75-739ec07f91cf
+                    - playerId: 8604e861-d784-43f0-b0f8-0d43ea6f7814
+                    - playerId: efafe75e-2f00-4418-914c-9b6675d39264
+                Response during Season 6:
+                  value:
+                    - id: 88c7bb4c-88a1-4afa-a0c3-58bb1d8dd00f
+                      total: 993
+                      playerId: 3af96a6b-866c-4b03-bc14-090acf6ecee5
+                    - id: 18c159a6-31d4-4e82-a489-5bf576b8931b
+                      total: 955
+                      playerId: 5ff66eae-7111-4e3b-a9b8-a9579165b0a5
+                    - id: bea20511-11b2-4484-b34e-8e7a716ba5ff
+                      total: 902
+                      playerId: 083d09d4-7ed3-4100-b021-8fbe30dd43e8
+                    - id: c9872021-3b48-4008-8688-db331f9cccf1
+                      total: 889
+                      playerId: 667cb445-c288-4e62-b603-27291c1e475d
+                    - id: f06ce39e-8550-40c8-99a0-786fbf690722
+                      total: 856
+                      playerId: 9820f2c5-f9da-4a07-b610-c2dd7bee2ef6
+                    - id: e4118ec6-65c0-4927-b56b-7b4ba0a6febb
+                      total: 722
+                      playerId: c0732e36-3731-4f1a-abdc-daa9563b6506
+                    - id: 8954025c-abcf-4740-a5d5-10fb4fa1e0eb
+                      total: 589
+                      playerId: 338694b7-6256-4724-86b6-3884299a5d9e
+                    - id: dcd8af5f-67f2-42dd-ba38-13d769b4f963
+                      total: 448
+                      playerId: 86d4e22b-f107-4bcf-9625-32d387fcb521
+                    - id: 572cca11-cba4-48aa-b4c6-09bd26de686c
+                      total: 415
+                      playerId: 1f159bab-923a-4811-b6fa-02bfde50925a
+                    - id: f6ce9e17-ee62-406d-83b6-fa0cb918a34a
+                      total: 333
+                      playerId: f7847de2-df43-4236-8dbe-ae403f5f3ab3
+                    - id: 27c0175d-ba67-4318-b4a2-1b95cb11aaf2
+                      total: 332
+                      playerId: 5bcfb3ff-5786-4c6c-964c-5c325fcc48d7
+                    - id: 8ef1d8f2-e434-4b66-9474-54f11f4c2bfa
+                      total: 331
+                      playerId: c6a277c3-d2b5-4363-839b-950896a5ec5e
+                    - id: 5619c535-fc93-4cc2-a4b2-cc6a0d0c6fc0
+                      total: 331
+                      playerId: 8604e861-d784-43f0-b0f8-0d43ea6f7814
+                    - id: cf8d90a8-86ad-4a9c-a3ec-c13d269ad978
+                      total: 316
+                      playerId: 04e14d7b-5021-4250-a3cd-932ba8e0a889
+                    - id: 615836c1-132e-4ade-953d-3b220aa7ff4c
+                      total: 270
+                      playerId: 44c92d97-bb39-469d-a13b-f2dd9ae644d1
+                    - id: f54969e7-2ee3-466f-8a13-367d31bd65bc
+                      total: 209
+                      playerId: 84a2b5f6-4955-4007-9299-3d35ae7135d3
+                    - id: f95791fb-eda1-443c-ac8b-557265041a06
+                      total: 199
+                      playerId: 4b3e8e9b-6de1-4840-8751-b1fb45dc5605
+                    - id: 68ed240a-3938-4612-bf37-ff85ffda596f
+                      total: 198
+                      playerId: f2a27a7e-bf04-4d31-86f5-16bfa3addbe7
+                    - id: a68dee9d-62a0-4623-a524-fea1b5cb851c
+                      total: 185
+                      playerId: 542af915-79c5-431c-a271-f7185e37c6ae
+                    - id: ac86d376-b108-4ecb-9abe-35043c9f9795
+                      total: 163
+                      playerId: 4bf352d2-6a57-420a-9d45-b23b2b947375
+      operationId: getIdols
+      description: Returns a list of the top 20 players on the Idol leaderboard.
+components:
+  schemas:
+    BonusResult:
+      type: object
+      additionalProperties: false
+      description: Represents the outcome of a single blessing after the election.
+      title: Blessing Result
+      x-examples:
+        Headliners (Season 7):
+          id: f0f15969-aecb-4f9e-8eb9-00f05ece732c
+          bonusId: popular_lineup_order
+          bonusTitle: Headliners
+          teamId: b72f3061-f573-40d7-832a-5ad475bd7909
+          totalVotes: 15631
+          description: |-
+            Arranged San Francisco Lovers's lineup in order of their Idolatry.
+            1 - Knight Urlacher
+            2 - Don Mitchell
+            3 - Kichiro Guerra
+            4 - Helga Burton
+            5 - Alexander Horne
+            6 - Ortiz Lopez
+            7 - Helga Moreno
+            8 - Theo King
+            9 - Kennedy Meh
+          highestTeam: b72f3061-f573-40d7-832a-5ad475bd7909
+          highestTeamVotes: 11204
+          teamVotes: 11204
+        Hitting Boost (Season 1):
+          id: cbb567c0-d770-4d22-92f6-ff16ebb94758
+          bonusId: team_improve_hitting
+          bonusTitle: Hitting Boost
+          teamId: 7966eb04-efcc-499b-8f03-d13916330531
+          totalVotes: 96
+          description: Improved the Yellowstone Magic's hitting by 10%
+          highestTeam: null
+          highestTeamVotes: null
+          teamVotes: null
+        Winnie Hess Mystery (Season 1):
+          id: winniehess_mystery
+          bonusId: mysterious_improvement
+          bonusTitle: Mysterious Improvement
+          teamId: adc5b394-8f76-416d-9ce9-813706877b84
+          totalVotes: 0
+          description: Winnie Hess mysteriously improved to 2.5 stars after being traded from the Crabs to the Breath Mints. An investigation may be incoming.
+          highestTeam: null
+          highestTeamVotes: null
+          teamVotes: null
+      properties:
+        id:
+          type: string
+          description: 'ID of the bonusResult object (usually UUID, not always)'
+        bonusId:
+          type: string
+          description: Internal blessing ID
+        bonusTitle:
+          type: string
+          description: Title of the blessing
+        teamId:
+          type: string
+          format: uuid
+          description: Team that won the blessing
+        totalVotes:
+          type: integer
+          description: Total votes cast towards this blessing
+        description:
+          type: string
+          description: Description of the blessing result
+        teamVotes:
+          type: integer
+          description: Votes cast by the winning team (present starting Season 2)
+        highestTeam:
+          type: string
+          format: uuid
+          description: 'Highest bidding team, ie. cast the most votes  (present starting Season 2)'
+        highestTeamVotes:
+          type: integer
+          description: Votes cast by the highest bidding team (present starting Season 2)
+      required:
+        - bonusId
+        - bonusTitle
+        - teamId
+        - totalVotes
+        - description
+      x-tags:
+        - Elections
+    DecreeResult:
+      type: object
+      title: Decree Result
+      x-examples:
+        Open the Forbidden Book (Season 1):
+          id: b090fdfc-7d9d-414b-a4a5-bbc698028c15
+          decreeId: forbidden_book
+          decreeTitle: Open the Forbidden Book
+          description: |-
+            The Book Opens.
+            Solar Eclipse.
+            Umpires' eyes turn white.
+            Star player Jaylen Hotdogfingers is incinerated.
+            Hellmouth swallows the Moab Desert.
+            THE DISCIPLINE ERA BEGINS
+          totalVotes: 566
+        Bless Off (Season 7):
+          id: 94ca62b2-fbba-4d32-a682-18b524ddd4a8
+          decreeId: bless_off
+          decreeTitle: Bless Off
+          description: |-
+            BLESS OFF PASSES
+            SILENCE FALLS
+            THE CRABS ARE DENIED
+            THE BREATH MINTS ARE DENIED
+            THE SHOE THIEVES ARE DENIED
+            THE JAZZ HANDS ARE DENIED
+            IN THE QUIET
+            THE MICROPHONE CRANKS THE GAIN
+          totalVotes: 227274
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of the decree result object
+        decreeId:
+          type: string
+          format: uuid
+          description: Internal ID of the decree
+        decreeTitle:
+          type: string
+          description: Decree title
+        description:
+          type: string
+          description: Decree result description
+        totalVotes:
+          type: integer
+          description: Total votes cast towards this decree
+      required:
+        - id
+        - decreeId
+        - decreeTitle
+        - description
+        - totalVotes
+      x-tags:
+        - Elections
+    Division:
+      type: object
+      additionalProperties: false
+      title: Division
+      description: ''
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of this division
+        teams:
+          type: array
+          description: IDs of teams in this division
+          items:
+            type: string
+            format: uuid
+          example:
+            - b72f3061-f573-40d7-832a-5ad475bd7909
+            - 8d87c468-699a-47a8-b40d-cfb73a5660ad
+            - 36569151-a2fb-43c1-9df7-2df512424c82
+            - ca3f1c8c-c025-4d8e-8eef-5be6accbeb16
+            - a37f9158-7f82-46bc-908c-c9e2dda7c33b
+        name:
+          type: string
+          description: Name of this division
+          example: Wild High
+      required:
+        - id
+        - teams
+        - name
+      x-examples: {}
+      x-tags:
+        - League
+    Game:
+      type: object
+      additionalProperties: false
+      x-tags:
+        - Games
+      description: A single game of Blaseball.
+      title: Game
+      x-examples:
+        Game in progress:
+          id: be57dcae-326a-41b1-847f-234354886c22
+          basesOccupied:
+            - 1
+            - 0
+          baseRunners:
+            - c09e64b6-8248-407e-b3af-1931b880dbee
+            - 88cd6efa-dbf2-4309-aabe-ec1d6f21f98a
+          baseRunnerNames:
+            - Lenny Spruce
+            - Hewitt Best
+          outcomes:
+            - Oscar Vaughan is Partying!
+          terminology: b67e9bbb-1495-4e1b-b517-f1444b0a6c8b
+          lastUpdate: Hewitt Best draws a walk.
+          rules: 4ae9d46a-5408-460a-84fb-cbd8d03fff6c
+          statsheet: 183ae286-2491-4fa1-9646-7023acf862bf
+          awayPitcher: a691f2ba-9b69-41f8-892c-1acd42c336e4
+          awayPitcherName: Jenkins Good
+          awayBatter: null
+          awayBatterName: ''
+          awayTeam: eb67ae5e-c4bf-46ca-bbbc-425cd34182ff
+          awayTeamName: Canada Moist Talkers
+          awayTeamNickname: Moist Talkers
+          awayTeamColor: '#f5feff'
+          awayTeamEmoji: '0x1F5E3'
+          awayOdds: 0.5776162159131275
+          awayStrikes: 3
+          awayScore: 1
+          awayTeamBatterCount: 26
+          homePitcher: d46abb00-c546-4952-9218-4f16084e3238
+          homePitcherName: Atlas Guerra
+          homeBatter: null
+          homeBatterName: ''
+          homeTeam: adc5b394-8f76-416d-9ce9-813706877b84
+          homeTeamName: Kansas City Breath Mints
+          homeTeamNickname: Breath Mints
+          homeTeamColor: '#178f55'
+          homeTeamEmoji: '0x1F36C'
+          homeOdds: 0.42238378408687255
+          homeStrikes: 3
+          homeScore: 5
+          homeTeamBatterCount: 28
+          season: 7
+          isPostseason: false
+          day: 85
+          phase: 5
+          gameComplete: false
+          finalized: false
+          gameStart: true
+          halfInningOuts: 2
+          halfInningScore: 1
+          inning: 6
+          topOfInning: false
+          atBatBalls: 0
+          atBatStrikes: 0
+          seriesIndex: 2
+          seriesLength: 3
+          shame: false
+          weather: 7
+          baserunnerCount: 2
+          homeBases: 4
+          awayBases: 4
+        Finished game:
+          id: 3681951f-0bf1-442e-9526-01b814a8e011
+          basesOccupied: []
+          baseRunners: []
+          baseRunnerNames: []
+          outcomes:
+            - Rogue Umpire incinerated Lovers hitter Miguel Javier! Replaced by Kennedy Meh
+          terminology: b67e9bbb-1495-4e1b-b517-f1444b0a6c8b
+          lastUpdate: Game over.
+          rules: 4ae9d46a-5408-460a-84fb-cbd8d03fff6c
+          statsheet: 12e879f0-d849-4dba-8991-ef8dd037c6a7
+          awayPitcher: 1513aab6-142c-48c6-b43e-fbda65fd64e8
+          awayPitcherName: Caleb Alvarado
+          awayBatter: 4bf352d2-6a57-420a-9d45-b23b2b947375
+          awayBatterName: Rivers Rosa
+          awayTeam: ca3f1c8c-c025-4d8e-8eef-5be6accbeb16
+          awayTeamName: Chicago Firefighters
+          awayTeamNickname: Firefighters
+          awayTeamColor: '#8c2a3e'
+          awayTeamEmoji: '0x1F525'
+          awayOdds: 0.48262243544143735
+          awayStrikes: 3
+          awayScore: 5
+          awayTeamBatterCount: 41
+          homePitcher: 7c5ae357-e079-4427-a90f-97d164c7262e
+          homePitcherName: Milo Brown
+          homeBatter: null
+          homeBatterName: null
+          homeTeam: b72f3061-f573-40d7-832a-5ad475bd7909
+          homeTeamName: San Francisco Lovers
+          homeTeamNickname: Lovers
+          homeTeamColor: '#780018'
+          homeTeamEmoji: '0x1F48B'
+          homeOdds: 0.5173775645585625
+          homeStrikes: 3
+          homeScore: 3
+          homeTeamBatterCount: 34
+          season: 2
+          isPostseason: false
+          day: 10
+          phase: 4
+          gameComplete: true
+          finalized: true
+          gameStart: true
+          halfInningOuts: 0
+          halfInningScore: 0
+          inning: 8
+          topOfInning: false
+          atBatBalls: 0
+          atBatStrikes: 0
+          seriesIndex: 2
+          seriesLength: 3
+          shame: false
+          weather: 7
+          baserunnerCount: 0
+          homeBases: 4
+          awayBases: 4
+        Future game:
+          id: 46fd5ccb-f8f9-4af3-8759-b694d28f4611
+          day: 98
+          phase: 0
+          rules: 4ae9d46a-5408-460a-84fb-cbd8d03fff6c
+          shame: false
+          inning: 0
+          season: 7
+          weather: 11
+          awayOdds: 0
+          awayTeam: b63be8c2-576a-4d6e-8daf-814f8bcea96f
+          homeOdds: 0
+          homeTeam: 9debc64f-74b7-4ae1-a4d6-fce0144b6ea5
+          outcomes: []
+          awayBases: 4
+          awayScore: 0
+          finalized: false
+          gameStart: false
+          homeBases: 4
+          homeScore: 0
+          statsheet: 8e9dfade-c404-4a75-ba64-a446f2689209
+          atBatBalls: 0
+          awayBatter: null
+          homeBatter: null
+          lastUpdate: ''
+          awayPitcher: null
+          awayStrikes: 3
+          baseRunners: []
+          homePitcher: null
+          homeStrikes: 3
+          seriesIndex: 3
+          terminology: b67e9bbb-1495-4e1b-b517-f1444b0a6c8b
+          topOfInning: true
+          atBatStrikes: 0
+          awayTeamName: Miami Dale
+          gameComplete: false
+          homeTeamName: Houston Spies
+          isPostseason: false
+          seriesLength: 3
+          awayTeamColor: '#9141ba'
+          awayTeamEmoji: '0x1F6A4'
+          basesOccupied: []
+          homeTeamColor: '#67556b'
+          homeTeamEmoji: '0x1F575'
+          awayBatterName: ''
+          halfInningOuts: 0
+          homeBatterName: ''
+          awayPitcherName: ''
+          baseRunnerNames: []
+          baserunnerCount: 0
+          halfInningScore: 0
+          homePitcherName: ''
+          awayTeamNickname: Dale
+          homeTeamNickname: Spies
+          awayTeamBatterCount: 0
+          homeTeamBatterCount: 0
+      properties:
+        id:
+          type: string
+          description: ID of this game
+        basesOccupied:
+          type: array
+          description: The indices of the currently occupied bases (zero-indexed)
+          items:
+            type: integer
+        baseRunners:
+          type: array
+          description: IDs of the players occupying bases (corresponding with the indices in `basesOccupied`)
+          items:
+            type: string
+            format: uuid
+        baseRunnerNames:
+          type: array
+          description: Names of the players on base (corresponding with the indices in `basesOccupied`)
+          items:
+            type: string
+        outcomes:
+          type: array
+          description: 'Important game events that occurred during this game, also shown on the end game screen'
+          items:
+            type: string
+            example: Rogue Umpire incinerated Breath Mints hitter Whit Steakknife! Replaced by Stew Briggs
+        terminology:
+          type: string
+          format: uuid
+          description: Unknown
+        lastUpdate:
+          type: string
+          description: The latest "game log" entry
+          example: 'Strike, looking. 0-1'
+        rules:
+          type: string
+          format: uuid
+          description: Unknown
+        statsheet:
+          type: string
+          format: uuid
+          description: ID of this game's statsheet
+        awayPitcher:
+          type: string
+          format: uuid
+          nullable: true
+          description: ID of the pitcher for the away team.
+        awayPitcherName:
+          type: string
+          description: Name of the pitcher for the away team
+        awayBatter:
+          type: string
+          nullable: true
+          format: uuid
+          description: ID of the current batter for the away team (or null if no active at-bat)
+        awayBatterName:
+          type: string
+          description: Name of the current batter for the away team (or empty string if no active at-bat)
+        awayTeam:
+          type: string
+          format: uuid
+          description: ID of the away team
+        awayTeamName:
+          type: string
+          description: Full name of the away team
+        awayTeamNickname:
+          type: string
+          description: Nickname of the away team
+        awayTeamColor:
+          type: string
+          description: Thene color of the away team
+        awayTeamEmoji:
+          type: string
+          description: Emoji of the away team
+        awayOdds:
+          type: number
+          description: Calculated odds of the away team winning
+          minimum: 0
+          maximum: 1
+          format: double
+        awayStrikes:
+          type: integer
+          description: The amount of strikes needed for the away team to strike out (usually 3)
+          example: 3
+        awayScore:
+          type: integer
+          description: Score of the away team
+        awayTeamBatterCount:
+          type: integer
+          description: How many at-bats the away team has had
+        homePitcher:
+          type: string
+          format: uuid
+          nullable: true
+          description: ID of the pitcher for the home team
+        homePitcherName:
+          type: string
+          description: Name of the pitcher for the home team
+        homeBatter:
+          type: string
+          nullable: true
+          format: uuid
+          description: ID of the current batter for the home team (or null if no active at-bat)
+        homeBatterName:
+          type: string
+          description: Name of the current batter for the home team (or empty string if no active at-bat)
+        homeTeam:
+          type: string
+          description: ID of the home team
+        homeTeamName:
+          type: string
+          description: Full name of the home team
+        homeTeamNickname:
+          type: string
+          description: Nickname of the home team
+        homeTeamColor:
+          type: string
+          description: Theme color of the home team
+        homeTeamEmoji:
+          type: string
+          description: Emoji of the home team
+        homeOdds:
+          type: number
+          description: Calculated odds of the home team winning
+          minimum: 0
+          maximum: 1
+          format: double
+        homeStrikes:
+          type: integer
+          description: The amount of strikes needed for the home team to strike out (usually 3)
+        homeScore:
+          type: integer
+          description: Score of the home team
+        homeTeamBatterCount:
+          type: integer
+          description: How many at-bats the home team has had
+        season:
+          type: integer
+          description: Season (zero-indexed)
+          minimum: 0
+          example: 7
+        isPostseason:
+          type: boolean
+          description: Whether this game takes place in the postseason (day >= 99)
+        day:
+          type: integer
+          description: Day (zero-indexed)
+          minimum: 0
+          example: 85
+        phase:
+          type: integer
+          description: The current "game phase" (documentation pending)
+          example: 5
+          minimum: 0
+          maximum: 6
+        gameComplete:
+          type: boolean
+          description: Whether this game is finished
+        finalized:
+          type: boolean
+          description: Unknown (similar to `gameComplete`?)
+        gameStart:
+          type: boolean
+          description: |
+            Whether this game has started
+        halfInningOuts:
+          type: integer
+          description: How many outs have been made this half-inning (displayed as "Outs" on the scoreboard)
+        halfInningScore:
+          type: integer
+          description: How many runs have been scored this half-inning
+        inning:
+          type: integer
+          description: |
+            Current inning number (zero-indexed)
+          minimum: 0
+          example: 7
+        topOfInning:
+          type: boolean
+          description: |
+            Whether this is the top of the current inning (vs. the bottom)
+        atBatBalls:
+          type: integer
+          description: How many balls have been called this at-bat (displayed as "Balls" on the scoreboard)
+        atBatStrikes:
+          type: integer
+          description: How many strikes have been called this at-bat (displayed as "Strikes" on the scoreboard)
+        seriesIndex:
+          type: integer
+          description: Index of this game in the series
+          example: 2
+        seriesLength:
+          type: integer
+          description: 'Length of the game series (3 during regular season, 5 during postseason)'
+          example: 3
+        shame:
+          type: boolean
+          description: Whether the away team has been shamed this game
+        weather:
+          $ref: '#/components/schemas/Weather'
+        baserunnerCount:
+          type: integer
+          description: Amount of players on base at the moment
+          minimum: 0
+        homeBases:
+          type: integer
+          description: The amount of bases for the home team to run (including home base)
+          example: 4
+        awayBases:
+          type: integer
+          description: The amount of bases for the away team to run (including home base)
+          example: 4
+      required:
+        - id
+        - basesOccupied
+        - baseRunners
+        - baseRunnerNames
+        - outcomes
+        - terminology
+        - lastUpdate
+        - rules
+        - statsheet
+        - awayPitcher
+        - awayPitcherName
+        - awayBatter
+        - awayBatterName
+        - awayTeam
+        - awayTeamName
+        - awayTeamNickname
+        - awayTeamColor
+        - awayTeamEmoji
+        - awayOdds
+        - awayStrikes
+        - awayScore
+        - awayTeamBatterCount
+        - homePitcher
+        - homePitcherName
+        - homeBatter
+        - homeBatterName
+        - homeTeam
+        - homeTeamName
+        - homeTeamNickname
+        - homeTeamColor
+        - homeTeamEmoji
+        - homeOdds
+        - homeStrikes
+        - homeScore
+        - homeTeamBatterCount
+        - season
+        - isPostseason
+        - day
+        - phase
+        - gameComplete
+        - finalized
+        - gameStart
+        - halfInningOuts
+        - halfInningScore
+        - inning
+        - topOfInning
+        - atBatBalls
+        - atBatStrikes
+        - seriesIndex
+        - seriesLength
+        - shame
+        - weather
+        - baserunnerCount
+        - homeBases
+        - awayBases
+    League:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of the league
+          example: d8545021-e9fc-48a3-af74-48685950a183
+        subleagues:
+          type: array
+          description: IDs of subleagues in this league
+          items:
+            type: string
+            format: uuid
+          example:
+            - aabc11a1-81af-4036-9f18-229c759ca8a9
+            - 4fe65afa-804f-4bb2-9b15-1281b2eab110
+        name:
+          type: string
+          description: Name of the league
+          example: Internet League Blaseball
+        tiebreakers:
+          type: string
+          format: uuid
+          description: ID of the league's tiebreaker list
+          example: faaa4d3f-4b76-4e10-99d3-bf933dcd1672
+      required:
+        - id
+        - subleagues
+        - name
+        - tiebreakers
+      x-examples: {}
+      x-tags:
+        - League
+      title: League
+    OffseasonRecap:
+      type: object
+      additionalProperties: false
+      x-tags:
+        - Elections
+      title: Election Results
+      x-examples:
+        Season 7 election results:
+          id: b9b7d77a-fe35-4df0-a68c-efd665ad42e0
+          bonusResults:
+            - f0f15969-aecb-4f9e-8eb9-00f05ece732c
+            - ec18f915-7b78-478c-93c6-305eddaeeaed
+            - 511260ad-b831-4ebc-a6b4-2582b661846e
+            - 068792c3-51a0-47ae-a359-9ee234acb74a
+            - e59fbc74-c6ea-4064-8309-e397aa4b3679
+            - 8a2f2499-244d-4788-abd8-22b8e71a7ca9
+            - fa34d625-5cb8-4f96-9bf9-4e6b916e93c2
+            - c8b1de0c-1916-4181-a03a-0a831b0b8612
+            - 6fbb2192-bc11-4fbc-9d78-54b34c170534
+            - 1687cebf-9012-46f5-aeb3-1a4258a39b40
+            - be2e2092-7572-4ece-ae7e-ce35721d0b4b
+            - e6c853dc-75c8-4cd9-b637-5d894a346ed8
+            - 61237abf-8bc7-4fb3-9ef4-8c77253e9a27
+            - b02c57d4-9aca-4fcd-86c7-3a834dcbdd5c
+            - 07b56f96-1e42-4eab-b852-9ca52e847c34
+            - 46e9edc7-2d93-40ca-9926-9802925be2f2
+            - 9cc4daf2-8f15-4cb5-a7cf-a5ce34562004
+            - b7a5b9d0-55c9-45a7-8aba-be06f373872f
+            - 41e610a8-3f8d-4be7-a9a5-018f82e03baf
+            - 174f7f51-4d3a-44d4-ad15-27bbe1b37212
+          decreeResults:
+            - 94ca62b2-fbba-4d32-a682-18b524ddd4a8
+          name: The Season 7 Election
+          season: 6
+          totalBonusVotes: 2692321
+          totalDecreeVotes: 398218
+          voteCount: 3090539
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of the offseasonRecap object
+        bonusResults:
+          type: array
+          description: IDs of blessing results
+          items:
+            type: string
+            format: uuid
+        decreeResults:
+          type: array
+          description: IDs of decree results (only passed decrees)
+          items:
+            type: string
+            format: uuid
+        name:
+          type: string
+          description: Name of the election
+        season:
+          type: integer
+          description: Season of this election (zero-indexed)
+        totalBonusVotes:
+          type: integer
+          description: Total votes cast towards blessings
+        totalDecreeVotes:
+          type: integer
+          description: Total votes cast towards decrees
+        voteCount:
+          type: integer
+          description: Total votes cast in this election
+      required:
+        - id
+        - bonusResults
+        - decreeResults
+        - name
+        - season
+        - totalBonusVotes
+        - totalDecreeVotes
+        - voteCount
+    OffseasonSetup:
+      type: object
+      additionalProperties: false
+      x-tags:
+        - Elections
+      title: Election Setup
+      x-examples:
+        Season 8 election:
+          decrees:
+            - id: wild_cards
+              type: 31
+              title: Wild Cards
+              description: 'Every Season, a random team from each Subleague will leave Party Time to become the 5th Playoff team. A best of 3 Wild Card series will happen on Fridays.'
+            - id: relief
+              type: 32
+              title: Relief
+              description: 'Next Season, the bottom four teams will have Relief. When one of their pitchers gives up 5 runs, they''ll immediately be replaced by a pitcher from their Shadows.'
+            - id: double_jumps
+              type: 33
+              title: Double Jumps
+              description: 'Whenever a team defeats the team currently leading their Division, they''ll earn an extra win. Permanent effect.'
+          blessings:
+            - id: mod_player_stable
+              type: 96
+              value: 1
+              title: Forever Physical
+              subheader: 'Brought to you by @Limited Run Games@http://limitedrungames.com/blaseball'
+              description: Keep a Random Player on your team Stable.
+            - id: reroll_worst_players_3
+              type: 10
+              value: 3
+              title: Radical Alchemy
+              subheader: 'Brought to you by @Necrobarista@https://store.steampowered.com/app/725270/Necrobarista/'
+              description: Re-rolls your team's three worst players.
+            - id: mod_team_fireproof
+              type: 64
+              value: 1
+              title: Anti Burnout
+              subheader: 'Brought to you by @IndieCade@https://www.kickstarter.com/projects/indiecade/anywhere-and-everywhere'
+              description: Your team is protected from Incinerations for the following season.
+            - id: random_pitcher_star_boost
+              type: 53
+              value: 3
+              title: Replacement Elbows
+              subheader: 'Brought to you by @Pro Gymnast@http://www.walaber.com/pro-gymnast'
+              description: Where did you find these? Improve 3 random pitchers on your team by one Star (20%)
+            - id: add_new_player_rotation
+              type: 107
+              value: 1
+              title: Promo Code
+              subheader: 'Brought to you by @Blaseball Cares@https://www.blaseballcares.com'
+              description: Enter the code. Recruit a rookie to be the 6th player in your Rotation.
+            - id: mod_team_bird_boost
+              type: 97
+              value: 1
+              title: Affinity For Crows
+              subheader: 'Brought to you by @The Society for Internet Blaseball Research@https://sibr.dev/'
+              description: 'Oh, that’s what they do. Your team will play 50% Better in Bird Weather.'
+            - id: mod_team_home_field
+              type: 98
+              value: 1
+              title: Home Field Advantage
+              description: No place like home. Your Team starts with 1 Run when playing at home next season.
+            - id: remove_worst_rotation
+              type: 108
+              value: 1
+              title: Composite
+              description: Reinforced. Remove the Worst Player from your Rotation. Your Rotation is now shorter.
+            - id: steal_leaderboard_player_14
+              type: 78
+              value: 14
+              title: Lottery Pick
+              description: Steal the 14th Most Idolized Player in the League.
+            - id: steal_leaderboard_player_21
+              type: 78
+              value: 21
+              title: Blind Date
+              description: Steal the 21st Most Idolized Player on the Leaderboard.
+            - id: max_steal_least_popular
+              type: 70
+              value: 1
+              title: Who? You too?
+              description: Never heard of them. Maximize and steal the least Idolized player in the league.
+            - id: duplicate_random_player
+              type: 82
+              value: 1
+              title: Party Line
+              description: Hello? Who's there? Replace a player on your team with the Alternate of a random player from another team.
+            - id: steal_random_team_best_bullpen
+              type: 101
+              value: 1
+              title: Thief in the Night
+              description: Under the cover of darkness. Steal a Pitcher from a Divisional Opponent's Shadows.
+            - id: random_hitter_star_boost
+              type: 52
+              value: 3
+              title: Precognition
+              description: Vision of things to come. Improve 3 random hitters on your team by one Star (20%)
+            - id: incinerate_least_idolized
+              type: 103
+              value: 1
+              title: New Kid
+              description: A warm welcome. Incinerate the Least Idolized Player on Your Team.
+            - id: barrel_of_peanuts
+              type: 104
+              value: 1
+              title: Barrel of Tiny Eggs
+              description: Feed the Hall Monitor. Fans of your team receive a big barrel of peanuts.
+            - id: division_swap
+              type: 99
+              value: 1
+              title: Divisional Swap
+              description: Swap your team into the other Division in your Subleague.
+            - id: subleague_swap
+              type: 100
+              value: 1
+              title: Subleague Swap
+              description: Swap your team into another Division in the opposite Subleague.
+            - id: team_blood_type_grass
+              type: 105
+              value: 1
+              title: Astroturf
+              description: The grass is greener on the other side. Give your team Grass Blood Type.
+            - id: team_blood_type_base
+              type: 106
+              value: 1
+              title: Base Instincts
+              description: Succumb. Give your team Base Blood Type.
+          decreesToPass: 1
+      properties:
+        decrees:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: Internal decree ID
+              type:
+                type: integer
+                description: Unknown
+              title:
+                type: string
+                description: Decree title
+              description:
+                type: string
+                description: Decree description
+            required:
+              - id
+              - type
+              - title
+              - description
+        blessings:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                description: Internal blessing ID
+              type:
+                type: integer
+                description: Unknown
+              value:
+                type: integer
+                description: Unknown
+              title:
+                type: string
+                description: Blessing title
+              subheader:
+                type: string
+                description: Usually sponsor names
+              description:
+                type: string
+                description: Blessing description
+            required:
+              - id
+              - type
+              - value
+              - title
+              - description
+        decreesToPass:
+          type: integer
+          description: Amount of decrees that will pass
+      required:
+        - decrees
+        - blessings
+        - decreesToPass
+    Player:
+      type: object
+      additionalProperties: false
+      description: ''
+      x-tags:
+        - Players
+      title: Player
+      x-examples:
+        Jessica Telephone (2020-09-26):
+          id: 083d09d4-7ed3-4100-b021-8fbe30dd43e8
+          anticapitalism: 0.7715585414248713
+          baseThirst: 1.0837081572225478
+          buoyancy: 0.9190386558929515
+          chasiness: 0.6821760105524166
+          coldness: 0.5542490771184405
+          continuation: 0.9751231462319436
+          divinity: 1.2164554950661912
+          groundFriction: 1.0870693806274312
+          indulgence: 0.7691018871160651
+          laserlikeness: 0.5783179230872257
+          martyrdom: 1.5743961867934053
+          moxie: 0.9824746391865744
+          musclitude: 1.3262941924123677
+          name: Jessica Telephone
+          bat: GUNBLADE_A
+          omniscience: 0.7104289779019639
+          overpowerment: 0.6892427934187828
+          patheticism: 0.21590198952572454
+          ruthlessness: 0.5221803174782815
+          shakespearianism: 0.9957369039444792
+          suppression: 1.0028774318124143
+          tenaciousness: 0.4457180604303871
+          thwackability: 1.1132820621017052
+          tragicness: 0.1
+          unthwackability: 0.40018316390635833
+          watchfulness: 0.6569065120599864
+          pressurization: 0.19240544381174618
+          totalFingers: 13
+          soul: 7
+          deceased: false
+          peanutAllergy: true
+          cinnamon: 0.3542455840750931
+          fate: 16
+          armor: ''
+          ritual: Batting Practice
+          coffee: 2
+          blood: 5
+          permAttr:
+            - SUPERALLERGIC
+            - SHELLED
+          seasAttr: []
+          weekAttr: []
+          gameAttr: []
+          hitStreak: 0
+          consecutiveHits: 0
+        Boyfriend Monreal (2020-09-26):
+          id: 493a83de-6bcf-41a1-97dd-cc5e150548a3
+          anticapitalism: 0.4273089325674563
+          baseThirst: 0.8963490564110628
+          buoyancy: 0.5647967078680627
+          chasiness: 0.4803739447535905
+          coldness: 0.885546103028737
+          continuation: 0.2199888489662629
+          divinity: 0.2807021373805849
+          groundFriction: 1.0592706162110814
+          indulgence: 0.4438526602843744
+          laserlikeness: 0.922331201285781
+          martyrdom: 0.6787348768031669
+          moxie: 0.9879067708201228
+          musclitude: 0.16795006958183814
+          name: Boyfriend Monreal
+          bat: ''
+          omniscience: 1.1170541197967532
+          overpowerment: 0.1782018013225244
+          patheticism: 0.24646172533180022
+          ruthlessness: 0.214613911632201
+          shakespearianism: 0.6733931178297228
+          suppression: 0.23513000681104157
+          tenaciousness: 0.3946929215300695
+          thwackability: 0.5420011136369189
+          tragicness: 0.1
+          unthwackability: 0.7551237722464466
+          watchfulness: 0.7378273692493681
+          pressurization: 0.26721552267062376
+          totalFingers: 10
+          soul: 4
+          deceased: true
+          peanutAllergy: false
+          cinnamon: 0.423816472847075
+          fate: 65
+          armor: ''
+          ritual: Getting organized
+          coffee: 13
+          blood: 8
+          permAttr: []
+          seasAttr: []
+          weekAttr:
+            - MARKED
+          gameAttr: []
+          hitStreak: 0
+          consecutiveHits: 0
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of this player
+        name:
+          type: string
+          description: Name of this player
+          example: Jessica Telephone
+        deceased:
+          type: boolean
+          description: Whether this player is deceased (incinerated)
+        peanutAllergy:
+          type: boolean
+          description: Whether this player is allergic to peanuts
+        baseThirst:
+          type: number
+          description: 'Baserunning stat: attempts to steal base'
+        continuation:
+          type: number
+          description: 'Baserunning stat: ???'
+        groundFriction:
+          type: number
+          description: 'Baserunning stat: appears to correlate to triples'
+        indulgence:
+          type: number
+          description: 'Baserunning stat: ???'
+        laserlikeness:
+          type: number
+          description: 'Baserunning stat: success rate when attempting to steal bases'
+        anticapitalism:
+          type: number
+          description: 'Defense stat: ???'
+        chasiness:
+          type: number
+          description: 'Defense stat: ???'
+        omniscience:
+          type: number
+          description: 'Defense stat: ???'
+        tenaciousness:
+          type: number
+          description: 'Defense stat: ???'
+        watchfulness:
+          type: number
+          description: 'Defense stat: ???'
+        buoyancy:
+          type: number
+          description: 'Batting? stat: ???'
+        divinity:
+          type: number
+          description: 'Batting stat: home run frequency'
+        martyrdom:
+          type: number
+          description: 'Batting stat: ???'
+        moxie:
+          type: number
+          description: 'Batting stat: ability to draw walks'
+        musclitude:
+          type: number
+          description: 'Batting stat: ability to hit extra bases (doubles/triples)'
+        patheticism:
+          type: number
+          description: 'Batting stat: raises strikeouts'
+        thwackability:
+          type: number
+          description: 'Batting stat: general hitting-the-ball ability'
+        tragicness:
+          type: number
+          description: 'Batting stat: ??? (value seems to change/reset over time)'
+        coldness:
+          type: number
+          description: 'Pitching stat: ???'
+        overpowerment:
+          type: number
+          description: 'Pitching stat: lowers home runs'
+        ruthlessness:
+          type: number
+          description: 'Pitching stat: reduces walks and increases strikeouts'
+        shakespearianism:
+          type: number
+          description: 'Pitching stat: ???'
+        suppression:
+          type: number
+          description: 'Pitching stat: ???'
+        unthwackability:
+          type: number
+          description: 'Pitching stat: lowers allowed hits'
+        totalFingers:
+          type: integer
+          description: 'Starts at 10, seemingly incremented on changes to pitching stats'
+        cinnamon:
+          type: number
+          description: Unknown
+        pressurization:
+          type: number
+          description: Unknown
+        soul:
+          type: integer
+          description: Correlates with length of player soul scream
+        bat:
+          type: string
+          description: 'ID of this player''s bat, or empty string'
+        armor:
+          type: string
+          description: 'ID of this player''s item, or empty string'
+        ritual:
+          type: string
+          description: '"Pre-game ritual" on player page'
+        coffee:
+          type: integer
+          description: This player's preferred coffee type (docs pending)
+        blood:
+          type: integer
+          description: This player's blood type (docs pending)
+        fate:
+          type: integer
+          description: Unknown?
+        permAttr:
+          type: array
+          description: Permanent player attributes
+          items:
+            $ref: '#/components/schemas/Attribute'
+        seasAttr:
+          type: array
+          description: Season-long player attributes
+          items:
+            $ref: '#/components/schemas/Attribute'
+        weekAttr:
+          type: array
+          description: Week-long (9 game days) player attributes
+          items:
+            $ref: '#/components/schemas/Attribute'
+        gameAttr:
+          type: array
+          description: Game-long player attributes
+          items:
+            $ref: '#/components/schemas/Attribute'
+      required:
+        - id
+        - name
+        - deceased
+        - peanutAllergy
+        - baseThirst
+        - continuation
+        - groundFriction
+        - indulgence
+        - laserlikeness
+        - anticapitalism
+        - chasiness
+        - omniscience
+        - tenaciousness
+        - watchfulness
+        - buoyancy
+        - divinity
+        - martyrdom
+        - moxie
+        - musclitude
+        - patheticism
+        - thwackability
+        - tragicness
+        - coldness
+        - overpowerment
+        - ruthlessness
+        - shakespearianism
+        - suppression
+        - unthwackability
+        - totalFingers
+        - cinnamon
+        - pressurization
+        - soul
+        - bat
+        - armor
+        - ritual
+        - coffee
+        - blood
+        - fate
+        - permAttr
+        - seasAttr
+        - weekAttr
+        - gameAttr
+    PlayoffMatchup:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        awaySeed:
+          type: integer
+        awayTeam:
+          type: string
+          format: uuid
+        awayWins:
+          type: integer
+        homeSeed:
+          type: integer
+        homeTeam:
+          type: string
+          format: uuid
+        homeWins:
+          type: integer
+      required:
+        - id
+        - name
+        - awaySeed
+        - awayTeam
+        - awayWins
+        - homeSeed
+        - homeTeam
+        - homeWins
+      title: Playoff Matchup
+      x-tags:
+        - League
+    PlayoffRound:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        gameIndex:
+          type: integer
+        games:
+          type: array
+          items:
+            type: string
+            format: uuid
+        matchups:
+          type: array
+          items:
+            type: string
+            format: uuid
+        name:
+          type: string
+        roundNumber:
+          type: integer
+        special:
+          type: boolean
+        winnerSeeds:
+          type: array
+          items:
+            type: integer
+        winners:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - id
+        - gameIndex
+        - games
+        - matchups
+        - name
+        - roundNumber
+        - special
+        - winnerSeeds
+        - winners
+      x-tags:
+        - League
+      title: Playoff Round
+    Playoffs:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        numberOfRounds:
+          type: integer
+        playoffDay:
+          type: integer
+        rounds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        season:
+          type: integer
+        tomorrowRound:
+          type: integer
+      required:
+        - id
+        - name
+        - numberOfRounds
+        - playoffDay
+        - rounds
+        - season
+        - tomorrowRound
+      title: Playoffs
+      x-tags:
+        - League
+    Season:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        league:
+          type: string
+          format: uuid
+        rules:
+          type: string
+          format: uuid
+        schedule:
+          type: string
+          format: uuid
+        seasonNumber:
+          type: integer
+        standings:
+          type: string
+          format: uuid
+        stats:
+          type: string
+          format: uuid
+        terminology:
+          type: string
+          format: uuid
+      required:
+        - id
+        - league
+        - rules
+        - schedule
+        - seasonNumber
+        - standings
+        - stats
+        - terminology
+      title: Season
+      x-tags:
+        - League
+    SimulationData:
+      type: object
+      additionalProperties: false
+      title: Simulation Data
+      x-examples: {}
+      properties:
+        id:
+          type: string
+          example: thisidisstaticyo
+          description: Always "thisidisstaticyo"
+        day:
+          type: integer
+          description: Current game day
+          minimum: 0
+          maximum: 120
+          example: 69
+        league:
+          type: string
+          format: uuid
+          description: ID of the current league object
+        nextElectionEnd:
+          type: string
+          format: date-time
+          description: Time when the current election ends
+        nextPhaseTime:
+          type: string
+          format: date-time
+          description: Time the next game phase starts (very unreliable)
+        nextSeasonStart:
+          type: string
+          format: date-time
+          description: Time when next season starts
+        phase:
+          type: integer
+          minimum: 0
+          maximum: 7
+          example: 2
+          description: Current phase of the league (docs pending)
+        playOffRound:
+          type: integer
+          description: 'Current round of playoffs (zero-indexed, 0 if not in playoffs)'
+        playoffs:
+          type: string
+          format: uuid
+          description: ID of current playoffs object
+        rules:
+          type: string
+          format: uuid
+          description: Unknown
+        season:
+          type: integer
+          description: Current game season
+          minimum: 0
+        seasonId:
+          type: string
+          format: uuid
+          description: ID of the season object
+        terminology:
+          type: string
+          format: uuid
+          description: Unknown
+        eraColor:
+          type: string
+          description: Theme color of the current game era
+          example: '#ff0000'
+          pattern: '#[0-9a-f]{6}'
+        eraTitle:
+          type: string
+          example: The Discipline Era
+          description: Name of the current game era (displayed in the Blaseball.com page header)
+        twgo:
+          type: string
+          description: Concatenated initials of every player incinerated between Season 2 and Season 6
+          example: JHFMTOJMNPSMLMDGFOSEZDTMJWHPADAACGRTBBPBBCJRTPMJCSNKKAOMVMSTAJTVTCJIMPSSSTBFHRSSMSDKIRLWLVWSSMEIMCCDMDRTEIFBCLRMMW
+        subEraColor:
+          type: string
+          pattern: '#[0-9A-Fa-f]{6}'
+          example: '#5988FF'
+          description: Theme color of the current game sub-era
+        subEraTitle:
+          type: string
+          description: Name of the current game sub-era (displayed in the Blaseball.com page header)
+          example: Rest in Violence
+        attr:
+          type: array
+          description: 'Various attributes, major league events, and unlocks'
+          items:
+            type: string
+            enum:
+              - OPENED_BOOK
+              - UNLOCKED_PEANUTS
+              - EAT_THE_RICH
+              - UNLOCKED_INTERVIEWS
+              - UNLOCKED_IDOLS
+              - PARTY_TIME
+              - UNLOCKED_HALL
+          example:
+            - OPENED_BOOK
+            - UNLOCKED_PEANUTS
+            - EAT_THE_RICH
+            - UNLOCKED_INTERVIEWS
+            - UNLOCKED_IDOLS
+            - PARTY_TIME
+            - UNLOCKED_HALL
+      required:
+        - id
+        - day
+        - league
+        - nextElectionEnd
+        - nextPhaseTime
+        - nextSeasonStart
+        - phase
+        - playOffRound
+        - playoffs
+        - rules
+        - season
+        - seasonId
+        - terminology
+        - eraColor
+        - eraTitle
+        - twgo
+        - subEraColor
+        - subEraTitle
+        - attr
+      x-tags:
+        - Global
+    Standings:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        losses:
+          type: object
+          additionalProperties:
+            type: integer
+        wins:
+          type: object
+          additionalProperties:
+            type: integer
+      required:
+        - id
+        - losses
+        - wins
+      title: League Standings
+      x-tags:
+        - League
+    StreamData:
+      type: object
+      additionalProperties: false
+      description: ''
+      title: Stream Data
+      properties:
+        value:
+          type: object
+          properties:
+            games:
+              type: object
+              properties:
+                sim:
+                  $ref: '#/components/schemas/SimulationData'
+                season:
+                  $ref: '#/components/schemas/Season'
+                standings:
+                  $ref: '#/components/schemas/Standings'
+                schedule:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Game'
+                tomorrowSchedule:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Game'
+                postseason:
+                  oneOf:
+                    - type: object
+                    - $ref: '#/components/schemas/Playoffs'
+              required:
+                - sim
+                - season
+                - standings
+                - schedule
+                - tomorrowSchedule
+                - postseason
+            leagues:
+              type: object
+              properties:
+                teams:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Team'
+                subleagues:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Subleague'
+                divisions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Division'
+                leagues:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/League'
+              required:
+                - teams
+                - subleagues
+                - divisions
+                - leagues
+            temporal:
+              $ref: '#/components/schemas/Temporal'
+      required:
+        - value
+      x-examples: {}
+      x-tags:
+        - Global
+    Subleague:
+      type: object
+      additionalProperties: false
+      title: Subleague
+      x-examples: {}
+      properties:
+        id:
+          type: string
+          example: aabc11a1-81af-4036-9f18-229c759ca8a9
+          description: ID of this subleague
+        name:
+          type: string
+          description: Name of this subleague
+          example: The Wild League
+        divisions:
+          type: array
+          description: IDs of divisions in this subleague
+          items:
+            type: string
+            format: uuid
+          example:
+            - d4cc18de-a136-4271-84f1-32516be91a80
+            - 98c92da4-0ea7-43be-bd75-c6150e184326
+      x-tags:
+        - League
+    Team:
+      type: object
+      additionalProperties: false
+      description: ''
+      x-tags:
+        - Teams
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID of this team
+        lineup:
+          type: array
+          description: List of players in the lineup (batters)
+          items:
+            type: string
+            format: uuid
+        rotation:
+          type: array
+          description: List of players in the rotation (pitchers)
+          items:
+            type: string
+            format: uuid
+        bullpen:
+          type: array
+          description: 'List of players in the bullpen (FK, aka. "Shadows")'
+          items:
+            type: string
+            format: uuid
+        bench:
+          type: array
+          description: 'List of players on the bench (FK, aka. "Shadows")'
+          items:
+            type: string
+            format: uuid
+        fullName:
+          type: string
+          description: Full name of the team (location + nickname)
+        location:
+          type: string
+          description: Location of this team
+        mainColor:
+          type: string
+          description: Primary team color
+        nickname:
+          type: string
+          description: Nickname of the team
+        secondaryColor:
+          type: string
+          description: Secondary team color
+        shorthand:
+          type: string
+          description: Team abbreviation (unused)
+        emoji:
+          type: string
+          description: Team emoji
+        slogan:
+          type: string
+          description: Team slogal
+        shameRuns:
+          type: integer
+        totalShames:
+          type: integer
+        totalShamings:
+          type: integer
+          description: ''
+        seasonShames:
+          type: integer
+          description: ''
+        seasonShamings:
+          type: integer
+          description: ''
+        championships:
+          type: integer
+          description: Amount of ILB championships this team has won
+        rotationSlot:
+          type: integer
+        weekAttr:
+          type: array
+          description: Team attributes expiring at the end of the week (9 game days)
+          items:
+            $ref: '#/components/schemas/Attribute'
+        gameAttr:
+          type: array
+          description: Team attributes expiring after this game
+          items:
+            $ref: '#/components/schemas/Attribute'
+        seasAttr:
+          type: array
+          description: Team attributes expiring after this season
+          items:
+            $ref: '#/components/schemas/Attribute'
+        permAttr:
+          type: array
+          description: Permanent team attributes
+          items:
+            $ref: '#/components/schemas/Attribute'
+      required:
+        - id
+        - lineup
+        - rotation
+        - bullpen
+        - bench
+        - fullName
+        - location
+        - mainColor
+        - nickname
+        - secondaryColor
+        - shorthand
+        - emoji
+        - slogan
+        - shameRuns
+        - totalShames
+        - totalShamings
+        - seasonShames
+        - seasonShamings
+        - championships
+        - weekAttr
+        - gameAttr
+        - seasAttr
+        - permAttr
+      title: Team
+      x-examples:
+        Kansas City Breath Mints (2020-09-26):
+          id: adc5b394-8f76-416d-9ce9-813706877b84
+          lineup:
+            - cc11963b-a05b-477b-b154-911dc31960df
+            - 88cd6efa-dbf2-4309-aabe-ec1d6f21f98a
+            - 4b6f0a4e-de18-44ad-b497-03b1f470c43c
+            - cd417f8a-ce01-4ab2-921d-42e2e445bbe2
+            - 46721a07-7cd2-4839-982e-7046df6e8b66
+            - 87e6ae4b-67de-4973-aa56-0fc9835a1e1e
+            - 53e701c7-e3c8-4e18-ba05-9b41b4b64cda
+            - 64f4cd75-0c1e-42cf-9ff0-e41c4756f22a
+            - c09e64b6-8248-407e-b3af-1931b880dbee
+          rotation:
+            - a199a681-decf-4433-b6ab-5454450bbe5e
+            - d46abb00-c546-4952-9218-4f16084e3238
+            - 7663c3ca-40a1-4f13-a430-14637dce797a
+            - f2a27a7e-bf04-4d31-86f5-16bfa3addbe7
+            - 138fccc3-e66f-4b07-8327-d4b6f372f654
+          bullpen:
+            - 6e373fca-b8ab-4848-9dcc-50e92cd732b7
+            - 9fd1f392-d492-4c48-8d46-27fb4283b2db
+            - aae38811-122c-43dd-b59c-d0e203154dbe
+            - 113f47b2-3111-4abb-b25e-18f7889e2d44
+            - fa5b54d2-b488-47cd-a529-592831e4813d
+            - a8e757c6-e299-4a2e-a370-4f7c3da98bd1
+            - 6598e40a-d76d-413f-ad06-ac4872875bde
+            - 90c8be89-896d-404c-945e-c135d063a74e
+          bench:
+            - a8a5cf36-d1a9-47d1-8d22-4a665933a7cc
+            - 35d5b43f-8322-4666-aab1-d466b4a5a388
+            - 849e13dc-6eb1-40a8-b55c-d4b4cd160aab
+          seasAttr:
+            - SHAME_PIT
+            - PARTY_TIME
+          permAttr:
+            - BLOOD_DONOR
+          fullName: Kansas City Breath Mints
+          location: Kansas City
+          mainColor: '#178f55'
+          nickname: Breath Mints
+          secondaryColor: '#e6ffec'
+          shorthand: KCBM
+          emoji: '0x1F36C'
+          slogan: 'Fresh Breath, Here We Come.'
+          shameRuns: 0
+          totalShames: 29
+          totalShamings: 18
+          seasonShames: 6
+          seasonShamings: 1
+          championships: 0
+          weekAttr: []
+          gameAttr: []
+          rotationSlot: 99
+    Temporal:
+      type: object
+      additionalProperties: false
+      properties:
+        doc:
+          type: object
+          additionalProperties: false
+          required:
+            - id
+            - alpha
+            - beta
+            - gamma
+            - delta
+            - epsilon
+            - zeta
+          properties:
+            id:
+              type: string
+              example: whatistime
+              description: Always "whatistime"
+            alpha:
+              type: integer
+              description: Amount of peanuts for sale in the store
+            beta:
+              type: integer
+              description: Maximum tier of squirrel in the store
+            gamma:
+              type: integer
+              description: '0 if the Peanut is speaking, 1 if the Hall Monitor is speaking, historically been 500000000'
+            delta:
+              type: boolean
+              description: Whether to show sponsor item in the store
+            epsilon:
+              type: boolean
+              description: Whether the Peanut or the Hall Monitor is speaking on-screen
+            zeta:
+              type: string
+              description: Last line said by the Peanut or the Hall Monitor
+      required:
+        - doc
+      x-tags:
+        - Global
+    TickerMessage:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: ID of this ticker message (not always a UUID)
+        msg:
+          type: string
+          description: Text of this message
+        expire:
+          type: string
+          nullable: true
+          format: date-time
+          description: Time this message expires (or null for indefinite)
+      required:
+        - id
+        - msg
+        - expire
+      x-tags:
+        - Global
+    Tiebreakers:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          description: ID of this tiebreaker object
+          format: uuid
+        order:
+          type: array
+          description: List of teams in their tiebreaker order
+          items:
+            type: string
+            format: uuid
+      required:
+        - id
+        - order
+      x-tags:
+        - League
+    GameStatsheet:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        homeTeamRunsByInning:
+          type: array
+          minItems: 8
+          items:
+            type: integer
+        awayTeamRunsByInning:
+          type: array
+          minItems: 9
+          items:
+            type: integer
+        awayTeamTotalBatters:
+          type: integer
+        homeTeamTotalBatters:
+          type: integer
+        awayTeamStats:
+          type: string
+          format: uuid
+        homeTeamStats:
+          type: string
+          format: uuid
+      required:
+        - id
+        - homeTeamRunsByInning
+        - awayTeamRunsByInning
+        - awayTeamTotalBatters
+        - homeTeamTotalBatters
+        - awayTeamStats
+        - homeTeamStats
+      x-tags:
+        - Games
+        - Statsheets
+      title: Game Statsheet
+    PlayerStatsheet:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        playerId:
+          type: string
+          format: uuid
+        teamId:
+          type: string
+          format: uuid
+        team:
+          type: string
+        name:
+          type: string
+        atBats:
+          type: integer
+        caughtStealing:
+          type: integer
+        doubles:
+          type: integer
+        earnedRuns:
+          type: integer
+        groundIntoDp:
+          type: integer
+        hits:
+          type: integer
+        hitsAllowed:
+          type: integer
+        homeRuns:
+          type: integer
+        losses:
+          type: integer
+        outsRecorded:
+          type: integer
+        rbis:
+          type: integer
+        runs:
+          type: integer
+        stolenBases:
+          type: integer
+        strikeouts:
+          type: integer
+        struckouts:
+          type: integer
+        triples:
+          type: integer
+        walks:
+          type: integer
+        walksIssued:
+          type: integer
+        wins:
+          type: integer
+      required:
+        - playerId
+        - teamId
+        - team
+        - name
+        - atBats
+        - caughtStealing
+        - doubles
+        - earnedRuns
+        - groundIntoDp
+        - hits
+        - hitsAllowed
+        - homeRuns
+        - losses
+        - outsRecorded
+        - rbis
+        - runs
+        - stolenBases
+        - strikeouts
+        - struckouts
+        - triples
+        - walks
+        - walksIssued
+        - wins
+      x-tags:
+        - Players
+        - Statsheets
+      title: Player Statsheet
+    SeasonStatsheet:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        teamStats:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+        - id
+      x-tags:
+        - Statsheets
+        - League
+      title: Season Statsheet
+    TeamStatsheet:
+      type: object
+      additionalProperties: false
+      x-tags:
+        - Teams
+        - Statsheets
+      properties:
+        id:
+          type: string
+          format: uuid
+        playerStats:
+          type: array
+          items:
+            type: string
+            format: uuid
+        gamesPlayed:
+          type: integer
+        wins:
+          type: integer
+        losses:
+          type: integer
+        name:
+          type: string
+        teamId:
+          type: string
+          format: uri
+      required:
+        - id
+        - playerStats
+        - gamesPlayed
+        - wins
+        - losses
+        - name
+        - teamId
+    Weather:
+      type: integer
+      title: Weather
+      description: |-
+        The weather of a game.
+
+        Currently known values:
+        - 0: Void (unused)
+        - 1: Sunny (unused, Season 1 games retroactively assigned this)
+        - 2: Overcast (unused)
+        - 3: Rainy (unused
+        - 4: Sandstorm (unused)
+        - 5: Snowy (unused)
+        - 6: Acidic (unused)
+        - **7: Solar Eclipse** (since Season 2)
+        - 8: Glitter (unused)
+        - **9: Blooddrain** (since Season 6, formerly Bloodwind)
+        - **10: Peanuts** (since Season 3)
+        - **11: Birds** (since Season 3)
+        - **12: Feedback** (since Season 4)
+        - **13: Reverb** (since Season 5)
+      minimum: 0
+      maximum: 13
+      example: 11
+      x-tags:
+        - Games
+    Attribute:
+      type: string
+      enum:
+        - EXTRA_STRIKE
+        - SHAME_PIT
+        - HOME_FIELD
+        - FIREPROOF
+        - ALTERNATE
+        - SOUNDPROOF
+        - SHELLED
+        - REVERBERATING
+        - BLOOD_DONOR
+        - BLOOD_THIEF
+        - BLOOD_PITY
+        - BLOOD_WINNER
+        - BLOOD_FAITH
+        - BLOOD_LAW
+        - BLOOD_CHAOS
+        - RETURNED
+        - INWARD
+        - MARKED
+        - PARTY_TIME
+        - LIFE_OF_PARTY
+        - DEBT
+        - SPICY
+        - HEATING_UP
+        - ON_FIRE
+        - HONEY_ROASTED
+        - FIRST_BORN
+        - SUPERALLERGIC
+        - EXTRA_BASE
+        - BLESS_OFF
+        - NON_IDOLIZED
+        - GRAVITY
+        - ELECTRIC
+        - DOUBLE_PAYOUTS
+        - FIRE_PROTECTOR
+        - RECEIVER
+        - FLICKERING
+      x-examples: {}
+      description: Visible on the team/player pages.
+      title: Team/Player Attribute
+      x-tags:
+        - Teams
+        - Players
+    TributeItem:
+      title: Tribute Item
+      type: object
+      properties:
+        playerID:
+          type: string
+          description: Player ID
+          format: uuid
+        peanuts:
+          type: integer
+          description: Peanuts paid tribute towards this player
+      x-tags:
+        - Global
+    IdolItem:
+      title: Idol Item
+      type: object
+      description: ''
+      properties:
+        playerId:
+          type: string
+          description: ID of the player
+          format: uuid
+        total:
+          type: integer
+          description: Amount of users idoling this player (removed after Season 6)
+          deprecated: true
+          minimum: 0
+        id:
+          type: string
+          format: uuid
+          description: 'Unknown (not a player ID, removed after Season 6)'
+          deprecated: true
+      x-tags:
+        - Global
+tags:
+  - name: Players
+  - name: Teams
+  - name: Games
+  - name: Elections
+  - name: Statsheets
+  - name: Global
+  - name: League

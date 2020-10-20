@@ -18,7 +18,10 @@ paths:
   /database/allDivisions:
     get:
       summary: Get all divisions
-      description: Returns a list of each division and its member teams.
+      description: |-
+        Returns a list of each division and its member teams.
+
+        This will return all divisions known to the database - including retired divisions (eg. Chaotic/Lawful Good/Evil from Season 5 and before).
       operationId: allDivisions
       responses:
         '200':
@@ -79,7 +82,7 @@ paths:
   /database/decreeResults:
     get:
       summary: List decree results
-      description: Get the results of one or more decrees.
+      description: Get the results of one or more decrees. Returns an array. Use commas to separate multiple decree IDs.
       operationId: decreeResults
       parameters:
         - name: ids
@@ -131,7 +134,7 @@ paths:
         Returns the last broadcast game update for a given game day and season. Completed games will show the final update of the game (generally "Game over."), currently running games will show the update present on www.blaseball.com, and future games (beyond the next game) will be missing data about pitchers and odds.
 
         This endpoint can return all regular-season games (up to Day 99 - so `98` here) of the current season, even ones that haven't started. New season schedules will become available once the simulation phase changes to `1` (at around Monday 1 AM Pacific). Postseason games are never available more than a single game in advance. 
-      operationId: gameByDate
+      operationId: games
       parameters:
         - name: season
           in: query
@@ -225,7 +228,10 @@ paths:
   /database/league:
     get:
       summary: Get league details
-      description: Returns information for a given league ID.
+      description: |-
+        Returns information for a given league ID.
+
+        There is currently only one known league: Internet League Blaseball, with ID `d8545021-e9fc-48a3-af74-48685950a183`.
       operationId: league
       parameters:
         - name: id
@@ -235,6 +241,7 @@ paths:
           schema:
             type: string
             format: uuid
+            example: d8545021-e9fc-48a3-af74-48685950a183
       responses:
         '200':
           description: OK
@@ -242,6 +249,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/League'
+              examples:
+                Internet League Blaseball (as of Season 11):
+                  value:
+                    id: d8545021-e9fc-48a3-af74-48685950a183
+                    subleagues:
+                      - aabc11a1-81af-4036-9f18-229c759ca8a9
+                      - 4fe65afa-804f-4bb2-9b15-1281b2eab110
+                    name: Internet League Blaseball
+                    tiebreakers: 370c436f-79fa-418b-bc98-5db48442ba3f
       tags:
         - League
   /database/offseasonRecap:
@@ -584,12 +600,12 @@ paths:
   /database/tiebreakers:
     get:
       summary: Get tiebreaker details
-      description: 'Returns inforation for a given tiebreaker ID from the league object. Each of the ids in `order` is an ID for a team object. This represents the "Divine Favor" ranking. (Note: the tiebreaker object is returned inside a single-element array, even though the endpoint''s argument only accepts one ID.)'
+      description: 'Returns information for a given tiebreaker ID from the league object. Each of the ids in `order` is an ID for a team object. This represents the "Divine Favor" ranking. (Note: the tiebreaker object is returned inside a single-element array, even though the endpoint''s argument only accepts one ID.)'
       operationId: tiebreakers
       parameters:
         - name: id
           in: query
-          description: ID of tiebreakers to return
+          description: ID of tiebreakers object to return
           required: true
           schema:
             type: string
@@ -886,7 +902,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/EventResult'
-      operationId: GetEventResults
+      operationId: eventResults
       description: Get the results of one or more election events. Returns an array. Use commas to separate multiple bonus IDs.
       parameters:
         - schema:
@@ -2851,29 +2867,41 @@ components:
     GameStatsheet:
       type: object
       additionalProperties: false
+      x-tags:
+        - Games
+        - Statsheets
+      title: Game Statsheet
+      description: 'Represents the statsheet of a single game. This object doesn''t include much information by itself, but refers to the team statsheets (which in turn refer to the player statsheets) containing most of the useful statistics.'
       properties:
         id:
           type: string
+          description: ID of this game statsheet
         homeTeamRunsByInning:
           type: array
           minItems: 8
+          description: Runs scored by the home team in each inning
           items:
             type: integer
         awayTeamRunsByInning:
           type: array
           minItems: 9
+          description: Runs scored by the away team in each inning
           items:
             type: integer
         awayTeamTotalBatters:
           type: integer
+          description: Always 0 (broken?)
         homeTeamTotalBatters:
           type: integer
+          description: Always 0 (broken?)
         awayTeamStats:
           type: string
           format: uuid
+          description: ID of the away team's statsheet for this game
         homeTeamStats:
           type: string
           format: uuid
+          description: ID of the home team's statsheet for this game
       required:
         - id
         - homeTeamRunsByInning
@@ -2882,10 +2910,6 @@ components:
         - homeTeamTotalBatters
         - awayTeamStats
         - homeTeamStats
-      x-tags:
-        - Games
-        - Statsheets
-      title: Game Statsheet
     PlayerStatsheet:
       type: object
       additionalProperties: false
@@ -2893,66 +2917,95 @@ components:
         - Players
         - Statsheets
       title: Player Statsheet
+      description: Represents the statsheet for a single player during a single game.
       properties:
         id:
           type: string
           format: uuid
+          description: The ID of this player statsheet
         playerId:
           type: string
           format: uuid
+          description: The ID of the player this statsheet is for
         teamId:
           type: string
           format: uuid
+          description: The ID of the team this player played on during this game
         team:
           type: string
+          description: The name of the team this player played on during this game
         name:
           type: string
+          description: The name of the player
         atBats:
           type: integer
+          description: 'Batters: amount of at bats during this game. Not entirely accurate.'
         caughtStealing:
           type: integer
+          description: 'Batters: amount of times caught stealing a base'
         doubles:
           type: integer
+          description: 'Batters: amount of doubles hit'
         earnedRuns:
           type: integer
+          description: 'Pitchers: amount of runs scored by opposing batters'
         groundIntoDp:
           type: integer
+          description: 'Batters: amount of ground outs into double plays hit'
         hits:
           type: integer
+          description: 'Batters: amount of hits (of any type)'
         hitsAllowed:
           type: integer
+          description: 'Pitchers: amount of hits allowed to opposing batters'
         homeRuns:
           type: integer
+          description: 'Batters: amount of home runs scored'
         losses:
           type: integer
+          description: '1 if the team lost this game, 0 otherwise'
         outsRecorded:
           type: integer
+          description: 'Pitchers: the amount of outs this pitcher has thrown the opposing team (27 in a full game)'
         rbis:
           type: integer
+          description: 'Batters: amount of runs batted in (includes home runs)'
         runs:
           type: integer
+          description: 'Batters: amount of runs scored (any type)'
         stolenBases:
           type: integer
+          description: 'Batters: amount of bases stolen'
         strikeouts:
           type: integer
+          description: 'Pitchers: amount of times this pitcher has struck out the opposing batter'
         struckouts:
           type: integer
+          description: 'Batters: amount of times struck out'
         triples:
           type: integer
+          description: 'Batters: amount of triples hit'
         walks:
           type: integer
+          description: 'Batters: amount of walks drawn'
         walksIssued:
           type: integer
+          description: 'Pitchers: amount of walks issued to opposing batters'
         wins:
           type: integer
+          description: '1 if the team won this game, 0 otherwise'
         hitByPitch:
           type: integer
+          description: 'Batters: amount of times hit by pitch'
         hitBatters:
           type: integer
+          description: 'Pitchers (Jaylen): amount of batters hit by pitch'
         quadruples:
           type: integer
+          description: 'Batters: amount of quadruples hit (only relevant with 5th base)'
         pitchesThrown:
           type: integer
+          description: 'Pitchers: the amount of pitches thrown'
       required:
         - playerId
         - teamId
@@ -3001,26 +3054,34 @@ components:
       x-tags:
         - Teams
         - Statsheets
+      title: Team Statsheet
       properties:
         id:
           type: string
           format: uuid
+          description: ID of this team statsheet
         playerStats:
           type: array
+          description: List of player statsheets - one for each player that's played in this game for this team.
           items:
             type: string
             format: uuid
         gamesPlayed:
           type: integer
+          description: Always 0 (broken?)
         wins:
           type: integer
+          description: Always 0 (broken?)
         losses:
           type: integer
+          description: Always 0 (broken?)
         name:
           type: string
+          description: Name of the team this statsheet is for
         teamId:
           type: string
           format: uri
+          description: ID of the team this statsheet is for
       required:
         - id
         - playerStats
@@ -3029,6 +3090,10 @@ components:
         - losses
         - name
         - teamId
+      description: |-
+        Represents the statsheet for a single team during a single game.
+
+        The list of player statsheets are in order of player appearance in the game. If this is the home team, the first item will be the pitcher (as the pitcher is the first relevant player when the away team is batting).
     Weather:
       type: integer
       title: Weather

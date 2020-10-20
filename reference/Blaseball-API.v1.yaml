@@ -2871,7 +2871,10 @@ components:
         - Games
         - Statsheets
       title: Game Statsheet
-      description: 'Represents the statsheet of a single game. This object doesn''t include much information by itself, but refers to the team statsheets (which in turn refer to the player statsheets) containing most of the useful statistics.'
+      description: |-
+        Represents the statsheet of a single game. This object doesn't include much information by itself, but refers to the team statsheets (which in turn refer to the player statsheets) containing most of the useful statistics.
+
+        In case of *Black Hole* or *Sun 2* weather, the runs by inning arrays may contain "negative runs" - 10 runs get subtracted from the runs for that inning, and adding up all the innings will still total the team's final score for that game.
       properties:
         id:
           type: string

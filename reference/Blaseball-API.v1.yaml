@@ -2453,7 +2453,7 @@ components:
               - UNLOCKED_HALL
         agitations:
           type: integer
-          description: 'Unknown, but very ominous.'
+          description: Amount of Sun 2 / Black Hole game events (including Season 10 finals)
         salutations:
           type: integer
           description: 'Unknown, but very ominous.'

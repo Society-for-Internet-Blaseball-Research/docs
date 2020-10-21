@@ -2788,6 +2788,8 @@ components:
       additionalProperties: false
       x-tags:
         - Global
+      title: Temporal object
+      description: 'Contains miscellaneous (usually story-related) data sent through the stream data. Most significant use is transmitting "site takeover" text (eg. the site announcement, Peanut, Hall Monitor, or Boss speaking - including during boss fights). Some fields (`theta` and `iota` at the moment) are currently unused.'
       properties:
         doc:
           type: object
@@ -2800,6 +2802,9 @@ components:
             - delta
             - epsilon
             - zeta
+            - eta
+            - theta
+            - iota
           properties:
             id:
               type: string
@@ -2807,10 +2812,10 @@ components:
               description: Always "whatistime"
             alpha:
               type: integer
-              description: Amount of peanuts for sale in the store
+              description: 'Amount of peanuts that can be bought at once in the store. Fluctuated a lot during Season 3, but has been set to 1000 since.'
             beta:
               type: integer
-              description: Maximum tier of squirrel in the store
+              description: Maximum tier of squirrel in the store. Currently 1 (one tier only).
             gamma:
               type: integer
               description: '-1 if the "Site Announcer" is speaking, 0 if the Peanut is speaking, 1 if the Hall Monitor is speaking, 2 if the Boss is speaking, has historically been 500000000'
@@ -2819,10 +2824,19 @@ components:
               description: Whether to show sponsor item in the store
             epsilon:
               type: boolean
-              description: Whether a Big Deal (speaker) is speaking on-screen
+              description: Whether a "site takeover" is currently happening. Is (mostly) `false` during active bossfights despite text being displayed.
             zeta:
               type: string
-              description: Last line said by the speaker
+              description: 'Text currently being said by the "site takeover" speaker. This includes the Peanut''s flavor text during boss fights, even though `epsilon` is `false` during them.'
+            eta:
+              type: integer
+              description: How many games the Crabs have won (seen through the Telescope). Added mid-Season 11.
+            theta:
+              type: string
+              description: Unknown function. Currently an empty string. Added mid-Season 11.
+            iota:
+              description: Unknown function. Currently zero. Added mid-Season 11.
+              type: integer
       required:
         - doc
     TickerMessage:

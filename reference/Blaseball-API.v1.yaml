@@ -2718,15 +2718,16 @@ components:
           description: How many runs this team was shamed by in their last game. Translates to the amount of negative runs induced by the Shame Pit of Targeted Shame.
         totalShames:
           type: integer
+          description: Total amount of times this team has been shamed
         totalShamings:
           type: integer
-          description: ''
+          description: Total amount of times this team has shamed the opposing team
         seasonShames:
           type: integer
-          description: ''
+          description: Amount of times this team has been shamed this season
         seasonShamings:
           type: integer
-          description: ''
+          description: Amount of times this team has shamed the opposing team this season
         championships:
           type: integer
           description: Amount of ILB championships this team has won

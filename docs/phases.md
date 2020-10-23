@@ -16,6 +16,6 @@ Phase # | Name | Description
 11 | Wild Card Evening | The postseason, break between the Wild Card games and the quarterfinals.
 4 | Postseason | Postseason games (after Wild Card) are in progress.
 9 | Day X | Boss fight time! Seems to happen immediately after the Internet League finals.
-5 | - | After post-season, before election. Transitions to phase 6 on Sunday at 3am PST. Unknown why this happens or what the differences are.
+5 | - | After post-season, before election. Transitions to phase 6 on Sunday at 5am PST. Unknown why this happens or what the differences are.
 6 | - | Same as phase 5.
 0 | Blaseball Gods' Day | Post-election, results are visible here. Starts at 12pm PST on Sunday, and lasts until the season ticks over at 1am PST on Monday.

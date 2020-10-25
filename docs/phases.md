@@ -10,10 +10,10 @@ Phase # | Name | Description
 ---|---|---
 1 | Pre-Season | The "pre-season" - this is when the next season's decrees and blessings become publicly visible, and when the upcoming season's game schedule gets generated. This starts on Monday at 1am PST, where the season number also ticks over.
 2 | Season | Normal season games are in progress here. Starts at 12pm PST on Monday.
-7 | - | Starts as soon as the last game of Day 99 finishes, and lasts until the next top of the hour. This is eg. when the "ominous line" on the idol board would start to vibrate.
+7 | - | Starts as soon as the last game of Day 99 finishes, and lasts until the next top of the hour. This is eg. when the "ominous line" on the idol board would start to vibrate. Was skipped in Season 11.
 3 | Offseason | Between the regular season and the Wild Card games. Starts on the top of the hour after Day 99, and lasts for the duration of that hour.
 10 | Postseason | Wild Card games are in progress. 
-11 | Wild Card Evening | The postseason, break between the Wild Card games and the quarterfinals.
+11 | Wild Card Evening | The postseason, break between the Wild Card games and the quarterfinals, and (Season 11+) the break between quarterfinals and semifinals.
 4 | Postseason | Postseason games (after Wild Card) are in progress.
 9 | Day X | Boss fight time! Seems to happen immediately after the Internet League finals.
 5 | - | After post-season, before election. Transitions to phase 6 on Sunday at 5am PST. Unknown why this happens or what the differences are.

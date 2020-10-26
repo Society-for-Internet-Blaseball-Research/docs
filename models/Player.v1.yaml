@@ -1,0 +1,303 @@
+type: object
+additionalProperties: false
+description: ''
+x-tags:
+  - Players
+title: Player
+x-examples:
+  Jessica Telephone (2020-09-26):
+    id: 083d09d4-7ed3-4100-b021-8fbe30dd43e8
+    anticapitalism: 0.7715585414248713
+    baseThirst: 1.0837081572225478
+    buoyancy: 0.9190386558929515
+    chasiness: 0.6821760105524166
+    coldness: 0.5542490771184405
+    continuation: 0.9751231462319436
+    divinity: 1.2164554950661912
+    groundFriction: 1.0870693806274312
+    indulgence: 0.7691018871160651
+    laserlikeness: 0.5783179230872257
+    martyrdom: 1.5743961867934053
+    moxie: 0.9824746391865744
+    musclitude: 1.3262941924123677
+    name: Jessica Telephone
+    bat: GUNBLADE_A
+    omniscience: 0.7104289779019639
+    overpowerment: 0.6892427934187828
+    patheticism: 0.21590198952572454
+    ruthlessness: 0.5221803174782815
+    shakespearianism: 0.9957369039444792
+    suppression: 1.0028774318124143
+    tenaciousness: 0.4457180604303871
+    thwackability: 1.1132820621017052
+    tragicness: 0.1
+    unthwackability: 0.40018316390635833
+    watchfulness: 0.6569065120599864
+    pressurization: 0.19240544381174618
+    totalFingers: 13
+    soul: 7
+    deceased: false
+    peanutAllergy: true
+    cinnamon: 0.3542455840750931
+    fate: 16
+    armor: ''
+    ritual: Batting Practice
+    coffee: 2
+    blood: 5
+    permAttr:
+      - SUPERALLERGIC
+      - SHELLED
+    seasAttr: []
+    weekAttr: []
+    gameAttr: []
+    hitStreak: 0
+    consecutiveHits: 0
+  Boyfriend Monreal (2020-09-26):
+    id: 493a83de-6bcf-41a1-97dd-cc5e150548a3
+    anticapitalism: 0.4273089325674563
+    baseThirst: 0.8963490564110628
+    buoyancy: 0.5647967078680627
+    chasiness: 0.4803739447535905
+    coldness: 0.885546103028737
+    continuation: 0.2199888489662629
+    divinity: 0.2807021373805849
+    groundFriction: 1.0592706162110814
+    indulgence: 0.4438526602843744
+    laserlikeness: 0.922331201285781
+    martyrdom: 0.6787348768031669
+    moxie: 0.9879067708201228
+    musclitude: 0.16795006958183814
+    name: Boyfriend Monreal
+    bat: ''
+    omniscience: 1.1170541197967532
+    overpowerment: 0.1782018013225244
+    patheticism: 0.24646172533180022
+    ruthlessness: 0.214613911632201
+    shakespearianism: 0.6733931178297228
+    suppression: 0.23513000681104157
+    tenaciousness: 0.3946929215300695
+    thwackability: 0.5420011136369189
+    tragicness: 0.1
+    unthwackability: 0.7551237722464466
+    watchfulness: 0.7378273692493681
+    pressurization: 0.26721552267062376
+    totalFingers: 10
+    soul: 4
+    deceased: true
+    peanutAllergy: false
+    cinnamon: 0.423816472847075
+    fate: 65
+    armor: ''
+    ritual: Getting organized
+    coffee: 13
+    blood: 8
+    permAttr: []
+    seasAttr: []
+    weekAttr:
+      - MARKED
+    gameAttr: []
+    hitStreak: 0
+    consecutiveHits: 0
+properties:
+  id:
+    type: string
+    format: uuid
+    description: ID of this player
+  name:
+    type: string
+    description: Name of this player
+    example: Jessica Telephone
+  deceased:
+    type: boolean
+    description: Whether this player is deceased (incinerated)
+  peanutAllergy:
+    type: boolean
+    description: Whether this player is allergic to peanuts
+  baseThirst:
+    type: number
+    description: 'Baserunning stat: attempts to steal base'
+  continuation:
+    type: number
+    description: 'Baserunning stat: ???'
+  groundFriction:
+    type: number
+    description: 'Baserunning stat: appears to correlate to triples'
+  indulgence:
+    type: number
+    description: 'Baserunning stat: ???'
+  laserlikeness:
+    type: number
+    description: 'Baserunning stat: success rate when attempting to steal bases'
+  anticapitalism:
+    type: number
+    description: 'Defense stat: ???'
+  chasiness:
+    type: number
+    description: 'Defense stat: ???'
+  omniscience:
+    type: number
+    description: 'Defense stat: ???'
+  tenaciousness:
+    type: number
+    description: 'Defense stat: ???'
+  watchfulness:
+    type: number
+    description: 'Defense stat: ???'
+  buoyancy:
+    type: number
+    description: 'Batting? stat: ???'
+  divinity:
+    type: number
+    description: 'Batting stat: home run frequency'
+  martyrdom:
+    type: number
+    description: 'Batting stat: ???'
+  moxie:
+    type: number
+    description: 'Batting stat: ability to draw walks'
+  musclitude:
+    type: number
+    description: 'Batting stat: ability to hit extra bases (doubles/triples)'
+  patheticism:
+    type: number
+    description: 'Batting stat: raises strikeouts'
+  thwackability:
+    type: number
+    description: 'Batting stat: general hitting-the-ball ability'
+  tragicness:
+    type: number
+    description: 'Batting stat: ??? (value seems to change/reset over time)'
+  coldness:
+    type: number
+    description: 'Pitching stat: ???'
+  overpowerment:
+    type: number
+    description: 'Pitching stat: lowers home runs'
+  ruthlessness:
+    type: number
+    description: 'Pitching stat: reduces walks and increases strikeouts'
+  shakespearianism:
+    type: number
+    description: 'Pitching stat: ???'
+  suppression:
+    type: number
+    description: 'Pitching stat: ???'
+  unthwackability:
+    type: number
+    description: 'Pitching stat: lowers allowed hits'
+  totalFingers:
+    type: integer
+    description: 'Starts at 10, seemingly incremented on changes to pitching stats'
+  cinnamon:
+    type: number
+    description: Unknown
+  pressurization:
+    type: number
+    description: Unknown
+  soul:
+    type: integer
+    description: Correlates with length of player soul scream
+  bat:
+    type: string
+    description: 'ID of this player''s bat, or empty string'
+  armor:
+    type: string
+    description: 'ID of this player''s item, or empty string'
+  ritual:
+    type: string
+    description: '"Pre-game ritual" on player page'
+  coffee:
+    type: integer
+    description: This player's preferred coffee type (docs pending)
+  blood:
+    type: integer
+    description: This player's blood type (docs pending)
+  fate:
+    type: integer
+    description: Unknown?
+  permAttr:
+    type: array
+    description: Permanent player attributes
+    items:
+      type: string
+  seasAttr:
+    type: array
+    description: Season-long player attributes
+    items:
+      type: string
+  weekAttr:
+    type: array
+    description: Week-long (9 game days) player attributes
+    items:
+      type: string
+  gameAttr:
+    type: array
+    description: Game-long player attributes
+    items:
+      type: string
+  hitStreak:
+    type: integer
+    description: The player's current hit streak (only applicable in-game)
+  consecutiveHits:
+    type: integer
+  hittingRating:
+    type: number
+    description: The player's "hitting rating" (batting stars divided by five)
+  pitchingRating:
+    type: number
+    description: The player's "pitching rating" (pitching stars divided by five)
+  baserunningRating:
+    type: number
+    description: The player's "baserunning rating" (baserunning stars divided by five)
+  defenseRating:
+    type: number
+    description: The player's "defense rating" (defense stars divided by five)
+required:
+  - id
+  - name
+  - deceased
+  - peanutAllergy
+  - baseThirst
+  - continuation
+  - groundFriction
+  - indulgence
+  - laserlikeness
+  - anticapitalism
+  - chasiness
+  - omniscience
+  - tenaciousness
+  - watchfulness
+  - buoyancy
+  - divinity
+  - martyrdom
+  - moxie
+  - musclitude
+  - patheticism
+  - thwackability
+  - tragicness
+  - coldness
+  - overpowerment
+  - ruthlessness
+  - shakespearianism
+  - suppression
+  - unthwackability
+  - totalFingers
+  - cinnamon
+  - pressurization
+  - soul
+  - bat
+  - armor
+  - ritual
+  - coffee
+  - blood
+  - fate
+  - permAttr
+  - seasAttr
+  - weekAttr
+  - gameAttr
+  - hitStreak
+  - consecutiveHits
+  - hittingRating
+  - pitchingRating
+  - baserunningRating
+  - defenseRating

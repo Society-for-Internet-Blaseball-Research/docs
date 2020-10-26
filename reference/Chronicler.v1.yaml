@@ -8,7 +8,8 @@ paths:
   /games:
     get:
       summary: Get games
-      tags: []
+      tags:
+        - Games
       responses:
         '200':
           description: OK
@@ -78,7 +79,8 @@ paths:
   /games/updates:
     get:
       summary: Your GET endpoint
-      tags: []
+      tags:
+        - Games
       responses:
         '200':
           description: OK
@@ -153,12 +155,14 @@ components:
           description: 'The timestamp the game ended, or `null` if it hasn''t ended yet'
           nullable: true
         data:
-          $ref: ./Blaseball-API.v1.yaml#/components/schemas/Game
+          $ref: ../models/Game.v1.yaml
       required:
         - gameId
         - startTime
         - endTime
         - data
+      x-tags:
+        - Games
     ChroniclerGameUpdate:
       title: Game Update Info
       type: object
@@ -176,12 +180,14 @@ components:
           format: uuid
           description: A UUID representing a hash of the `data` object. Can be used as an ID for this particular update.
         data:
-          $ref: ./Blaseball-API.v1.yaml#/components/schemas/Game
+          $ref: ../models/Game.v1.yaml
       required:
         - gameId
         - timestamp
         - hash
         - data
+      x-tags:
+        - Games
   parameters:
     pageParam:
       in: query
@@ -225,3 +231,5 @@ components:
         type: string
         format: date-time
       description: Return only results from after this timestamp.
+tags:
+  - name: Games

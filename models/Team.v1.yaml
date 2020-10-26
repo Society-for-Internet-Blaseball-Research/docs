@@ -1,0 +1,183 @@
+type: object
+additionalProperties: false
+description: ''
+x-tags:
+  - Teams
+title: Team
+x-examples:
+  Kansas City Breath Mints (2020-09-26):
+    id: adc5b394-8f76-416d-9ce9-813706877b84
+    lineup:
+      - cc11963b-a05b-477b-b154-911dc31960df
+      - 88cd6efa-dbf2-4309-aabe-ec1d6f21f98a
+      - 4b6f0a4e-de18-44ad-b497-03b1f470c43c
+      - cd417f8a-ce01-4ab2-921d-42e2e445bbe2
+      - 46721a07-7cd2-4839-982e-7046df6e8b66
+      - 87e6ae4b-67de-4973-aa56-0fc9835a1e1e
+      - 53e701c7-e3c8-4e18-ba05-9b41b4b64cda
+      - 64f4cd75-0c1e-42cf-9ff0-e41c4756f22a
+      - c09e64b6-8248-407e-b3af-1931b880dbee
+    rotation:
+      - a199a681-decf-4433-b6ab-5454450bbe5e
+      - d46abb00-c546-4952-9218-4f16084e3238
+      - 7663c3ca-40a1-4f13-a430-14637dce797a
+      - f2a27a7e-bf04-4d31-86f5-16bfa3addbe7
+      - 138fccc3-e66f-4b07-8327-d4b6f372f654
+    bullpen:
+      - 6e373fca-b8ab-4848-9dcc-50e92cd732b7
+      - 9fd1f392-d492-4c48-8d46-27fb4283b2db
+      - aae38811-122c-43dd-b59c-d0e203154dbe
+      - 113f47b2-3111-4abb-b25e-18f7889e2d44
+      - fa5b54d2-b488-47cd-a529-592831e4813d
+      - a8e757c6-e299-4a2e-a370-4f7c3da98bd1
+      - 6598e40a-d76d-413f-ad06-ac4872875bde
+      - 90c8be89-896d-404c-945e-c135d063a74e
+    bench:
+      - a8a5cf36-d1a9-47d1-8d22-4a665933a7cc
+      - 35d5b43f-8322-4666-aab1-d466b4a5a388
+      - 849e13dc-6eb1-40a8-b55c-d4b4cd160aab
+    seasAttr:
+      - SHAME_PIT
+      - PARTY_TIME
+    permAttr:
+      - BLOOD_DONOR
+    fullName: Kansas City Breath Mints
+    location: Kansas City
+    mainColor: '#178f55'
+    nickname: Breath Mints
+    secondaryColor: '#e6ffec'
+    shorthand: KCBM
+    emoji: '0x1F36C'
+    slogan: 'Fresh Breath, Here We Come.'
+    shameRuns: 0
+    totalShames: 29
+    totalShamings: 18
+    seasonShames: 6
+    seasonShamings: 1
+    championships: 0
+    weekAttr: []
+    gameAttr: []
+    rotationSlot: 99
+properties:
+  id:
+    type: string
+    format: uuid
+    description: ID of this team
+  lineup:
+    type: array
+    description: List of players in the lineup (batters)
+    items:
+      type: string
+      format: uuid
+  rotation:
+    type: array
+    description: List of players in the rotation (pitchers)
+    items:
+      type: string
+      format: uuid
+  bullpen:
+    type: array
+    description: 'List of players in the bullpen (FK, aka. "Shadows")'
+    items:
+      type: string
+      format: uuid
+  bench:
+    type: array
+    description: 'List of players on the bench (FK, aka. "Shadows")'
+    items:
+      type: string
+      format: uuid
+  fullName:
+    type: string
+    description: Full name of the team (location + nickname)
+  location:
+    type: string
+    description: Location of this team
+  mainColor:
+    type: string
+    description: Primary team color
+  nickname:
+    type: string
+    description: Nickname of the team
+  secondaryColor:
+    type: string
+    description: Secondary team color
+  shorthand:
+    type: string
+    description: Team abbreviation (unused)
+  emoji:
+    type: string
+    description: Team emoji
+  slogan:
+    type: string
+    description: Team slogal
+  shameRuns:
+    type: integer
+    description: How many runs this team was shamed by in their last game. Translates to the amount of negative runs induced by the Shame Pit of Targeted Shame.
+  totalShames:
+    type: integer
+    description: Total amount of times this team has been shamed
+  totalShamings:
+    type: integer
+    description: Total amount of times this team has shamed the opposing team
+  seasonShames:
+    type: integer
+    description: Amount of times this team has been shamed this season
+  seasonShamings:
+    type: integer
+    description: Amount of times this team has shamed the opposing team this season
+  championships:
+    type: integer
+    description: Amount of ILB championships this team has won
+  rotationSlot:
+    type: integer
+    description: 'Seems to constantly increase once per game day. Potentially related to pitcher rotations, actual use unknown.'
+  weekAttr:
+    type: array
+    description: Team attributes expiring at the end of the week (9 game days)
+    items:
+      type: string
+  gameAttr:
+    type: array
+    description: Team attributes expiring after this game
+    items:
+      type: string
+  seasAttr:
+    type: array
+    description: Team attributes expiring after this season
+    items:
+      type: string
+  permAttr:
+    type: array
+    description: Permanent team attributes
+    items:
+      type: string
+  teamSpirit:
+    type: integer
+    description: Unknown what this does.
+required:
+  - id
+  - lineup
+  - rotation
+  - bullpen
+  - bench
+  - fullName
+  - location
+  - mainColor
+  - nickname
+  - secondaryColor
+  - shorthand
+  - emoji
+  - slogan
+  - shameRuns
+  - totalShames
+  - totalShamings
+  - seasonShames
+  - seasonShamings
+  - championships
+  - rotationSlot
+  - weekAttr
+  - gameAttr
+  - seasAttr
+  - permAttr
+  - teamSpirit

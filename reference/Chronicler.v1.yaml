@@ -1,0 +1,227 @@
+openapi: 3.0.0
+info:
+  title: Chronicler
+  version: '1.0'
+servers:
+  - url: 'https://api.sibr.dev/chronicler/v1'
+paths:
+  /games:
+    get:
+      summary: Get games
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChroniclerGame'
+      operationId: GetGames
+      description: |-
+        Returns all known games. The resulting response is quite large (10,000+ games), but can (and probably should) be filtered using the query parameters.
+
+        The resulting data object will be the last seen state for this game, and will include most of the relevant properties of a game (teams, pitchers, final score, weather, etc).
+      parameters:
+        - $ref: '#/components/parameters/countParam'
+        - $ref: '#/components/parameters/orderParam'
+        - $ref: '#/components/parameters/beforeParam'
+        - $ref: '#/components/parameters/afterParam'
+        - schema:
+            type: integer
+          in: query
+          name: season
+          description: Return only games from this season
+        - schema:
+            type: number
+          in: query
+          name: day
+          description: Return only games from this day
+        - schema:
+            type: boolean
+          in: query
+          description: 'Filter by whether the game has started (`true` returns only started games, `false` returns only future games)'
+          name: started
+        - schema:
+            type: boolean
+          in: query
+          name: finished
+          description: |-
+            Filter by whether the game has finished (`true` returns only finished games,
+             `false` returns only unfinished)
+        - schema:
+            type: boolean
+          in: query
+          name: outcomes
+          description: 'Filter by whether the game has any outcomes (`true` returns only games with outcomes, `false` returns only games without outcomes)'
+        - schema:
+            type: integer
+          in: query
+          name: weather
+          description: Filter by game weather ID (can take multiple comma-separated values)
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: team
+          description: Filter by team ID (can take multiple comma-separated team IDs)
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          description: Filter by pitcher ID (can take multiple comma-separated player IDs)
+          name: pitcher
+  /games/updates:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChroniclerGameUpdate'
+                  nextPage:
+                    $ref: '#/components/schemas/PageToken'
+      operationId: GetGameUpdates
+      description: 'Returns game *updates* - ie. observed versions of a game object. This can be used eg. for analyzing play-by-plays by getting the full history of a single game, or to search for specific plays using the `search` parameter.'
+      parameters:
+        - $ref: '#/components/parameters/countParam'
+        - $ref: '#/components/parameters/orderParam'
+        - $ref: '#/components/parameters/beforeParam'
+        - $ref: '#/components/parameters/afterParam'
+        - $ref: '#/components/parameters/pageParam'
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: game
+          description: Return only updates for this game ID (can take multiple comma-separated game IDs)
+        - schema:
+            type: string
+          in: query
+          name: search
+          description: Full text search for the `lastUpdate` (game log) field. Uses PostgreSQL `websearch_to_tsquery` syntax.
+        - schema:
+            type: boolean
+          in: query
+          name: started
+          description: 'Filter by whether the game has started (`true` returns only started games, `false` returns only future games)'
+        - schema:
+            type: integer
+          in: query
+          name: season
+          description: Return only game updates from this season
+components:
+  schemas:
+    PageToken:
+      title: Page Token
+      type: string
+      description: |-
+        An opaque token used to navigate results by page.
+
+        Pass this as the `?page=` query parameter of the next request to get the next page (ordered based on other query parameters).
+
+        This will only be `null` if the returned result set is empty - it's possible to have a non-null page token, fetch the next page based on that, and get zero results back.
+    ChroniclerGame:
+      title: Game Info
+      type: object
+      description: A "wrapper object" around a game object from blaseball.com.
+      properties:
+        gameId:
+          type: string
+          format: uuid
+          description: The ID of the game
+        startTime:
+          type: string
+          format: date-time
+          description: 'The timestamp the game started, or `null` if it hasn''t started yet'
+          nullable: true
+        endTime:
+          type: string
+          format: date-time
+          description: 'The timestamp the game ended, or `null` if it hasn''t ended yet'
+          nullable: true
+        data:
+          $ref: ./Blaseball-API.v1.yaml#/components/schemas/Game
+      required:
+        - gameId
+        - startTime
+        - endTime
+        - data
+    ChroniclerGameUpdate:
+      title: Game Update Info
+      type: object
+      properties:
+        gameId:
+          type: string
+          description: The ID of the game
+          format: uuid
+        timestamp:
+          type: string
+          description: The earliest timestamp this update has been observed
+          format: date-time
+        hash:
+          type: string
+          format: uuid
+          description: A UUID representing a hash of the `data` object. Can be used as an ID for this particular update.
+        data:
+          $ref: ./Blaseball-API.v1.yaml#/components/schemas/Game
+      required:
+        - gameId
+        - timestamp
+        - hash
+        - data
+  parameters:
+    pageParam:
+      in: query
+      name: page
+      required: false
+      schema:
+        $ref: '#/components/schemas/PageToken'
+      description: 'The last page token, for result pagination.'
+    countParam:
+      in: query
+      name: count
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+      description: The amount of results to return.
+    orderParam:
+      in: query
+      name: order
+      required: false
+      schema:
+        type: string
+        default: asc
+        enum:
+          - asc
+          - desc
+      description: 'How to sort the results by timestamp, either ascending or descending.'
+    beforeParam:
+      in: query
+      name: before
+      required: false
+      schema:
+        type: string
+        format: date-time
+      description: Return only results from before this timestamp.
+    afterParam:
+      in: query
+      name: after
+      required: false
+      schema:
+        type: string
+        format: date-time
+      description: Return only results from after this timestamp.

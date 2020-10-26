@@ -96,12 +96,15 @@ properties:
       type: string
   permAttr:
     type: array
-    description: Permanent team attributes
+    description: Team attributes with no automatic expiry.
     items:
       type: string
   teamSpirit:
     type: integer
-    description: Unknown what this does.
+    description: Unknown what this does. Seemingly related to boss fights.
+  card:
+    type: integer
+    description: 'The tarot card this team won in the Season 11 elections, zero-indexed (eg. VII The Chariot is `6`). Teams with no tarot card (eg. Crabs) have a value of -1.'
 required:
   - id
   - lineup
@@ -128,3 +131,4 @@ required:
   - seasAttr
   - permAttr
   - teamSpirit
+  - card

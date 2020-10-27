@@ -1,0 +1,311 @@
+type: object
+additionalProperties: false
+x-tags:
+  - Games
+title: Blaseball Game
+x-examples: {}
+properties:
+  id:
+    type: string
+    description: ID of this game
+  basesOccupied:
+    type: array
+    description: The indices of the currently occupied bases (zero-indexed)
+    items:
+      type: integer
+  baseRunners:
+    type: array
+    description: IDs of the players occupying bases (corresponding with the indices in `basesOccupied`)
+    items:
+      type: string
+      format: uuid
+  baseRunnerNames:
+    type: array
+    description: Names of the players on base (corresponding with the indices in `basesOccupied`)
+    items:
+      type: string
+  outcomes:
+    type: array
+    description: 'Important game events that occurred during this game, also shown on the end game screen'
+    items:
+      type: string
+      example: Rogue Umpire incinerated Breath Mints hitter Whit Steakknife! Replaced by Stew Briggs
+  terminology:
+    type: string
+    format: uuid
+    description: Unknown
+  lastUpdate:
+    type: string
+    description: The latest "game log" entry
+    example: 'Strike, looking. 0-1'
+  rules:
+    type: string
+    format: uuid
+    description: Unknown
+  statsheet:
+    type: string
+    format: uuid
+    description: ID of this game's statsheet
+  awayPitcher:
+    type: string
+    format: uuid
+    nullable: true
+    description: ID of the pitcher for the away team. `null` for future games.
+  awayPitcherName:
+    type: string
+    description: Name of the pitcher for the away team. `null` for future games.
+  awayBatter:
+    type: string
+    nullable: true
+    format: uuid
+    description: ID of the current batter for the away team (or null if no active at-bat)
+  awayBatterName:
+    type: string
+    description: Name of the current batter for the away team (or empty string if no active at-bat)
+  awayTeam:
+    type: string
+    format: uuid
+    description: ID of the away team
+  awayTeamName:
+    type: string
+    description: Full name of the away team
+  awayTeamNickname:
+    type: string
+    description: Nickname of the away team
+  awayTeamColor:
+    type: string
+    description: Primary theme color of the away team
+  awayTeamEmoji:
+    type: string
+    description: Emoji of the away team
+  awayOdds:
+    type: number
+    description: Calculated odds of the away team winning. Zero for future games.
+    minimum: 0
+    maximum: 1
+    format: double
+  awayStrikes:
+    type: integer
+    description: The amount of strikes needed for the away team to strike out (usually 3)
+    example: 3
+  awayScore:
+    type: integer
+    description: Score of the away team
+  awayTeamBatterCount:
+    type: integer
+    description: How many at-bats the away team has had
+  homePitcher:
+    type: string
+    format: uuid
+    nullable: true
+    description: ID of the pitcher for the home team. `null` for future games.
+  homePitcherName:
+    type: string
+    description: Name of the pitcher for the home team. `null` for future games.
+  homeBatter:
+    type: string
+    nullable: true
+    format: uuid
+    description: ID of the current batter for the home team (or null if no active at-bat)
+  homeBatterName:
+    type: string
+    description: Name of the current batter for the home team (or empty string if no active at-bat)
+  homeTeam:
+    type: string
+    description: ID of the home team
+  homeTeamName:
+    type: string
+    description: Full name of the home team
+  homeTeamNickname:
+    type: string
+    description: Nickname of the home team
+  homeTeamColor:
+    type: string
+    description: Primary theme color of the home team
+  homeTeamEmoji:
+    type: string
+    description: Emoji of the home team
+  homeOdds:
+    type: number
+    description: Calculated odds of the home team winning. Zero for future games.
+    minimum: 0
+    maximum: 1
+    format: double
+  homeStrikes:
+    type: integer
+    description: The amount of strikes needed for the home team to strike out (usually 3)
+  homeScore:
+    type: integer
+    description: Score of the home team
+  homeTeamBatterCount:
+    type: integer
+    description: How many at-bats the home team has had
+  season:
+    type: integer
+    description: Season (zero-indexed)
+    minimum: 0
+    example: 7
+  isPostseason:
+    type: boolean
+    description: Whether this game takes place in the postseason (day >= 99). Wild card games are considered postseason here.
+  day:
+    type: integer
+    description: Day (zero-indexed)
+    minimum: 0
+    example: 85
+  phase:
+    type: integer
+    description: The current "game phase" (documentation pending)
+    example: 5
+    minimum: 0
+    maximum: 6
+  gameComplete:
+    type: boolean
+    description: Whether this game is finished
+  finalized:
+    type: boolean
+    description: Unknown (equal to `gameComplete`?)
+  gameStart:
+    type: boolean
+    description: |
+      Whether this game has started
+  halfInningOuts:
+    type: integer
+    description: How many outs have been made this half-inning (displayed as "Outs" on the scoreboard)
+  halfInningScore:
+    type: integer
+    description: How many runs have been scored this half-inning
+  inning:
+    type: integer
+    description: |
+      Current inning number (zero-indexed)
+    minimum: 0
+    example: 7
+  topOfInning:
+    type: boolean
+    description: |
+      Whether this is the top of the current inning (vs. the bottom)
+  atBatBalls:
+    type: integer
+    description: How many balls have been called this at-bat (displayed as "Balls" on the scoreboard)
+  atBatStrikes:
+    type: integer
+    description: How many strikes have been called this at-bat (displayed as "Strikes" on the scoreboard)
+  seriesIndex:
+    type: integer
+    description: Index of this game in the series
+    example: 2
+  seriesLength:
+    type: integer
+    description: 'Length of the game series (3 during regular season, 5 during postseason)'
+    example: 3
+  shame:
+    type: boolean
+    description: Whether the away team has been shamed this game
+  weather:
+    type: integer
+  baserunnerCount:
+    type: integer
+    description: Amount of players on base at the moment
+    minimum: 0
+  homeBases:
+    type: integer
+    description: The amount of bases for the home team to run (including home base)
+    example: 4
+  awayBases:
+    type: integer
+    description: The amount of bases for the away team to run (including home base)
+    example: 4
+  repeatCount:
+    type: integer
+    description: 'Unknown, related to the Repeating modifier?'
+  awayTeamSecondaryColor:
+    type: string
+    description: Secondary theme color of the away team
+  homeTeamSecondaryColor:
+    type: string
+    description: Secondary theme color of the home team
+  homeBalls:
+    type: integer
+    description: How many balls to a walk for the home team (usually 4)
+    example: 4
+  awayBalls:
+    type: integer
+    description: How many balls to a walk for the away team (usually 4)
+    example: 4
+  homeOuts:
+    type: integer
+    description: How many outs to an half-inning for the home team (usually 3)
+    example: 3
+  awayOuts:
+    type: integer
+    description: How many outs to an half-inning for the away team (usually 3)
+    example: 3
+  playCount:
+    type: integer
+    description: Increases by one every game update. Useful for chronological sorting or deduplication.
+required:
+  - id
+  - basesOccupied
+  - baseRunners
+  - baseRunnerNames
+  - outcomes
+  - terminology
+  - lastUpdate
+  - rules
+  - statsheet
+  - awayPitcher
+  - awayPitcherName
+  - awayBatter
+  - awayBatterName
+  - awayTeam
+  - awayTeamName
+  - awayTeamNickname
+  - awayTeamColor
+  - awayTeamEmoji
+  - awayOdds
+  - awayStrikes
+  - awayScore
+  - awayTeamBatterCount
+  - homePitcher
+  - homePitcherName
+  - homeBatter
+  - homeBatterName
+  - homeTeam
+  - homeTeamName
+  - homeTeamNickname
+  - homeTeamColor
+  - homeTeamEmoji
+  - homeOdds
+  - homeStrikes
+  - homeScore
+  - homeTeamBatterCount
+  - season
+  - isPostseason
+  - day
+  - phase
+  - gameComplete
+  - finalized
+  - gameStart
+  - halfInningOuts
+  - halfInningScore
+  - inning
+  - topOfInning
+  - atBatBalls
+  - atBatStrikes
+  - seriesIndex
+  - seriesLength
+  - shame
+  - weather
+  - baserunnerCount
+  - homeBases
+  - awayBases
+  - repeatCount
+  - awayTeamSecondaryColor
+  - homeTeamSecondaryColor
+  - homeBalls
+  - awayBalls
+  - homeOuts
+  - awayOuts
+  - playCount
+description: ''

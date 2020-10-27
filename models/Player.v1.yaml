@@ -1,0 +1,210 @@
+type: object
+additionalProperties: false
+description: ''
+x-tags:
+  - Players
+title: Blaseball Player
+x-examples: {}
+properties:
+  id:
+    type: string
+    format: uuid
+    description: ID of this player
+  name:
+    type: string
+    description: Name of this player
+    example: Jessica Telephone
+  deceased:
+    type: boolean
+    description: Whether this player is deceased (incinerated)
+  peanutAllergy:
+    type: boolean
+    description: Whether this player is allergic to peanuts
+  baseThirst:
+    type: number
+    description: 'Baserunning stat: attempts to steal base'
+  continuation:
+    type: number
+    description: 'Baserunning stat: ???'
+  groundFriction:
+    type: number
+    description: 'Baserunning stat: appears to correlate to triples'
+  indulgence:
+    type: number
+    description: 'Baserunning stat: ???'
+  laserlikeness:
+    type: number
+    description: 'Baserunning stat: success rate when attempting to steal bases'
+  anticapitalism:
+    type: number
+    description: 'Defense stat: ???'
+  chasiness:
+    type: number
+    description: 'Defense stat: ???'
+  omniscience:
+    type: number
+    description: 'Defense stat: ???'
+  tenaciousness:
+    type: number
+    description: 'Defense stat: ???'
+  watchfulness:
+    type: number
+    description: 'Defense stat: ???'
+  buoyancy:
+    type: number
+    description: 'Batting? stat: ???'
+  divinity:
+    type: number
+    description: 'Batting stat: home run frequency'
+  martyrdom:
+    type: number
+    description: 'Batting stat: ???'
+  moxie:
+    type: number
+    description: 'Batting stat: ability to draw walks'
+  musclitude:
+    type: number
+    description: 'Batting stat: ability to hit extra bases (doubles/triples)'
+  patheticism:
+    type: number
+    description: 'Batting stat: raises strikeouts'
+  thwackability:
+    type: number
+    description: 'Batting stat: general hitting-the-ball ability'
+  tragicness:
+    type: number
+    description: 'Batting stat: ??? (value seems to change/reset over time)'
+  coldness:
+    type: number
+    description: 'Pitching stat: ???'
+  overpowerment:
+    type: number
+    description: 'Pitching stat: lowers home runs'
+  ruthlessness:
+    type: number
+    description: 'Pitching stat: reduces walks and increases strikeouts'
+  shakespearianism:
+    type: number
+    description: 'Pitching stat: ???'
+  suppression:
+    type: number
+    description: 'Pitching stat: ???'
+  unthwackability:
+    type: number
+    description: 'Pitching stat: lowers allowed hits'
+  totalFingers:
+    type: integer
+    description: 'Starts at 10, seemingly incremented on changes to pitching stats'
+  cinnamon:
+    type: number
+    description: Unknown
+  pressurization:
+    type: number
+    description: Unknown
+  soul:
+    type: integer
+    description: Correlates with length of player soul scream
+  bat:
+    type: string
+    description: 'ID of this player''s bat, or empty string'
+  armor:
+    type: string
+    description: 'ID of this player''s item, or empty string'
+  ritual:
+    type: string
+    description: '"Pre-game ritual" on player page'
+  coffee:
+    type: integer
+    description: This player's preferred coffee type (docs pending)
+  blood:
+    type: integer
+    description: This player's blood type (docs pending)
+  fate:
+    type: integer
+    description: Unknown?
+  permAttr:
+    type: array
+    description: Permanent player attributes
+    items:
+      type: string
+  seasAttr:
+    type: array
+    description: Season-long player attributes
+    items:
+      type: string
+  weekAttr:
+    type: array
+    description: Week-long (9 game days) player attributes
+    items:
+      type: string
+  gameAttr:
+    type: array
+    description: Game-long player attributes
+    items:
+      type: string
+  hitStreak:
+    type: integer
+    description: The player's current hit streak (only applicable in-game)
+  consecutiveHits:
+    type: integer
+  hittingRating:
+    type: number
+    description: The player's "hitting rating" (batting stars divided by five)
+  pitchingRating:
+    type: number
+    description: The player's "pitching rating" (pitching stars divided by five)
+  baserunningRating:
+    type: number
+    description: The player's "baserunning rating" (baserunning stars divided by five)
+  defenseRating:
+    type: number
+    description: The player's "defense rating" (defense stars divided by five)
+required:
+  - id
+  - name
+  - deceased
+  - peanutAllergy
+  - baseThirst
+  - continuation
+  - groundFriction
+  - indulgence
+  - laserlikeness
+  - anticapitalism
+  - chasiness
+  - omniscience
+  - tenaciousness
+  - watchfulness
+  - buoyancy
+  - divinity
+  - martyrdom
+  - moxie
+  - musclitude
+  - patheticism
+  - thwackability
+  - tragicness
+  - coldness
+  - overpowerment
+  - ruthlessness
+  - shakespearianism
+  - suppression
+  - unthwackability
+  - totalFingers
+  - cinnamon
+  - pressurization
+  - soul
+  - bat
+  - armor
+  - ritual
+  - coffee
+  - blood
+  - fate
+  - permAttr
+  - seasAttr
+  - weekAttr
+  - gameAttr
+  - hitStreak
+  - consecutiveHits
+  - hittingRating
+  - pitchingRating
+  - baserunningRating
+  - defenseRating

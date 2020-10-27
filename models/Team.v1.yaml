@@ -1,0 +1,134 @@
+type: object
+additionalProperties: false
+description: ''
+x-tags:
+  - Teams
+title: Blaseball Team
+x-examples: {}
+properties:
+  id:
+    type: string
+    format: uuid
+    description: ID of this team
+  lineup:
+    type: array
+    description: List of players in the lineup (batters)
+    items:
+      type: string
+      format: uuid
+  rotation:
+    type: array
+    description: List of players in the rotation (pitchers)
+    items:
+      type: string
+      format: uuid
+  bullpen:
+    type: array
+    description: 'List of players in the bullpen (FK, aka. "Shadows")'
+    items:
+      type: string
+      format: uuid
+  bench:
+    type: array
+    description: 'List of players on the bench (FK, aka. "Shadows")'
+    items:
+      type: string
+      format: uuid
+  fullName:
+    type: string
+    description: Full name of the team (location + nickname)
+  location:
+    type: string
+    description: Location of this team
+  mainColor:
+    type: string
+    description: Primary team color
+  nickname:
+    type: string
+    description: Nickname of the team
+  secondaryColor:
+    type: string
+    description: Secondary team color
+  shorthand:
+    type: string
+    description: Team abbreviation (unused)
+  emoji:
+    type: string
+    description: Team emoji
+  slogan:
+    type: string
+    description: Team slogal
+  shameRuns:
+    type: integer
+    description: How many runs this team was shamed by in their last game. Translates to the amount of negative runs induced by the Shame Pit of Targeted Shame.
+  totalShames:
+    type: integer
+    description: Total amount of times this team has been shamed
+  totalShamings:
+    type: integer
+    description: Total amount of times this team has shamed the opposing team
+  seasonShames:
+    type: integer
+    description: Amount of times this team has been shamed this season
+  seasonShamings:
+    type: integer
+    description: Amount of times this team has shamed the opposing team this season
+  championships:
+    type: integer
+    description: Amount of ILB championships this team has won
+  rotationSlot:
+    type: integer
+    description: 'Seems to constantly increase once per game day. Potentially related to pitcher rotations, actual use unknown.'
+  weekAttr:
+    type: array
+    description: Team attributes expiring at the end of the week (9 game days)
+    items:
+      type: string
+  gameAttr:
+    type: array
+    description: Team attributes expiring after this game
+    items:
+      type: string
+  seasAttr:
+    type: array
+    description: Team attributes expiring after this season
+    items:
+      type: string
+  permAttr:
+    type: array
+    description: Team attributes with no automatic expiry.
+    items:
+      type: string
+  teamSpirit:
+    type: integer
+    description: Unknown what this does. Seemingly related to boss fights.
+  card:
+    type: integer
+    description: 'The tarot card this team won in the Season 11 elections, zero-indexed (eg. VII The Chariot is `6`). Teams with no tarot card (eg. Crabs) have a value of -1.'
+required:
+  - id
+  - lineup
+  - rotation
+  - bullpen
+  - bench
+  - fullName
+  - location
+  - mainColor
+  - nickname
+  - secondaryColor
+  - shorthand
+  - emoji
+  - slogan
+  - shameRuns
+  - totalShames
+  - totalShamings
+  - seasonShames
+  - seasonShamings
+  - championships
+  - rotationSlot
+  - weekAttr
+  - gameAttr
+  - seasAttr
+  - permAttr
+  - teamSpirit
+  - card

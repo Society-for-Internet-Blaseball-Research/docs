@@ -201,7 +201,7 @@ Player blood type is usually cosmetic, but in the case of team-wide blood type b
 
 It has been observed that blood type effects only occur when the player has the required blood type, *and* is on a team with the blood type modifier attribute. When the blessing was awarded, all team members had their blood type changed, but later additions keep their existing type.
 
-For example, Jaylen Hotdogfingers, who transferred to the Lovers after Season 10, has blood type "AA", and has never been observed to Charm a batter.
+For example, Jaylen Hotdogfingers, who transferred to the Lovers after Season 10, has blood type "AA", and has never been observed to Charm a batter. The opposite example is Francisca Sasquatch, who transferred (back) to the Dale while already having Electric blood - Sasquatch *does* successfully trigger the effects of Electric blood, despite not being on the team when the blessing was won.
 
 ID | Name | Team | Modifier
 --- | --- | ---

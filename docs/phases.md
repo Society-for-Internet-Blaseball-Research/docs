@@ -19,3 +19,7 @@ Phase # | Name | Description
 5 | - | After post-season, before election. Transitions to phase 6 on Sunday at 5am PST. Unknown why this happens or what the differences are.
 6 | - | Same as phase 5.
 0 | Blaseball Gods' Day | Post-election, results are visible here. Starts at 12pm PST on Sunday, and lasts until the season ticks over at 1am PST on Monday.
+12 | Pre-Tournament | A custom tournament (such as the Coffee Cup) is starting shortly
+13 | Tournament Play | Tournament games are being played
+14 | Tournament Round Complete | A round of the tournament has finished
+15 | Tournament Complete | The tournament is complete

@@ -158,7 +158,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '../models/Game.v1.yaml'
+                  $ref: ../models/Game.v1.yaml
       tags:
         - Games
   '/database/gameById/{gameId}':
@@ -172,7 +172,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../models/Game.v1.yaml'
+                $ref: ../models/Game.v1.yaml
       tags:
         - Games
     parameters:
@@ -910,6 +910,104 @@ paths:
           name: ids
           description: IDs of event results to return (comma-separated)
           required: true
+  /database/mods:
+    get:
+      summary: List Modifications
+      tags:
+        - Global
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Modification'
+      operationId: mods
+      description: Get the name and description of Team or Player Modifications. Returns an array. Use commas to separate multiple modification IDs.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: ids
+          description: IDs of modifications to return (comma-separated)
+          required: true
+  /database/items:
+    get:
+      summary: List Items
+      tags:
+        - Global
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+      operationId: items
+      description: Get information about a list of Items (Bat or Armor). Returns an array. Use commas to separate multiple item IDs.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: ids
+          description: IDs of items to return (comma-separated)
+          required: true
+  /database/blood:
+    get:
+      summary: List Blood types
+      tags:
+        - Global
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      operationId: blood
+      description: Get names of Blood types. Returns an array. Use commas to separate multiple blood IDs.
+      parameters:
+        - schema:
+            type: string
+            example: '0,1'
+          in: query
+          name: ids
+          description: IDs of blood types to return (comma-separated)
+          required: true
+  /database/coffee:
+    get:
+      summary: List Cofee preferences
+      tags:
+        - Global
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      operationId: coffee
+      description: Get names of Coffee preferences. Returns an array. Use commas to separate coffee IDs.
+      parameters:
+        - schema:
+            type: string
+            example: '0,1'
+          in: query
+          name: ids
+          description: IDs of coffee preferences to return (comma-separated)
+          required: true
 components:
   schemas:
     BonusResult:
@@ -1087,7 +1185,6 @@ components:
       x-examples: {}
       x-tags:
         - League
-    
     League:
       type: object
       additionalProperties: false
@@ -1732,11 +1829,11 @@ components:
                 schedule:
                   type: array
                   items:
-                    $ref: '../models/Game.v1.yaml'
+                    $ref: ../models/Game.v1.yaml
                 tomorrowSchedule:
                   type: array
                   items:
-                    $ref: '../models/Game.v1.yaml'
+                    $ref: ../models/Game.v1.yaml
                 postseason:
                   oneOf:
                     - type: object
@@ -1754,7 +1851,7 @@ components:
                 teams:
                   type: array
                   items:
-                    $ref: '../models/Team.v1.yaml'
+                    $ref: ../models/Team.v1.yaml
                 subleagues:
                   type: array
                   items:
@@ -2190,6 +2287,60 @@ components:
       description: Represents a general (usually story-related) event after the election (eg. the Crabs ascending).
       x-tags:
         - Elections
+    Modification:
+      title: Modification
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the modification
+        color:
+          type: string
+          description: Modification icon color
+        background:
+          type: string
+          description: Modification background color
+        textColor:
+          type: string
+          description: Modification text color
+        title:
+          type: string
+          description: Modification name
+        description:
+          type: string
+          description: Modification description
+      x-examples:
+        fireproof:
+          id: FIREPROOF
+          color: '#a5c5f0'
+          backgroud: '#4c77b0'
+          textColor: '#a5c5f0'
+          title: Fireproof
+          description: A Fireproof player can not be incinerated.
+      description: Represents a Player or Team Modification.
+      x-tags:
+        - Global
+    Item:
+      title: Item
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the Item
+        name:
+          type: string
+          description: Item name
+        attr:
+          type: string
+          description: 'Modification ID associated with this item, or "NONE"'
+      x-examples:
+        grappling_hook:
+          id: GRAPPLING_HOOK
+          title: Grappling Hook
+          description: NONE
+      description: Represents an Item (Bat or Armor)
+      x-tags:
+        - Global
 tags:
   - name: Players
   - name: Teams

@@ -142,8 +142,8 @@ properties:
     description: How many at-bats the home team has had
   season:
     type: integer
-    description: Season (zero-indexed)
-    minimum: 0
+    description: Season (zero-indexed), or -1 if a tournament game
+    minimum: -1
     example: 7
   isPostseason:
     type: boolean
@@ -244,6 +244,37 @@ properties:
   playCount:
     type: integer
     description: Increases by one every game update. Useful for chronological sorting or deduplication.
+  tournament:
+    type: integer
+    description: Tournament identifier, or -1 if a seasonal game
+    minimum: -1
+    example: 0
+  baseRunnerMods:
+    type: array
+    description: Applicable modifications of the players on base (corresponding with the indices in `basesOccupied`)
+    example: ["WIRED"]
+    items:
+      type: string
+  homePitcherMod:
+    type: string
+    description: Modification ID for home pitcher
+  homeBatterMod:
+    type: string
+    description: Modification ID for current home batter
+  awayPitcherMod:
+    type: string
+    description: Modification ID for away pitcher
+  awayBatterMod:
+    type: string
+    description: Modification ID for current away batter
+  scoreUpdate:
+    type: string
+    description: Description of the number of runs scored in the current play
+    example: "1 Run scored!"
+  scoreLedger:
+    type: string
+    description: Additional information applicable to a scoring run
+    example: "(1 Run), Cat Inning is Tired. (-0.5 Runs)"
 required:
   - id
   - basesOccupied
@@ -308,4 +339,12 @@ required:
   - homeOuts
   - awayOuts
   - playCount
+  - tournament
+  - baseRunnerMods
+  - homePitcherMod
+  - homeBatterMod
+  - awayPitcherMod
+  - awayBatterMod
+  - scoreLedger
+  - scoreUpdate
 description: ''

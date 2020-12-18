@@ -131,9 +131,9 @@ paths:
     get:
       summary: Get game details by date
       description: |-
-        Returns the last broadcast game update for a given game day and season. Completed games will show the final update of the game (generally "Game over."), currently running games will show the update present on www.blaseball.com, and future games (beyond the next game) will be missing data about pitchers and odds.
+        Returns the last broadcast game update for a given game day and season or tournament. Completed games will show the final update of the game (generally "Game over."), currently running games will show the update present on www.blaseball.com, and future games (beyond the next game) will be missing data about pitchers and odds.
 
-        This endpoint can return all regular-season games (up to Day 99 - so `98` here) of the current season, even ones that haven't started. New season schedules will become available once the simulation phase changes to `1` (at around Monday 1 AM Pacific). Postseason games are never available more than a single game in advance. 
+        This endpoint can return all regular-season games (up to Day 99 - so `98` here) of the current season, even ones that haven't started. New season schedules will become available once the simulation phase changes to `1` (at around Monday 1 AM Pacific). Postseason and tournament games are never available more than a single game in advance.
       operationId: games
       parameters:
         - name: season
@@ -147,6 +147,12 @@ paths:
           in: query
           description: Day (zero-indexed)
           required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: tournament
+          in: query
+          description: Tournament identifier
           schema:
             type: integer
             minimum: 0
@@ -1600,6 +1606,12 @@ components:
           type: integer
         tomorrowRound:
           type: integer
+        winner:
+          type: string
+          format: uuid
+          nullable: true
+        tournament:
+          type: integer
       required:
         - id
         - name
@@ -1608,6 +1620,8 @@ components:
         - rounds
         - season
         - tomorrowRound
+        - winner
+        - tournament
       title: Playoffs
       x-tags:
         - League
@@ -1687,9 +1701,9 @@ components:
         phase:
           type: integer
           minimum: 0
-          maximum: 7
+          maximum: 15
           example: 2
-          description: Current phase of the league (docs pending)
+          description: Current phase of the league (See `Simulation phases`)
         playOffRound:
           type: integer
           description: 'Current round of playoffs (zero-indexed, 0 if not in playoffs)'
@@ -1762,6 +1776,12 @@ components:
         salutations:
           type: integer
           description: 'Unknown, but very ominous.'
+        tournament:
+          type: integer
+          description: Identifier of current exibition tournament, or -1
+        tournamentRound:
+          type: integer
+          description: Current round of an active exibtion tournament (if applicable)
       required:
         - id
         - day
@@ -1784,6 +1804,8 @@ components:
         - attr
         - agitations
         - salutations
+        - tournament
+        - tournamentRound
     Standings:
       type: object
       properties:

@@ -159,6 +159,14 @@ properties:
   defenseRating:
     type: number
     description: The player's "defense rating" (defense stars divided by five)
+  leagueTeamId:
+    type: string
+    format: uuid
+    description: Player's current team (if applicable)
+  tournamentTeamId:
+    type: string
+    format: uuid
+    description: Player's team for exibition tournaments (if applicable)
 required:
   - id
   - name
@@ -208,3 +216,5 @@ required:
   - pitchingRating
   - baserunningRating
   - defenseRating
+  - leagueTeamId
+  - tournamentTeamId

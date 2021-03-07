@@ -3,7 +3,7 @@ info:
   title: Chronicler
   version: '1.0'
 servers:
-  - url: 'https://reblase.sibr.dev/newapi'
+  - url: 'https://api.sibr.dev/chronicler/v1'
 paths:
   /games/updates:
     get:
@@ -449,9 +449,7 @@ components:
           description: 'Position on team roster (lineup/rotation/etc), null if not on team'
         rosterIndex:
           type: integer
-          description: >-
-            Index of this player on the team roster (zero-indexed, local to each
-            position), null if not on team
+          description: 'Index of this player on the team roster (zero-indexed, local to each position), null if not on team'
         data:
           description: Player data
           type: object
@@ -512,9 +510,7 @@ components:
           description: File size in bytes
         download:
           type: string
-          description: >-
-            Link to download this version of the file (relative to this API
-            base)
+          description: Link to download this version of the file (relative to this API base)
           format: uri
       required:
         - timestamp
@@ -577,3 +573,4 @@ components:
         - lastSeen
         - hash
         - data
+  securitySchemes: {}

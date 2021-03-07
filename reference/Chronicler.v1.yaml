@@ -395,8 +395,7 @@ components:
           format: date-time
           description: Time when game ended (null if running/future)
         data:
-          description: Latest game state
-          type: object
+          $ref: ../models/Game.v1.yaml
       required:
         - id
         - data
@@ -417,8 +416,7 @@ components:
           description: Hash of the update data (as UUID)
           format: uuid
         data:
-          description: Game update data
-          type: object
+          $ref: ../models/Game.v1.yaml
       required:
         - gameId
         - timestamp
@@ -451,8 +449,7 @@ components:
           type: integer
           description: 'Index of this player on the team roster (zero-indexed, local to each position), null if not on team'
         data:
-          description: Player data
-          type: object
+          $ref: ../models/Player.v1.yaml
       required:
         - id
         - lastUpdate
@@ -481,8 +478,7 @@ components:
           format: uuid
           description: Hash of the player data
         data:
-          description: Player data for this version
-          type: object
+          $ref: ../models/Player.v1.yaml
       required:
         - id
         - firstSeen
@@ -542,8 +538,7 @@ components:
           format: date-time
           description: Timestamp of last update to the team data
         data:
-          type: object
-          description: Team data
+          $ref: ../models/Team.v1.yaml
       required:
         - id
         - lastUpdate
@@ -565,8 +560,7 @@ components:
           type: string
           description: Hash of team data
         data:
-          type: string
-          description: Team data
+          $ref: ../models/Team.v1.yaml
       required:
         - id
         - firstSeen

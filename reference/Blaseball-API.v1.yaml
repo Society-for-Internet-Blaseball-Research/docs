@@ -1017,7 +1017,8 @@ paths:
   /database/feed/global:
     get:
       summary: Global Feed
-      tags: []
+      tags:
+        - Feed
       responses:
         '200':
           description: '  OK'
@@ -1051,7 +1052,6 @@ paths:
   /database/feed/player:
     get:
       summary: Player Feed
-      tags: []
       responses:
         '200':
           description: '  OK'
@@ -1089,10 +1089,13 @@ paths:
           required: true
       operationId: get-database-feed-player
       description: Get a list of feed events tagged with a player. Not all event types are tagged.
+      tags:
+        - Feed
   /database/feed/team:
     get:
       summary: Team Feed
-      tags: []
+      tags:
+        - Feed
       responses:
         '200':
           description: '  OK'
@@ -1133,7 +1136,8 @@ paths:
   /database/feedbyphase:
     get:
       summary: Feed by Phase
-      tags: []
+      tags:
+        - Feed
       responses:
         '200':
           description: OK
@@ -2668,10 +2672,11 @@ components:
         * 158: Eliminated from postseason
         * 159: Postseason advance
 tags:
-  - name: Players
-  - name: Teams
-  - name: Games
   - name: Elections
-  - name: Statsheets
+  - name: Feed
+  - name: Games
   - name: Global
   - name: League
+  - name: Players
+  - name: Statsheets
+  - name: Teams

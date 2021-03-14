@@ -2581,6 +2581,8 @@ components:
         - phase
         - category
         - description
+      x-tags:
+        - Feed
     FeedType:
       type: integer
       title: Feed Event Type
@@ -2671,6 +2673,8 @@ components:
         * 157: Black Hole swallows
         * 158: Eliminated from postseason
         * 159: Postseason advance
+      x-tags:
+        - Feed
 tags:
   - name: Elections
   - name: Feed

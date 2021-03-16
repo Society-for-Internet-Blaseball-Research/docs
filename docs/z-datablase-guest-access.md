@@ -8,13 +8,13 @@ The guest account is limited to *reading* data only so you can't break anything,
 
 *(If you need a longer timeout, contact us in `#datablase` on the SIBR Discord)*
 
-# Login to pgAdmin
+## Login to pgAdmin
 
 Visit https://pgadmin.sibr.dev/ and log in with username **guest@sibr.dev** and password **salmon**
 
 ![Image of login screen for pgAdmin](login.png)
 
-# Find the latest database
+## Find the latest database
 
 First, expand the **Servers** to see the available servers known to this account.
 ![Image of pgAdmin window with arrow pointing to server list](pgadmin-1.png)
@@ -27,7 +27,7 @@ Within the SIBR server you'll find several databases - one called **postgres** w
 
 You should always choose the *highest version number* database - it'll have the freshest, crispiest data from the current season.
 
-# Get to the query tool
+## Get to the query tool
 
 To start making queries, simply right-click the database and choose **Query Tool...**
 
@@ -39,7 +39,7 @@ You've now found your home - the pgAdmin Query Tool! Though intimidating at firs
 
 Simply type a valid SQL query in the top box and hit **F5** to execute and see the results at the bottom!
 
-# An Example
+## An Example
 
 Let's say you want to see all the records of home runs hit by noted Steaks phenom **Zephyr McCloud** during their debut in season 14!
 
@@ -55,7 +55,7 @@ Let's say you want to see all the records of home runs hit by noted Steaks pheno
 Voila! You've run your first query and gotten some results!
 You can download your results with the **Download as CSV/TXT** button marked above, or just copy and paste things you need from the query results.
 
-# Next Steps
+## Next Steps
 
 The Datablase is a PostgreSQL database, a long-running and stable technology with *lots* of tutorials and help documentation available. If you study up on how to construct queries you'll be doing complex stuff in no time!
 
@@ -63,9 +63,9 @@ And then if you get really good you can take over this project from us!
 
 If you want to get into the details, read on for...
 
-# Datablase Structure
+## Datablase Structure
 
-## The Basics
+### The Basics
 
 There are three schemas:
 * `public` is used only by the Evolve database migration library; you should ignore it.
@@ -74,29 +74,29 @@ There are three schemas:
 
 In 99% of cases you'll want to query tables or views in the `data` schema - that's where all the delicious golden-brown statistics are.
 
-## Significant Tables
+### Significant Tables
 The tables in the datablase are where raw data lives. If you want higher-level calculated data like statistics or team rosters, look ahead to the Notable Views section.
 
 Tables are updated once per minute with the latest data available from **Chronicler** so they should be within *a few* minutes of LIVE.
 
-### `data.games`
+#### `data.games`
 The schedule! Every game we could find out about from blaseball.com, with odds, weather, scores, and even the winning & losing pitchers, plus more.
 
-### `data.teams`
+#### `data.teams`
 The historical record of what each team has looked like *throughout the time we've been archiving*. This means yes, we have records for Mexico City Wild Wings, Wexico City Mild Wings, *and* Mexico City Mild Wings.
 
 Records in this table have a `valid_from` and `valid_until` timestamp that describe when the record was accurate.
 
 In order to see the *current* teams, you'll need to query for records `WHERE valid_until IS NULL`.
 
-### `data.players`
+#### `data.players`
 The historical record of what each player has looked like *throughout the time we've been archiving*. This means yes, we have 31 separate entries for Wyatt Mason / NaN.
 
 Records in this table have a `valid_from` and `valid_until` timestamp that describe when the record was accurate.
 
 In order to see the *current* state of any players, you'll need to query for records `WHERE valid_until IS NULL`.
 
-### `data.game_events`
+#### `data.game_events`
  The big Kahuna where each at-bat (mostly) gets stored. This table drives nearly all our derived statistics.
  
  A Datablase "game event" includes multiple pitches up until the point where, roughly speaking, Something Happened. The most obvious example is a hit, or strikeout, or walk. But the game event can also be completed by things like a stolen base - in these cases, the at-bat just continues in the next game event.
@@ -110,7 +110,7 @@ In order to see the *current* state of any players, you'll need to query for rec
  * `event_text` - list of all original text that is grouped into this event
  * `season`, `day`, `game_id` - pretty self-explanatory but important
 
- ### `data.game_event_base_runners`
+ #### `data.game_event_base_runners`
 
  A child table of `data.game_events` - each record in this table is linked to a record in `game_events` by its ID.
 
@@ -118,7 +118,7 @@ In order to see the *current* state of any players, you'll need to query for rec
 
  Please note that one game event might have multiple baserunner records associated with it.
 
-### `data.outcomes`
+#### `data.outcomes`
 
 Another child table of `data.game_events` linked to it by the game event ID, this table records when various "Outcomes" (like blooddrain sips or shellings) occurred.
 

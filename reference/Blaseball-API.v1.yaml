@@ -1017,7 +1017,8 @@ paths:
   /database/feed/global:
     get:
       summary: Global Feed
-      tags: []
+      tags:
+        - Feed
       responses:
         '200':
           description: '  OK'
@@ -1051,7 +1052,6 @@ paths:
   /database/feed/player:
     get:
       summary: Player Feed
-      tags: []
       responses:
         '200':
           description: '  OK'
@@ -1089,10 +1089,13 @@ paths:
           required: true
       operationId: get-database-feed-player
       description: Get a list of feed events tagged with a player. Not all event types are tagged.
+      tags:
+        - Feed
   /database/feed/team:
     get:
       summary: Team Feed
-      tags: []
+      tags:
+        - Feed
       responses:
         '200':
           description: '  OK'
@@ -1133,7 +1136,8 @@ paths:
   /database/feedbyphase:
     get:
       summary: Feed by Phase
-      tags: []
+      tags:
+        - Feed
       responses:
         '200':
           description: OK
@@ -2577,6 +2581,8 @@ components:
         - phase
         - category
         - description
+      x-tags:
+        - Feed
     FeedType:
       type: integer
       title: Feed Event Type
@@ -2598,7 +2604,7 @@ components:
         * 13: Strike (not including Foul Balls)
         * 14: Ball
         * 15: Foul Ball
-        * 23: Player skipped due to being Shelled
+        * 23: Player skipped due to being Shelled or Elsewhere
         * 24: Partying
         * 25: Strike zapped by Electric blood
         * 27: Mild pitch
@@ -2608,6 +2614,7 @@ components:
         * 31: Sun 2 (in-game)
         * 33: Birds flavor text
         * 34: Murder of crows
+        * 35: Birds free shelled player
         * 36: Triple Threat
         * 37: Free Refill
         * 39: Wired
@@ -2616,14 +2623,17 @@ components:
         * 47: Allergic reaction
         * 48: Reverberating
         * 49: Reverb shuffle
+        * 51: Blooddrain
         * 52: Siphon
         * 54: Incineration
         * 55: Fire eating
         * 56: Flag planted
+        * 57: Renovation built
         * 59: Decree passed
         * 60: Blessing won
         * 61: Will received
         * 62: Flood
+        * 72: Peanut Mister
         * 73: Peanuts flavor text
         * 74: Tasting the infinite (Shelling)
         * 81: Tarot reading
@@ -2631,12 +2641,17 @@ components:
         * 84: Return from Elsewhere
         * 85: Over Under
         * 86: Under Over
+        * 88: Undersea
         * 92: Superyummy text
         * 93: Perk
+        * 96: Earlbirds
+        * 97: Late to the Party
         * 106: Added in-game modifier (Triple Threat, Free Refill, Magmatic, Inhabiting, etc)
         * 107: Removed in-game modifier (same as above, but when they disappear)
         * 108: Modifier expires
         * 109: Player recruited (including Postseason Births)
+        * 110: Player sent to shadows and replaced (necromancy)
+        * 111: Player removed and replaced from shadows (Returned)
         * 113: Player trade
         * 114: Player changing position
         * 115: Player joining team
@@ -2645,7 +2660,9 @@ components:
         * 118: Player stat decrease
         * 119: Player reroll
         * 125: Player enters the Hall of Flame
-        * 132: Reverb shuffle
+        * 126: Player exits the Hall of Flame
+        * 130: Reverb shuffle (full)
+        * 132: Reverb shuffle (rotation)
         * 135: New team
         * 136: New player (excluding incinerations)
         * 137: Player hatched
@@ -2658,6 +2675,7 @@ components:
         * 146: Added modifier due to another modifier(?) (under/over, Perk)
         * 147: Removed modifier added due to another modifier(?) (under/over, Perk)
         * 148: Superyummy transitions (Overperforming -> Underperforming, vice versa, may be general modifier-induced mod swaps)
+        * 149: Necromancy narration
         * 150: Returned player is permitted to stay
         * 151: Decree narration
         * 152: Will results
@@ -2667,11 +2685,16 @@ components:
         * 157: Black Hole swallows
         * 158: Eliminated from postseason
         * 159: Postseason advance
+        * 166: Lineup optimized
+        * 175: Alternate Coin text (hidden from Book, includes player)
+      x-tags:
+        - Feed
 tags:
-  - name: Players
-  - name: Teams
-  - name: Games
   - name: Elections
-  - name: Statsheets
+  - name: Feed
+  - name: Games
   - name: Global
   - name: League
+  - name: Players
+  - name: Statsheets
+  - name: Teams

@@ -2704,9 +2704,9 @@ components:
         * 166: Lineup optimized
         * 168: Peanut allergy cured
         * 169: Echoed player
-        * 170: ECHO STATIC modification update (Echo -> Static)
+        * 170: Echo player becomes Static
         * 171: Echo fades
-        * 172: Echoed player modification add
+        * 172: Echoed modification added
         * 174: Receiver becomes an echo
         * 175: Alternate Coin text (hidden from Book, includes player)
         * 176: The Investigation is Underway.

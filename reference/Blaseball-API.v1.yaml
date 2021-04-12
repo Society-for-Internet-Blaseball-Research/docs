@@ -2663,6 +2663,7 @@ components:
         * 109: Player recruited (including Postseason Births)
         * 110: Player sent to shadows and replaced (necromancy)
         * 111: Player removed and replaced from shadows (Returned)
+        * 112: ECHO STATIC player removed from team
         * 113: Player trade
         * 114: Player changing position
         * 115: Player joining team
@@ -2672,6 +2673,7 @@ components:
         * 119: Player reroll
         * 125: Player enters the Hall of Flame
         * 126: Player exits the Hall of Flame
+        * 127: Player gained item
         * 130: Reverb shuffle (full)
         * 132: Reverb shuffle (rotation)
         * 135: New team
@@ -2691,13 +2693,28 @@ components:
         * 151: Decree narration
         * 152: Will results
         * 154: Team shamed
+        * 153: Team stat adjustment (Lineup Batting adjusted, Shadow Defense adjusted)
         * 155: Team shames
         * 156: Sun 2 grants win
         * 157: Black Hole swallows
         * 158: Eliminated from postseason
         * 159: Postseason advance
+        * 161: Player gained blood type
+        * 165: High Pressure (The pressure is on/off, Overperforming added and removed) 
         * 166: Lineup optimized
+        * 168: Peanut allergy cured
+        * 169: Echoed player
+        * 170: ECHO STATIC modification update (Echo -> Static)
+        * 171: Echo fades
+        * 172: Echoed player modification add
+        * 174: Receiver becomes an echo
         * 175: Alternate Coin text (hidden from Book, includes player)
+        * 176: The Investigation is Underway.
+        * 178: Midseason Middling
+        * 179: Player hidden stat increase
+        * 180: Player hidden stat decrease
+        * 181: Entering a Crime Scene
+        * 185: Item breaks
       x-tags:
         - Feed
 tags:

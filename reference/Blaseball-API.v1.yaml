@@ -2604,6 +2604,8 @@ components:
         * 13: Strike (not including Foul Balls)
         * 14: Ball
         * 15: Foul Ball
+        * 20: Solar Panels overflow run activation
+        * 22: Hit by pitch
         * 23: Player skipped due to being Shelled or Elsewhere
         * 24: Partying
         * 25: Strike zapped by Electric blood
@@ -2633,15 +2635,24 @@ components:
         * 60: Blessing won
         * 61: Will received
         * 62: Flood
+        * 63: Salmon swim upstream
+        * 65: Entering the Secret Base
+        * 66: Exiting the Secret Base
+        * 67: Consumers attack
+        * 69: Echo Chamber
+        * 70: Grind Rail
         * 72: Peanut Mister
         * 73: Peanuts flavor text
         * 74: Tasting the infinite (Shelling)
+        * 78: Solar Panels alignment
+        * 79: Solar Panels overflow run collection
         * 81: Tarot reading
         * 82: Emergency Alert
         * 84: Return from Elsewhere
         * 85: Over Under
         * 86: Under Over
         * 88: Undersea
+        * 91: Homesickness
         * 92: Superyummy text
         * 93: Perk
         * 96: Earlbirds

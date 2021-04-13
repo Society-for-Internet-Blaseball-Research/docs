@@ -2644,7 +2644,7 @@ components:
         * 72: Peanut Mister
         * 73: Peanuts flavor text
         * 74: Tasting the infinite (Shelling)
-        * 78: Solar Panels alignment
+        * 78: Solar Panels start-up text
         * 79: Solar Panels overflow run collection
         * 81: Tarot reading
         * 82: Emergency Alert
@@ -2693,7 +2693,7 @@ components:
         * 151: Decree narration
         * 152: Will results
         * 154: Team shamed
-        * 153: Team stat adjustment (Lineup Batting adjusted, Shadow Defense adjusted)
+        * 153: Team modification blessing (S15+)
         * 155: Team shames
         * 156: Sun 2 grants win
         * 157: Black Hole swallows
@@ -2702,7 +2702,7 @@ components:
         * 161: Player gained blood type
         * 165: High Pressure (The pressure is on/off, Overperforming added and removed) 
         * 166: Lineup optimized
-        * 168: Peanut allergy cured
+        * 168: Peanut allergy cured (Nut Button)
         * 169: Echoed player
         * 170: Echo player becomes Static
         * 171: Echo fades

@@ -2604,6 +2604,8 @@ components:
         * 13: Strike (not including Foul Balls)
         * 14: Ball
         * 15: Foul Ball
+        * 20: Solar Panels overflow run activation
+        * 22: Hit by pitch
         * 23: Player skipped due to being Shelled or Elsewhere
         * 24: Partying
         * 25: Strike zapped by Electric blood
@@ -2633,15 +2635,24 @@ components:
         * 60: Blessing won
         * 61: Will received
         * 62: Flood
+        * 63: Salmon swim upstream
+        * 65: Entering the Secret Base
+        * 66: Exiting the Secret Base
+        * 67: Consumers attack
+        * 69: Echo Chamber
+        * 70: Grind Rail
         * 72: Peanut Mister
         * 73: Peanuts flavor text
         * 74: Tasting the infinite (Shelling)
+        * 78: Solar Panels start-up text
+        * 79: Solar Panels overflow run collection
         * 81: Tarot reading
         * 82: Emergency Alert
         * 84: Return from Elsewhere
         * 85: Over Under
         * 86: Under Over
         * 88: Undersea
+        * 91: Homesickness
         * 92: Superyummy text
         * 93: Perk
         * 96: Earlbirds
@@ -2652,6 +2663,7 @@ components:
         * 109: Player recruited (including Postseason Births)
         * 110: Player sent to shadows and replaced (necromancy)
         * 111: Player removed and replaced from shadows (Returned)
+        * 112: ECHO STATIC player removed from team
         * 113: Player trade
         * 114: Player changing position
         * 115: Player joining team
@@ -2661,6 +2673,7 @@ components:
         * 119: Player reroll
         * 125: Player enters the Hall of Flame
         * 126: Player exits the Hall of Flame
+        * 127: Player gained item
         * 130: Reverb shuffle (full)
         * 132: Reverb shuffle (rotation)
         * 135: New team
@@ -2680,13 +2693,28 @@ components:
         * 151: Decree narration
         * 152: Will results
         * 154: Team shamed
+        * 153: Team modification blessing (S15+)
         * 155: Team shames
         * 156: Sun 2 grants win
         * 157: Black Hole swallows
         * 158: Eliminated from postseason
         * 159: Postseason advance
+        * 161: Player gained blood type
+        * 165: High Pressure (The pressure is on/off, Overperforming added and removed) 
         * 166: Lineup optimized
+        * 168: Peanut allergy cured (Nut Button)
+        * 169: Echoed player
+        * 170: Echo player becomes Static
+        * 171: Echo fades
+        * 172: Echoed modification added
+        * 174: Receiver becomes an echo
         * 175: Alternate Coin text (hidden from Book, includes player)
+        * 176: The Investigation is Underway.
+        * 178: Midseason Middling
+        * 179: Player hidden stat increase
+        * 180: Player hidden stat decrease
+        * 181: Entering a Crime Scene
+        * 185: Item breaks
       x-tags:
         - Feed
 tags:

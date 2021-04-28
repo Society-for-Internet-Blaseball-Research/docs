@@ -802,9 +802,18 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/IdolItem'
+                type: object
+                properties:
+                  idols:
+                    type: array
+                    items:
+                      type: string
+                  data:
+                    type: object
+                    properties:
+                      strictlyConfidential:
+                        type: integer
+                        description: Location of the MVP line
               examples:
                 Response after Season 6:
                   value:
@@ -1162,6 +1171,135 @@ paths:
           name: phase
           description: The phase to return.
           required: true
+  /database/renovations:
+    get:
+      summary: List Renovations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Renovation'
+      operationId: renovations
+      description: Get the name and description of Stadium renovations. Returns an array. Use commas to separate multiple renovation IDs.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: ids
+          description: IDs of renovations to return (comma-separated)
+      tags:
+        - Teams
+  /database/seasondaycount:
+    get:
+      summary: Season Day Count
+      tags:
+        - League
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dayCount:
+                    type: integer
+                    description: Number of game days
+      operationId: seasondaycount
+      description: Get the number of days in a given season.
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: season
+          description: Season number (0-indexed)
+  /database/getPreviousChamp:
+    get:
+      summary: Get Previous Champion
+      tags:
+        - League
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ../models/Team.v1.yaml
+      operationId: get-database-getPreviousChamp
+      description: Returns the team that won the previous championship.
+  /database/teamElectionStats:
+    get:
+      summary: Team Election Stats
+      tags:
+        - Teams
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wills:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        percent:
+                          type: string
+      operationId: teamElectionStats
+      description: Information about a team's will progress.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: id
+          description: Team ID
+  /database/renovationProgress:
+    get:
+      summary: Your GET endpoint
+      tags:
+        - Teams
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stats:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        percent:
+                          type: string
+                  progress:
+                    type: object
+                    properties:
+                      total:
+                        description: Number of renovations funded
+                        type: integer
+                      toNext:
+                        description: Percentage progress to next renovation
+                        type: number
+      operationId: renovationProgress
+      description: Information about a team's renovation progress.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: id
+          description: Stadium ID
 components:
   schemas:
     BonusResult:
@@ -1210,6 +1348,8 @@ components:
           highestTeam: null
           highestTeamVotes: null
           teamVotes: null
+      x-tags:
+        - Elections
       properties:
         id:
           type: string
@@ -1233,21 +1373,22 @@ components:
         teamVotes:
           type: integer
           description: Votes cast by the winning team (present starting Season 2)
+          nullable: true
         highestTeam:
           type: string
           format: uuid
           description: 'Highest bidding team, ie. cast the most votes  (present starting Season 2)'
+          nullable: true
         highestTeamVotes:
           type: integer
           description: Votes cast by the highest bidding team (present starting Season 2)
+          nullable: true
       required:
         - bonusId
         - bonusTitle
         - teamId
         - totalVotes
         - description
-      x-tags:
-        - Elections
     DecreeResult:
       type: object
       title: Decree Result
@@ -1449,6 +1590,15 @@ components:
           description: IDs of "event results" (listed as "Tidings") on the website
           items:
             type: string
+        willResults:
+          type: array
+          description: IDs of "will results". These do not map to any known IDs or endpoints
+          nullable: true
+          items: {}
+        totalWillVotes:
+          type: integer
+          description: Total votes cast towards wills
+          nullable: true
       required:
         - id
         - bonusResults
@@ -1637,6 +1787,9 @@ components:
               description:
                 type: string
                 description: Blessing description
+              metadata:
+                type: object
+                description: Metadata information for the particular blessing
             required:
               - id
               - type
@@ -1646,6 +1799,38 @@ components:
         decreesToPass:
           type: integer
           description: Amount of decrees that will pass
+        wills:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Internal will ID
+              title:
+                type: string
+                description: Will title
+              description:
+                type: string
+                description: Will Description
+              info:
+                type: array
+                description: Information about will selection
+                items:
+                  type: object
+                  properties:
+                    type:
+                      type: integer
+                      description: Unknown
+                    description:
+                      type: string
+                      description: Description of will filter selection
+                    filters:
+                      type: object
+                      description: Metadata information for the particular filter
+        willsToPass:
+          type: integer
+          description: Amount of wills that will pass per-team
       required:
         - decrees
         - blessings
@@ -1653,6 +1838,9 @@ components:
     PlayoffMatchup:
       type: object
       additionalProperties: false
+      title: Playoff Matchup
+      x-tags:
+        - League
       properties:
         id:
           type: string
@@ -1673,6 +1861,11 @@ components:
           format: uuid
         homeWins:
           type: integer
+        gamesPlayed:
+          type: integer
+          description: ''
+        gamesNeeded:
+          type: string
       required:
         - id
         - name
@@ -1682,9 +1875,6 @@ components:
         - homeSeed
         - homeTeam
         - homeWins
-      title: Playoff Matchup
-      x-tags:
-        - League
     PlayoffRound:
       type: object
       additionalProperties: false
@@ -1838,6 +2028,7 @@ components:
           type: string
           format: date-time
           description: Time when the current election ends
+          deprecated: true
         nextPhaseTime:
           type: string
           format: date-time
@@ -1846,6 +2037,7 @@ components:
           type: string
           format: date-time
           description: Time when next season starts
+          deprecated: true
         phase:
           type: integer
           minimum: 0
@@ -1888,6 +2080,7 @@ components:
           type: string
           description: Concatenated initials of every player incinerated between Season 2 and Season 6
           example: JHFMTOJMNPSMLMDGFOSEZDTMJWHPADAACGRTBBPBBCJRTPMJCSNKKAOMVMSTAJTVTCJIMPSSSTBFHRSSMSDKIRLWLVWSSMEIMCCDMDRTEIFBCLRMMW
+          deprecated: true
         subEraColor:
           type: string
           pattern: '#[0-9A-Fa-f]{6}'
@@ -1910,33 +2103,56 @@ components:
             - UNLOCKED_HALL
           items:
             type: string
-            enum:
-              - OPENED_BOOK
-              - UNLOCKED_PEANUTS
-              - EAT_THE_RICH
-              - UNLOCKED_INTERVIEWS
-              - UNLOCKED_IDOLS
-              - PARTY_TIME
-              - UNLOCKED_HALL
         agitations:
           type: integer
-          description: Amount of Sun 2 / Black Hole game events (including Season 10 finals)
+          description: Amount of Black Hole game events (including Season 10 finals). In Season 11 this also counted Sun2 game events.
         salutations:
           type: integer
-          description: 'Unknown, but very ominous.'
+          description: Amount of Sun2 game events (excluding Season 11)
         tournament:
           type: integer
           description: 'Identifier of current exibition tournament, or -1'
         tournamentRound:
           type: integer
           description: Current round of an active exibtion tournament (if applicable)
+        godsDayDate:
+          type: string
+          format: date-time
+        preseasonDate:
+          type: string
+          format: date-time
+        earlseasonDate:
+          type: string
+          format: date-time
+        earlsiestaDate:
+          type: string
+          format: date-time
+        midseasonDate:
+          type: string
+          format: date-time
+        latesiestaDate:
+          type: string
+          format: date-time
+        lateseasonDate:
+          type: string
+          format: date-time
+        endseasonDate:
+          type: string
+          format: date-time
+        earlpostseasonDate:
+          type: string
+          format: date-time
+        latepostseasonDate:
+          type: string
+          format: date-time
+        electionDate:
+          type: string
+          format: date-time
       required:
         - id
         - day
         - league
-        - nextElectionEnd
         - nextPhaseTime
-        - nextSeasonStart
         - phase
         - playOffRound
         - playoffs
@@ -1946,7 +2162,6 @@ components:
         - terminology
         - eraColor
         - eraTitle
-        - twgo
         - subEraColor
         - subEraTitle
         - attr
@@ -1956,6 +2171,9 @@ components:
         - tournamentRound
     Standings:
       type: object
+      title: League Standings
+      x-tags:
+        - League
       properties:
         id:
           type: string
@@ -1968,13 +2186,14 @@ components:
           type: object
           additionalProperties:
             type: integer
+        runs:
+          type: object
+        gamesPlayed:
+          type: object
       required:
         - id
         - losses
         - wins
-      title: League Standings
-      x-tags:
-        - League
     StreamData:
       type: object
       additionalProperties: false
@@ -2034,6 +2253,19 @@ components:
                   type: array
                   items:
                     $ref: '#/components/schemas/League'
+                stadiums:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Stadium'
+                tiebreakers:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Tiebreakers'
+                stats:
+                  type: object
+                  properties:
+                    communityChest:
+                      type: object
               required:
                 - teams
                 - subleagues
@@ -2133,6 +2365,8 @@ components:
     TickerMessage:
       type: object
       additionalProperties: false
+      x-tags:
+        - Global
       properties:
         id:
           type: string
@@ -2142,15 +2376,13 @@ components:
           description: Text of this message
         expire:
           type: string
-          nullable: true
           format: date-time
           description: Time this message expires (or null for indefinite)
+          nullable: true
       required:
         - id
         - msg
         - expire
-      x-tags:
-        - Global
     Tiebreakers:
       type: object
       additionalProperties: false
@@ -2490,8 +2722,8 @@ components:
       description: Represents a Player or Team Modification.
       x-tags:
         - Global
-    Item:
-      title: Item
+    ItemOld:
+      title: Item (Seasons 4 to 15)
       type: object
       properties:
         id:
@@ -2525,23 +2757,27 @@ components:
         playerTags:
           type: array
           description: List of players associated with the event
+          nullable: true
           items:
             type: string
             format: uuid
         teamTags:
           type: array
           description: List of teams associated with the event
+          nullable: true
           items:
             type: string
             format: uuid
         gameTags:
           type: array
           description: List of games associated with the event
+          nullable: true
           items:
             type: string
             format: uuid
         metadata:
           type: object
+          nullable: true
           description: Event-specific metadata
         created:
           type: string
@@ -2596,6 +2832,136 @@ components:
         * 4: Narrative
       x-tags:
         - Feed
+    Stadium:
+      title: Stadium
+      type: object
+      description: ''
+      properties:
+        id:
+          type: string
+        hype:
+          type: integer
+        mods:
+          type: array
+          items:
+            type: string
+        name:
+          type: string
+        birds:
+          type: integer
+        model:
+          type: integer
+        state:
+          type: object
+        teamId:
+          type: string
+        renoLog:
+          type: object
+        weather:
+          type: object
+        nickname:
+          type: string
+        renoCost:
+          type: integer
+        renoHand:
+          type: array
+          items:
+            type: string
+        mainColor:
+          type: string
+        mysticism:
+          type: number
+        viscosity:
+          type: number
+        elongation:
+          type: number
+        filthiness:
+          type: number
+        obtuseness:
+          type: number
+        forwardness:
+          type: number
+        grandiosity:
+          type: number
+        ominousness:
+          type: number
+        renoDiscard:
+          type: array
+          items:
+            type: string
+        fortification:
+          type: number
+        inconvenience:
+          type: number
+        luxuriousness:
+          type: number
+        tertiaryColor:
+          type: string
+        secondaryColor:
+          type: string
+      x-tags:
+        - Teams
+    Item:
+      title: Item
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          description: Name of the Item
+        forger:
+          type: string
+          description: Unknown
+        forgerName:
+          type: string
+          description: Unknown
+        prePrefix:
+          type: object
+        prefixes:
+          type: array
+          items:
+            type: object
+        postPrefix:
+          type: object
+        root:
+          type: object
+        suffix:
+          type: object
+        durability:
+          type: integer
+        health:
+          type: integer
+        baserunningRating:
+          type: number
+        pitchingRating:
+          type: number
+        hittingRating:
+          type: number
+        defenseRating:
+          type: number
+      x-tags:
+        - Global
+      description: ''
+    Renovation:
+      title: Renovation
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        type:
+          type: integer
+        effects:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+      description: ''
+      x-tags:
+        - Teams
 tags:
   - name: Elections
   - name: Feed

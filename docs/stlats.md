@@ -4,7 +4,7 @@
 Every player has a significant number of hidden properties (or *"stlats"*) not visible through any public interface directly. Visible star ratings are calculated based on a weighted combination of these, but differences in the composition of each player's stlats will affect their performance in different game scenarios, leading to a much more complex and interesting simulation.
 
 ### Range
-Most stlats range between zero and one, however there's no known upper limit to most of them. Most stlats do seem to have a lower limit of `0.01`, and the "negative stlats" an upper limit of `0.99`, presumably to prevent the star calculations from breaking. At the start of the Expansion Era (Season 12) the lower limit was expanded to `0.001`, as shown by Chorby Soul's floored attributes.
+Most stlats range between zero and one, however there's no known upper limit to most of them. Most stlats do seem to have a lower limit of `0.01`, and the "negative stlats" an upper limit of `0.99`, presumably to prevent the star calculations from breaking. At the start of the Expansion Era (Season 12) the lower limit was expanded to `0.001` and the upper limit on "negative stlats" to `0.999`, as shown by Chorby Soul's floored attributes.
 
 ### Batting stlats
 Name | Star weight | Description

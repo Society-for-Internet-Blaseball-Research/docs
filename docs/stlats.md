@@ -54,7 +54,7 @@ Name | Description
 `totalFingers` | Finger count appears to represent instances of change to pitching stats. All players start with 10 fingers. Players impacted by general stat buffs all received 1 more finger, regardless of the size of the buff. Party buffs don't appear to grant fingers.<br>Raúl Leal received an over-debuff of 0.51 with the Iffey Jr. to Minimize them, and gained 51 fingers - they appear to have been given -0.01 to all stlats 51 times to get them to 0 in everything.<br>This process in reverse is likely how PolkaDot Patterson and Axel Trololo got their pitching maximized (we can check on Axel since we have their stat history) by adding a small amount repeatedly until they hit 5 stars.<br>Goodwin Morin seems to have gotten the reverse of Raúl's process when being maximized, instead of the same process PolkaDot Patterson and Axel Trololo got - resulting in gaining 81 fingers and +0.81 to *every* attribute. This brought their pitching to 5 stars, but boosted other ratings much further - they ended up with 7 baserunning stars, for example.
 `pressurization` | Represents "minimum vibes" in the vibe calculation formula (higher pressurization = lower vibe floor).
 `cinnamon` | Represents "maximum vibes" in the vibe calculation formula (higher cinnamon = higher vibe ceiling).
-`soul` | Represents the amount of 11-letter "chunks" in the player's soulscream. All players have a value between 2 and 9, with the exception of [Chorby Soul](https://www.blaseball.com/player/a1628d97-16ca-4a75-b8df-569bae02bef9), with a value of 1777 (hence the broken soulscream).
+`soul` | Represents the amount of 11-letter "chunks" in the player's soulscream. Players generally have a value between 2 and 9, with the exception of [Chorby Soul](https://www.blaseball.com/player/a1628d97-16ca-4a75-b8df-569bae02bef9), with a value of 1777 (hence the broken soulscream).
 `peanutAllergy` | Whether the player is allergic to peanuts. An allergic player will get an allergic reaction (a debuff) from swallowing a peanut during Peanut weather, whereas a non-allergic player will get a "yummy" reaction (a buff) instead.
 `fate` | Unknown. Ranges between 1 and 99. Directly visible on the player page, unlike other stlats.
 
@@ -196,6 +196,8 @@ function generateSoulscream(player) {
 
 Because JavaScript works with double-precision floating point numbers, it's unable to represent numbers over 10^309. With a `soul` value of larger than 309, the `magnitude` variable above will become exactly zero (`1 / Infinity`), a division by zero will occur in the `stlatDigit` calculation, and the resulting letter will instead be the word `undefined`. This explains why [Chorby Soul](https://www.blaseball.com/player/a1628d97-16ca-4a75-b8df-569bae02bef9) has 3400 valid soulscream letters (309 * 11 = 3399) until it just becomes the word `undefined` repeated over and over :)
 
+After Chorby Soul was reintroduced to the league due to necromancy after Season 14, soulscreams now only include letters for the first 300 soul. Players with soul larger than 300 will end with "... (CONT. FOR X SOUL)", where X is `soul - 300`.
+
 ## Blood type
 Player blood type is usually cosmetic, but in the case of team-wide blood type blessings, may have an effect.
 
@@ -206,17 +208,17 @@ For example, Jaylen Hotdogfingers, who transferred to the Lovers after Season 10
 ID | Name | Team | Modifier
 --- | --- | ---
 0 | A | - | None, used as a placeholder for newly generated players.
-1 | AAA | - | None.
-2 | AA | - | None.
-3 | Acidic | - | None.
+1 | AAA | Steaks | "Power Chaaarge": Batters have a chance of gaining the Overperforming modification for the remainder of the game after hitting a triple.
+2 | AA | Pies | "Power Chaarge": Batters have a chance of gaining the Overperforming modification for the remainder of the game after hitting a double.
+3 | Acidic | Tacos | "Acidic": Pitchers have a chance of throwing acidic pitches, which reduces runs scored on the play by 0.1.
 4 | Basic | Sunbeams | "Base Instincts": Batters have a chance to move directly to second, third, or fourth base (but never home) when drawing a walk.
-5 | O | - | None.
+5 | O | Crabs | "0": Batters will always swing at strikes when there are 0 Balls and 0 Strikes in the count.
 6 | O No | Magic | "0 No": Converts would-be strikeouts to foul balls when there are 0 Balls on the count. This often leads to [very large amounts of consecutive fouls](https://reblase.sibr.dev/game/ab10b339-4de9-4bc3-b057-5bf702607583#4d593d33-ec11-e90c-204b-f3a4b4fb9e6d) for batters with high patheticism and low moxie.
-7 | H₂O | - | None.
+7 | H₂O | Moist Talkers | "H20": Batters will always swing at strikes when there are 2 Outs in the count.
 8 | Electric | Dale | "Electric": Batters have a chance to "zap" away strikes on the board.
 9 | Love | Lovers | "Charm": Batters have a chance to draw a walk during their at-bat, and pitchers have a chance to make the batter strike out immediately.
-10 | Fire | - | -
-11 | Psychic | - | -
+10 | Fire | Tigers | "Fiery": Pitchers have a chance of throwing double strikes.
+11 | Psychic | Spies | "Psychic": Gives batters a chance to turn a strikeout into a walk. Gives pitchers a chance to convert a walk into an out, but the runner stays on base. 
 12 | Grass | Flowers | "Growth": Teams will play better as the season goes on, up to a 5% boost by the season's end. The actual effect of this isn't known.
 - | Blood? | - | Fallback value.
 

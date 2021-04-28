@@ -1229,7 +1229,7 @@ paths:
             application/json:
               schema:
                 $ref: ../models/Team.v1.yaml
-      operationId: get-database-getPreviousChamp
+      operationId: getPreviousChamp
       description: Returns the team that won the previous championship.
   /database/teamElectionStats:
     get:
@@ -1263,7 +1263,7 @@ paths:
           description: Team ID
   /database/renovationProgress:
     get:
-      summary: Your GET endpoint
+      summary: Stadium Renovation Progress
       tags:
         - Teams
       responses:

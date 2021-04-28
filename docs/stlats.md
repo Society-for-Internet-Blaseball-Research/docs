@@ -4,9 +4,7 @@
 Every player has a significant number of hidden properties (or *"stlats"*) not visible through any public interface directly. Visible star ratings are calculated based on a weighted combination of these, but differences in the composition of each player's stlats will affect their performance in different game scenarios, leading to a much more complex and interesting simulation.
 
 ### Range
-Most stlats range between zero and one, however there's no known upper limit to most of them. Most stlats do seem to have a lower limit of `0.01`, and the "negative stlats" an upper limit of `0.99`, presumably to prevent the star calculations from breaking.
-
-This was demonstrated by Raúl Leal's minimization, leaving them with a `buoyancy`, `coldness`, `divinity`, `chasiness`, `martyrdom`, `baseThirst`, `omniscience`, `suppression`, `ruthlessness`, `laserlikeness`, `overpowerment`, `tenaciousness`, `anticapitalism` and `shakespearianism` value of exactly `0.01`, and a `patheticism` value of exactly `0.99`.
+Most stlats range between zero and one, however there's no known upper limit to most of them. Most stlats do seem to have a lower limit of `0.01`, and the "negative stlats" an upper limit of `0.99`, presumably to prevent the star calculations from breaking. At the start of the Expansion Era (Season 12) the lower limit was expanded to `0.001`, as shown by Chorby Soul's floored attributes.
 
 ### Batting stlats
 Name | Star weight | Description
@@ -120,9 +118,9 @@ function ratingToStarsRounded(rating) {
 
 Note that these functions will usually return a value between `0.0` and `1.0` - a value of `1.0` means five stars. There's no known upper limit here; Richardson Games currently has a defense rating of ~1.63, meaning *eight* visible defense stars.
 
-To get the unrounded star count, multiply the value by five. This value can be rounded to the *nearest* half-star to get the displayed amount of stars. This can be done by doubling the star count, rounding that to the nearest integer, then halving it again - or in code, `Math.round(stars * 2) / 2`.
+To get the unrounded star count, multiply the value by five. The site rounds all star values to the nearest tenth. Prior to Season 15 these were rounded to the nearest half-star; this can be done by doubling the star count, rounding that to the nearest integer, then halving it again - or in code, `Math.round(stars * 2) / 2`.
 
-Starting in mid-October, the rating values (from 0-1) are also present in a pre-calculated form in the players object, as the properties `hittingRating`, `pitchingRating`, `baserunningRating`, and `defenseRating`, but are currently unused in the frontend code (the calculation is done directly instead). This may imply the star calculation is going to change at some point, and that we're not going to be able to see the new formulas going forward.
+Starting in mid-October, the rating values (from 0-1) are also present in a pre-calculated form in the players object, as the properties `hittingRating`, `pitchingRating`, `baserunningRating`, and `defenseRating`. As of Season 15 these ratings are used for the star ratings presented on the site, and are modified for players with the Attractor modification to make their stars appear larger.
 
 ## Vibes
 Vibes oscillate over the course of the season as a sine wave with parameters based on a few player stlats. `buoyancy` controls the period of the oscillation, `pressurization` the minimum value, and `cinnamon` the maximum value.
@@ -199,11 +197,9 @@ Because JavaScript works with double-precision floating point numbers, it's unab
 After Chorby Soul was reintroduced to the league due to necromancy after Season 14, soulscreams now only include letters for the first 300 soul. Players with soul larger than 300 will end with "... (CONT. FOR X SOUL)", where X is `soul - 300`.
 
 ## Blood type
-Player blood type is usually cosmetic, but in the case of team-wide blood type blessings, may have an effect.
+Player blood type is usually cosmetic, but in the case of team-wide blood type blessings, may have an effect. When a blessing is awarded, all team members have their blood type changed, but later player additions or trades keep their existing type. There are some examples (Crabs receiving 0, Moist Talkers receiving H20) in which the blood type of active team members did not change, though this may have simply been a bug.
 
-It has been observed that blood type effects only occur when the player has the required blood type, *and* is on a team with the blood type modifier attribute. When the blessing was awarded, all team members had their blood type changed, but later additions keep their existing type.
-
-For example, Jaylen Hotdogfingers, who transferred to the Lovers after Season 10, has blood type "AA", and has never been observed to Charm a batter. The opposite example is Francisca Sasquatch, who transferred (back) to the Dale while already having Electric blood - Sasquatch *does* successfully trigger the effects of Electric blood, despite not being on the team when the blessing was won.
+In early seasons it was observed that effects of blood type modifications only occur when the player has the required blood type *and* is on a team with the blood type modifier attribute, however this appears to no longer be the case. More recently (Seasons 14+) it appears that blood type is not a requirement, and players that do not have the required blood type still receive the benefits.
 
 ID | Name | Team | Modifier
 --- | --- | ---
@@ -234,7 +230,7 @@ ID | Name | Notes
 4 | Cold Brew | -
 5 | Flat White | -
 6 | Americano | -
-7 | Espresso | [Missing from the display name lookup table, so will display as "Coffee?" on player pages.](https://twitter.com/SIBROfficial/status/1305545970285862912)
+7 | Espresso | [Previously displayed as "Coffee?" on player pages due to a bug](https://twitter.com/SIBROfficial/status/1305545970285862912), but displays correctly since the Coffee Cup.
 8 | Heavy Foam | -
 9 | Latte | -
 10 | Decaf | -

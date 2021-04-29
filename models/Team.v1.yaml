@@ -59,7 +59,7 @@ properties:
     type: string
     description: Team slogal
   shameRuns:
-    type: integer
+    type: number
     description: How many runs this team was shamed by in their last game. Translates to the amount of negative runs induced by the Shame Pit of Targeted Shame.
   totalShames:
     type: integer
@@ -105,6 +105,28 @@ properties:
   card:
     type: integer
     description: 'The tarot card this team won in the Season 11 elections, zero-indexed (eg. VII The Chariot is `6`). Teams with no tarot card (eg. Crabs) have a value of -1.'
+  tournamentWins:
+    type: integer
+    description: Number of tournament wins
+  stadium:
+    type: string
+    description: Stadium ID
+    nullable: true
+  eDensity:
+    type: number
+    description: Current Team eDensity
+  state:
+    type: object
+  evolution:
+    type: integer
+    description: Unknown
+  winStreak:
+    type: integer
+    description: Number of consecutive wins or losses
+  level:
+    type: integer
+    description: 'Current team level (Low C, AAAAA, etc)'
+    nullable: true
 required:
   - id
   - lineup

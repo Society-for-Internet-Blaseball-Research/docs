@@ -2715,6 +2715,7 @@ components:
         * 180: Player hidden stat decrease
         * 181: Entering a Crime Scene
         * 185: Item breaks
+        * 192: Holiday Inning
       x-tags:
         - Feed
 tags:

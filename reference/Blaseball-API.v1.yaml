@@ -2716,6 +2716,7 @@ components:
         * 181: Entering a Crime Scene
         * 185: Item breaks
         * 192: Holiday Inning
+        * 193: Prize Match (declaring what the prize is)
       x-tags:
         - Feed
 tags:

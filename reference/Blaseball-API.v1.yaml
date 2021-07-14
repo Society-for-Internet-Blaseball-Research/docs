@@ -2605,10 +2605,12 @@ components:
         * 14: Ball
         * 15: Foul Ball
         * 20: Solar Panels overflow run activation
+        * 21: Home Field Advantage activation
         * 22: Hit by pitch
         * 23: Player skipped due to being Shelled or Elsewhere
         * 24: Partying
         * 25: Strike zapped by Electric blood
+        * 26: Weather change
         * 27: Mild pitch
         * 28: End of inning
         * 29: Site takeover text
@@ -2622,28 +2624,35 @@ components:
         * 39: Wired
         * 40: Feedback blocked
         * 41: Feedback
+        * 45: Peanuts: Superallergic reaction
         * 47: Allergic reaction
         * 48: Reverberating
         * 49: Reverb shuffle
         * 51: Blooddrain
         * 52: Siphon
+        * 53: Blooddrain: transfusion (either normal/Siphon) blocked by Sealant
         * 54: Incineration
         * 55: Fire eating
         * 56: Flag planted
         * 57: Renovation built
+        * 58: Light switch is now OFF/ON
         * 59: Decree passed
         * 60: Blessing won
         * 61: Will received
         * 62: Flood
         * 63: Salmon swim upstream
+        * 64: Polarity: polarity shift
         * 65: Entering the Secret Base
         * 66: Exiting the Secret Base
         * 67: Consumers attack
         * 69: Echo Chamber
         * 70: Grind Rail
+        * 71: Tunnels used
         * 72: Peanut Mister
         * 73: Peanuts flavor text
         * 74: Tasting the infinite (Shelling)
+        * 76: Event Horizon activates
+        * 77: Event Horizon awaits
         * 78: Solar Panels start-up text
         * 79: Solar Panels overflow run collection
         * 81: Tarot reading
@@ -2657,6 +2666,7 @@ components:
         * 93: Perk
         * 96: Earlbirds
         * 97: Late to the Party
+        * 99: Shame donor
         * 106: Added in-game modifier (Triple Threat, Free Refill, Magmatic, Inhabiting, etc)
         * 107: Removed in-game modifier (same as above, but when they disappear)
         * 108: Modifier expires
@@ -2671,14 +2681,20 @@ components:
         * 117: Player stat increase
         * 118: Player stat decrease
         * 119: Player reroll
+        * 122: Stat change from superallergic reaction
+        * 124: Failed player move due to Force
         * 125: Player enters the Hall of Flame
         * 126: Player exits the Hall of Flame
         * 127: Player gained item
+        * 128: Player lost item
         * 130: Reverb shuffle (full)
+        * 131: Reverb shuffle (lineup)
         * 132: Reverb shuffle (rotation)
+        * 133: Team incineration replacement
         * 135: New team
         * 136: New player (excluding incinerations)
         * 137: Player hatched
+        * 138: Team joins the league
         * 139: Player Evolves
         * 141: Team wins Internet Series
         * 142: Postseason spot
@@ -2692,9 +2708,9 @@ components:
         * 150: Returned player is permitted to stay
         * 151: Decree narration
         * 152: Will results
+        * 153: Team stat adjustments (S15+)
         * 154: Team shamed
-        * 153: Team modification blessing (S15+)
-        * 155: Team shames
+        * 155: Team shames another
         * 156: Sun 2 grants win
         * 157: Black Hole swallows
         * 158: Eliminated from postseason
@@ -2707,16 +2723,60 @@ components:
         * 170: Echo player becomes Static
         * 171: Echo fades
         * 172: Echoed modification added
+        * 173: PsychoAcoustics
         * 174: Receiver becomes an echo
         * 175: Alternate Coin text (hidden from Book, includes player)
         * 176: The Investigation is Underway.
+        * 177: Glitter: Crate drop
         * 178: Midseason Middling
         * 179: Player hidden stat increase
         * 180: Player hidden stat decrease
         * 181: Entering a Crime Scene
+        * 182: Ambitious
+        * 183: Unambitious
+        * 184: Coasting
         * 185: Item breaks
+        * 186: Item damaged
+        * 187: Broken item repaired
+        * 188: Damaged item repaired
+        * 189: Community Chest opens
+        * 190: No free item slot
+        * 191: Fax Machine activation
         * 192: Holiday Inning
         * 193: Prize Match (declaring what the prize is)
+        * 194: Team received gifts
+        * 195: Smithy activation
+        * 196: Player enters vault
+        * 198: A Blood type
+        * 199: Player soul increase
+        * 201: Narrative being actions
+        * 202: Library: Pre-season message
+        * 203: Ballpark mod Ratified into Non-Physical Law
+        * 204: SMASH
+        * 206: Hype built in ballpark
+        * 208: Practicing Moderation
+        * 209: Runs scored
+        * 210: League modification added
+        * 213: Ballons inflated from win
+        * 214: Win collected (Regular Season, S20+)
+        * 215: Win collected (Postseason, S20+)
+        * 216: Game over
+        * 217: Sun(Sun) pressure change
+        * 218: Tunnel used, nothing found
+        * 219: Tunnel used, fled elsewhere
+        * 220: Tunnel used - stole item
+        * 223: Weather event
+        * 224: Element added to item
+        * 226: Sun 30 smiles
+        * 228: Voicemail activation
+        * 230: Phantom Thieves Guild steals item
+        * 231: Phantom Thieves Guild steals player
+        * 232: [TUMBLEWEED SOUNDS]
+        * 233: Trader/traitor
+        * 234: Trade failed
+        * 236: Item traded
+        * 238: [REDACTED] - snack payouts? (Library only)
+        * 241: Vault revealed
       x-tags:
         - Feed
 tags:

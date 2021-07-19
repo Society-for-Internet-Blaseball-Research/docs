@@ -12,7 +12,7 @@ externalDocs:
 servers:
   - url: 'https://www.blaseball.com'
     description: Main website
-  - url: 'https://cors-proxy.blaseball-reference.com'
+  - url: 'http://api.sibr.dev/corsmechanics/'
     description: CORS proxy run by SIBR
 paths:
   /database/allDivisions:

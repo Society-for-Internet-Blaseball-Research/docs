@@ -6,14 +6,11 @@ info:
   contact:
     name: The Game Band
   termsOfService: 'https://www.blaseball.com/tos'
-externalDocs:
-  description: A GitHub repository with separate Markdown documents explaining each API endpoint.
-  url: 'https://github.com/Society-for-Internet-Blaseball-Research/blaseball-api-spec'
 servers:
+  - url: 'https://api.sibr.dev/corsmechanics/'
+    description: CORS proxy run by SIBR
   - url: 'https://www.blaseball.com'
     description: Main website
-  - url: 'http://api.sibr.dev/corsmechanics/'
-    description: CORS proxy run by SIBR
 paths:
   /database/allDivisions:
     get:
@@ -1348,8 +1345,6 @@ components:
           highestTeam: null
           highestTeamVotes: null
           teamVotes: null
-      x-tags:
-        - Elections
       properties:
         id:
           type: string
@@ -1444,8 +1439,6 @@ components:
         - decreeTitle
         - description
         - totalVotes
-      x-tags:
-        - Elections
       description: Represents the outcome message of a single passed decree after the election.
     Division:
       type: object
@@ -1478,8 +1471,6 @@ components:
         - teams
         - name
       x-examples: {}
-      x-tags:
-        - League
     League:
       type: object
       additionalProperties: false
@@ -1513,14 +1504,10 @@ components:
         - name
         - tiebreakers
       x-examples: {}
-      x-tags:
-        - League
       title: League
     OffseasonRecap:
       type: object
       additionalProperties: false
-      x-tags:
-        - Elections
       title: Election Results
       x-examples:
         Season 7 election results:
@@ -1612,8 +1599,6 @@ components:
     OffseasonSetup:
       type: object
       additionalProperties: false
-      x-tags:
-        - Elections
       title: Election Setup
       x-examples:
         Season 8 election:
@@ -1839,8 +1824,6 @@ components:
       type: object
       additionalProperties: false
       title: Playoff Matchup
-      x-tags:
-        - League
       properties:
         id:
           type: string
@@ -1919,8 +1902,6 @@ components:
         - special
         - winnerSeeds
         - winners
-      x-tags:
-        - League
       title: Playoff Round
     Playoffs:
       type: object
@@ -1961,8 +1942,6 @@ components:
         - winner
         - tournament
       title: Playoffs
-      x-tags:
-        - League
     Season:
       type: object
       additionalProperties: false
@@ -2000,15 +1979,11 @@ components:
         - stats
         - terminology
       title: Season
-      x-tags:
-        - League
     SimulationData:
       type: object
       additionalProperties: false
       title: Simulation Data
       x-examples: {}
-      x-tags:
-        - Global
       properties:
         id:
           type: string
@@ -2172,8 +2147,6 @@ components:
     Standings:
       type: object
       title: League Standings
-      x-tags:
-        - League
       properties:
         id:
           type: string
@@ -2200,8 +2173,6 @@ components:
       description: ''
       title: Stream Data
       x-examples: {}
-      x-tags:
-        - Global
       properties:
         value:
           type: object
@@ -2304,13 +2275,9 @@ components:
           example:
             - d4cc18de-a136-4271-84f1-32516be91a80
             - 98c92da4-0ea7-43be-bd75-c6150e184326
-      x-tags:
-        - League
     Temporal:
       type: object
       additionalProperties: false
-      x-tags:
-        - Global
       title: Temporal object
       description: 'Contains miscellaneous (usually story-related) data sent through the stream data. Most significant use is transmitting "site takeover" text (eg. the site announcement, Peanut, Hall Monitor, or Boss speaking - including during boss fights). Some fields (`theta` and `iota` at the moment) are currently unused.'
       properties:
@@ -2365,8 +2332,6 @@ components:
     TickerMessage:
       type: object
       additionalProperties: false
-      x-tags:
-        - Global
       properties:
         id:
           type: string
@@ -2400,14 +2365,9 @@ components:
       required:
         - id
         - order
-      x-tags:
-        - League
     GameStatsheet:
       type: object
       additionalProperties: false
-      x-tags:
-        - Games
-        - Statsheets
       title: Game Statsheet
       description: |-
         Represents the statsheet of a single game. This object doesn't include much information by itself, but refers to the team statsheets (which in turn refer to the player statsheets) containing most of the useful statistics.
@@ -2454,9 +2414,6 @@ components:
     PlayerStatsheet:
       type: object
       additionalProperties: false
-      x-tags:
-        - Players
-        - Statsheets
       title: Player Statsheet
       description: Represents the statsheet for a single player during a single game.
       properties:
@@ -2585,16 +2542,10 @@ components:
             format: uuid
       required:
         - id
-      x-tags:
-        - Statsheets
-        - League
       title: Season Statsheet
     TeamStatsheet:
       type: object
       additionalProperties: false
-      x-tags:
-        - Teams
-        - Statsheets
       title: Team Statsheet
       properties:
         id:
@@ -2646,8 +2597,6 @@ components:
         peanuts:
           type: integer
           description: Peanuts paid tribute towards this player
-      x-tags:
-        - Global
     IdolItem:
       title: Idol
       type: object
@@ -2667,8 +2616,6 @@ components:
           format: uuid
           description: 'Unknown (not a player ID, removed after Season 6)'
           deprecated: true
-      x-tags:
-        - Global
     EventResult:
       title: Event Result
       type: object
@@ -2687,8 +2634,6 @@ components:
             Good Luck on your Journey!
             They shall be replaced in the ILB by the Tokyo Lift.
       description: Represents a general (usually story-related) event after the election (eg. the Crabs ascending).
-      x-tags:
-        - Elections
     Modification:
       title: Modification
       type: object
@@ -2720,8 +2665,6 @@ components:
           title: Fireproof
           description: A Fireproof player can not be incinerated.
       description: Represents a Player or Team Modification.
-      x-tags:
-        - Global
     ItemOld:
       title: Item (Seasons 4 to 15)
       type: object
@@ -2741,14 +2684,10 @@ components:
           title: Grappling Hook
           description: NONE
       description: Represents an Item (Bat or Armor)
-      x-tags:
-        - Global
     FeedEvent:
       title: Feed Event
       type: object
       description: An event in the game feed.
-      x-tags:
-        - Feed
       properties:
         id:
           type: string
@@ -2830,8 +2769,6 @@ components:
         * 2: Abilities
         * 3: Outcomes
         * 4: Narrative
-      x-tags:
-        - Feed
     Stadium:
       title: Stadium
       type: object
@@ -2899,8 +2836,6 @@ components:
           type: string
         secondaryColor:
           type: string
-      x-tags:
-        - Teams
     Item:
       title: Item
       type: object
@@ -2940,8 +2875,6 @@ components:
           type: number
         defenseRating:
           type: number
-      x-tags:
-        - Global
       description: ''
     Renovation:
       title: Renovation
@@ -2960,8 +2893,6 @@ components:
         description:
           type: string
       description: ''
-      x-tags:
-        - Teams
 tags:
   - name: Elections
   - name: Feed

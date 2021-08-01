@@ -4,9 +4,7 @@
 Every player has a significant number of hidden properties (or *"stlats"*) not visible through any public interface directly. Visible star ratings are calculated based on a weighted combination of these, but differences in the composition of each player's stlats will affect their performance in different game scenarios, leading to a much more complex and interesting simulation.
 
 ### Range
-Most stlats range between zero and one, however there's no known upper limit to most of them. Most stlats do seem to have a lower limit of `0.01`, and the "negative stlats" an upper limit of `0.99`, presumably to prevent the star calculations from breaking.
-
-This was demonstrated by Raúl Leal's minimization, leaving them with a `buoyancy`, `coldness`, `divinity`, `chasiness`, `martyrdom`, `baseThirst`, `omniscience`, `suppression`, `ruthlessness`, `laserlikeness`, `overpowerment`, `tenaciousness`, `anticapitalism` and `shakespearianism` value of exactly `0.01`, and a `patheticism` value of exactly `0.99`.
+Most stlats range between zero and one, however there's no known upper limit to most of them. Most stlats do seem to have a lower limit of `0.01`, and the "negative stlats" an upper limit of `0.99`, presumably to prevent the star calculations from breaking. At the start of the Expansion Era (Season 12) the lower limit was expanded to `0.001` and the upper limit on "negative stlats" to `0.999`, as shown by Chorby Soul's floored attributes.
 
 ### Batting stlats
 Name | Star weight | Description
@@ -54,7 +52,7 @@ Name | Description
 `totalFingers` | Finger count appears to represent instances of change to pitching stats. All players start with 10 fingers. Players impacted by general stat buffs all received 1 more finger, regardless of the size of the buff. Party buffs don't appear to grant fingers.<br>Raúl Leal received an over-debuff of 0.51 with the Iffey Jr. to Minimize them, and gained 51 fingers - they appear to have been given -0.01 to all stlats 51 times to get them to 0 in everything.<br>This process in reverse is likely how PolkaDot Patterson and Axel Trololo got their pitching maximized (we can check on Axel since we have their stat history) by adding a small amount repeatedly until they hit 5 stars.<br>Goodwin Morin seems to have gotten the reverse of Raúl's process when being maximized, instead of the same process PolkaDot Patterson and Axel Trololo got - resulting in gaining 81 fingers and +0.81 to *every* attribute. This brought their pitching to 5 stars, but boosted other ratings much further - they ended up with 7 baserunning stars, for example.
 `pressurization` | Represents "minimum vibes" in the vibe calculation formula (higher pressurization = lower vibe floor).
 `cinnamon` | Represents "maximum vibes" in the vibe calculation formula (higher cinnamon = higher vibe ceiling).
-`soul` | Represents the amount of 11-letter "chunks" in the player's soulscream. All players have a value between 2 and 9, with the exception of [Chorby Soul](https://www.blaseball.com/player/a1628d97-16ca-4a75-b8df-569bae02bef9), with a value of 1777 (hence the broken soulscream).
+`soul` | Represents the amount of 11-letter "chunks" in the player's soulscream. Players generally have a value between 2 and 9, with the exception of [Chorby Soul](https://www.blaseball.com/player/a1628d97-16ca-4a75-b8df-569bae02bef9), with a value of 1777 (hence the broken soulscream).
 `peanutAllergy` | Whether the player is allergic to peanuts. An allergic player will get an allergic reaction (a debuff) from swallowing a peanut during Peanut weather, whereas a non-allergic player will get a "yummy" reaction (a buff) instead.
 `fate` | Unknown. Ranges between 1 and 99. Directly visible on the player page, unlike other stlats.
 
@@ -120,9 +118,9 @@ function ratingToStarsRounded(rating) {
 
 Note that these functions will usually return a value between `0.0` and `1.0` - a value of `1.0` means five stars. There's no known upper limit here; Richardson Games currently has a defense rating of ~1.63, meaning *eight* visible defense stars.
 
-To get the unrounded star count, multiply the value by five. This value can be rounded to the *nearest* half-star to get the displayed amount of stars. This can be done by doubling the star count, rounding that to the nearest integer, then halving it again - or in code, `Math.round(stars * 2) / 2`.
+To get the unrounded star count, multiply the value by five. The site rounds all star values to the nearest tenth. Prior to Season 15 these were rounded to the nearest half-star; this can be done by doubling the star count, rounding that to the nearest integer, then halving it again - or in code, `Math.round(stars * 2) / 2`.
 
-Starting in mid-October, the rating values (from 0-1) are also present in a pre-calculated form in the players object, as the properties `hittingRating`, `pitchingRating`, `baserunningRating`, and `defenseRating`, but are currently unused in the frontend code (the calculation is done directly instead). This may imply the star calculation is going to change at some point, and that we're not going to be able to see the new formulas going forward.
+Starting in mid-October, the rating values (from 0-1) are also present in a pre-calculated form in the players object, as the properties `hittingRating`, `pitchingRating`, `baserunningRating`, and `defenseRating`. As of Season 15 these ratings are used for the star ratings presented on the site, and are modified for players with the Attractor modification to make their stars appear larger.
 
 ## Vibes
 Vibes oscillate over the course of the season as a sine wave with parameters based on a few player stlats. `buoyancy` controls the period of the oscillation, `pressurization` the minimum value, and `cinnamon` the maximum value.
@@ -196,27 +194,27 @@ function generateSoulscream(player) {
 
 Because JavaScript works with double-precision floating point numbers, it's unable to represent numbers over 10^309. With a `soul` value of larger than 309, the `magnitude` variable above will become exactly zero (`1 / Infinity`), a division by zero will occur in the `stlatDigit` calculation, and the resulting letter will instead be the word `undefined`. This explains why [Chorby Soul](https://www.blaseball.com/player/a1628d97-16ca-4a75-b8df-569bae02bef9) has 3400 valid soulscream letters (309 * 11 = 3399) until it just becomes the word `undefined` repeated over and over :)
 
+After Chorby Soul was reintroduced to the league due to necromancy after Season 14, soulscreams now only include letters for the first 300 soul. Players with soul larger than 300 will end with "... (CONT. FOR X SOUL)", where X is `soul - 300`.
+
 ## Blood type
-Player blood type is usually cosmetic, but in the case of team-wide blood type blessings, may have an effect.
+Player blood type is usually cosmetic, but in the case of team-wide blood type blessings, may have an effect. When a blessing is awarded, all team members have their blood type changed, but later player additions or trades keep their existing type. There are some examples (Crabs receiving 0, Moist Talkers receiving H20) in which the blood type of active team members did not change, though this may have simply been a bug.
 
-It has been observed that blood type effects only occur when the player has the required blood type, *and* is on a team with the blood type modifier attribute. When the blessing was awarded, all team members had their blood type changed, but later additions keep their existing type.
-
-For example, Jaylen Hotdogfingers, who transferred to the Lovers after Season 10, has blood type "AA", and has never been observed to Charm a batter. The opposite example is Francisca Sasquatch, who transferred (back) to the Dale while already having Electric blood - Sasquatch *does* successfully trigger the effects of Electric blood, despite not being on the team when the blessing was won.
+In early seasons it was observed that effects of blood type modifications only occur when the player has the required blood type *and* is on a team with the blood type modifier attribute, however this appears to no longer be the case. More recently (Seasons 14+) it appears that blood type is not a requirement, and players that do not have the required blood type still receive the benefits.
 
 ID | Name | Team | Modifier
 --- | --- | ---
 0 | A | - | None, used as a placeholder for newly generated players.
-1 | AAA | - | None.
-2 | AA | - | None.
-3 | Acidic | - | None.
+1 | AAA | Steaks | "Power Chaaarge": Batters have a chance of gaining the Overperforming modification for the remainder of the game after hitting a triple.
+2 | AA | Pies | "Power Chaarge": Batters have a chance of gaining the Overperforming modification for the remainder of the game after hitting a double.
+3 | Acidic | Tacos | "Acidic": Pitchers have a chance of throwing acidic pitches, which reduces runs scored on the play by 0.1.
 4 | Basic | Sunbeams | "Base Instincts": Batters have a chance to move directly to second, third, or fourth base (but never home) when drawing a walk.
-5 | O | - | None.
+5 | O | Crabs | "0": Batters will always swing at strikes when there are 0 Balls and 0 Strikes in the count.
 6 | O No | Magic | "0 No": Converts would-be strikeouts to foul balls when there are 0 Balls on the count. This often leads to [very large amounts of consecutive fouls](https://reblase.sibr.dev/game/ab10b339-4de9-4bc3-b057-5bf702607583#4d593d33-ec11-e90c-204b-f3a4b4fb9e6d) for batters with high patheticism and low moxie.
-7 | H₂O | - | None.
+7 | H₂O | Moist Talkers | "H20": Batters will always swing at strikes when there are 2 Outs in the count.
 8 | Electric | Dale | "Electric": Batters have a chance to "zap" away strikes on the board.
 9 | Love | Lovers | "Charm": Batters have a chance to draw a walk during their at-bat, and pitchers have a chance to make the batter strike out immediately.
-10 | Fire | - | -
-11 | Psychic | - | -
+10 | Fire | Tigers | "Fiery": Pitchers have a chance of throwing double strikes.
+11 | Psychic | Spies | "Psychic": Gives batters a chance to turn a strikeout into a walk. Gives pitchers a chance to convert a walk into an out, but the runner stays on base. 
 12 | Grass | Flowers | "Growth": Teams will play better as the season goes on, up to a 5% boost by the season's end. The actual effect of this isn't known.
 - | Blood? | - | Fallback value.
 
@@ -232,7 +230,7 @@ ID | Name | Notes
 4 | Cold Brew | -
 5 | Flat White | -
 6 | Americano | -
-7 | Espresso | [Missing from the display name lookup table, so will display as "Coffee?" on player pages.](https://twitter.com/SIBROfficial/status/1305545970285862912)
+7 | Espresso | [Previously displayed as "Coffee?" on player pages due to a bug](https://twitter.com/SIBROfficial/status/1305545970285862912), but displays correctly since the Coffee Cup.
 8 | Heavy Foam | -
 9 | Latte | -
 10 | Decaf | -

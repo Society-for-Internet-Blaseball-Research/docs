@@ -4,6 +4,7 @@ x-tags:
   - Games
 title: Blaseball Game
 x-examples: {}
+description: ''
 properties:
   id:
     type: string
@@ -62,6 +63,7 @@ properties:
   awayBatterName:
     type: string
     description: Name of the current batter for the away team (or empty string if no active at-bat)
+    nullable: true
   awayTeam:
     type: string
     format: uuid
@@ -89,7 +91,7 @@ properties:
     description: The amount of strikes needed for the away team to strike out (usually 3)
     example: 3
   awayScore:
-    type: integer
+    type: number
     description: Score of the away team
   awayTeamBatterCount:
     type: integer
@@ -110,6 +112,7 @@ properties:
   homeBatterName:
     type: string
     description: Name of the current batter for the home team (or empty string if no active at-bat)
+    nullable: true
   homeTeam:
     type: string
     description: ID of the home team
@@ -135,14 +138,14 @@ properties:
     type: integer
     description: The amount of strikes needed for the home team to strike out (usually 3)
   homeScore:
-    type: integer
+    type: number
     description: Score of the home team
   homeTeamBatterCount:
     type: integer
     description: How many at-bats the home team has had
   season:
     type: integer
-    description: Season (zero-indexed), or -1 if a tournament game
+    description: 'Season (zero-indexed), or -1 if a tournament game'
     minimum: -1
     example: 7
   isPostseason:
@@ -157,8 +160,6 @@ properties:
     type: integer
     description: The current "game phase" (documentation pending)
     example: 5
-    minimum: 0
-    maximum: 6
   gameComplete:
     type: boolean
     description: Whether this game is finished
@@ -173,7 +174,7 @@ properties:
     type: integer
     description: How many outs have been made this half-inning (displayed as "Outs" on the scoreboard)
   halfInningScore:
-    type: integer
+    type: number
     description: How many runs have been scored this half-inning
   inning:
     type: integer
@@ -246,13 +247,14 @@ properties:
     description: Increases by one every game update. Useful for chronological sorting or deduplication.
   tournament:
     type: integer
-    description: Tournament identifier, or -1 if a seasonal game
+    description: 'Tournament identifier, or -1 if a seasonal game'
     minimum: -1
     example: 0
   baseRunnerMods:
     type: array
     description: Applicable modifications of the players on base (corresponding with the indices in `basesOccupied`)
-    example: ["WIRED"]
+    example:
+      - WIRED
     items:
       type: string
   homePitcherMod:
@@ -270,11 +272,38 @@ properties:
   scoreUpdate:
     type: string
     description: Description of the number of runs scored in the current play
-    example: "1 Run scored!"
+    example: 1 Run scored!
   scoreLedger:
     type: string
     description: Additional information applicable to a scoring run
-    example: "(1 Run), Cat Inning is Tired. (-0.5 Runs)"
+    example: '(1 Run), Cat Inning is Tired. (-0.5 Runs)'
+  stadiumId:
+    type: string
+    description: Stadium that this game took place in
+    nullable: true
+  secretBaserunner:
+    type: string
+    nullable: true
+  topInningScore:
+    type: number
+    description: Score for the top of this inning
+  bottomInningScore:
+    type: number
+    description: Score for the bottom of this inning
+  newInningPhase:
+    type: integer
+    description: Unknown
+  gameStartPhase:
+    type: integer
+    description: Unknown
+  isTitleMatch:
+    type: boolean
+    description: Unknown
+  queuedEvents:
+    type: array
+    items: {}
+  state:
+    type: object
 required:
   - id
   - basesOccupied
@@ -345,6 +374,5 @@ required:
   - homeBatterMod
   - awayPitcherMod
   - awayBatterMod
-  - scoreLedger
   - scoreUpdate
-description: ''
+  - scoreLedger

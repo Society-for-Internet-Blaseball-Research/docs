@@ -1305,7 +1305,7 @@ components:
       description: Represents the outcome of a single blessing after the election.
       title: Blessing Result
       x-tags:
-        Models
+        - Models
       x-examples:
         Headliners (Season 7):
           id: f0f15969-aecb-4f9e-8eb9-00f05ece732c
@@ -1390,7 +1390,7 @@ components:
       type: object
       title: Decree Result
       x-tags:
-        Models
+        - Models
       x-examples:
         Open the Forbidden Book (Season 1):
           id: b090fdfc-7d9d-414b-a4a5-bbc698028c15
@@ -1449,7 +1449,7 @@ components:
       additionalProperties: false
       title: Division
       x-tags:
-        Models
+        - Models
       description: A single team division (eg. Wild High or Chaotic Good)
       properties:
         id:
@@ -1480,7 +1480,7 @@ components:
     League:
       type: object
       x-tags:
-        Models
+        - Models
       additionalProperties: false
       properties:
         id:
@@ -1518,7 +1518,7 @@ components:
       additionalProperties: false
       title: Election Results
       x-tags:
-        Models
+        - Models
       x-examples:
         Season 7 election results:
           id: b9b7d77a-fe35-4df0-a68c-efd665ad42e0
@@ -1611,7 +1611,7 @@ components:
       additionalProperties: false
       title: Election Setup
       x-tags:
-        Models
+        - Models
       x-examples:
         Season 8 election:
           decrees:
@@ -1837,7 +1837,7 @@ components:
       additionalProperties: false
       title: Playoff Matchup
       x-tags:
-        Models
+        - Models
       properties:
         id:
           type: string
@@ -1875,7 +1875,7 @@ components:
     PlayoffRound:
       type: object
       x-tags:
-        Models
+        - Models
       additionalProperties: false
       properties:
         id:
@@ -1922,7 +1922,7 @@ components:
     Playoffs:
       type: object
       x-tags:
-        Models
+        - Models
       additionalProperties: false
       properties:
         id:
@@ -1963,7 +1963,7 @@ components:
     Season:
       type: object
       x-tags:
-        Models
+        - Models
       additionalProperties: false
       properties:
         id:
@@ -2004,7 +2004,7 @@ components:
       additionalProperties: false
       title: Simulation Data
       x-tags:
-        Models
+        - Models
       x-examples: {}
       properties:
         id:
@@ -2170,7 +2170,7 @@ components:
       type: object
       title: League Standings
       x-tags:
-        Models
+        - Models
       properties:
         id:
           type: string
@@ -2197,7 +2197,7 @@ components:
       description: ''
       title: Stream Data
       x-tags:
-        Models
+        - Models
       x-examples: {}
       properties:
         value:
@@ -2283,7 +2283,7 @@ components:
       additionalProperties: false
       title: Subleague
       x-tags:
-        Models
+        - Models
       x-examples: {}
       properties:
         id:
@@ -2308,7 +2308,7 @@ components:
       additionalProperties: false
       title: Temporal object
       x-tags:
-        Models
+        - Models
       description: 'Contains miscellaneous (usually story-related) data sent through the stream data. Most significant use is transmitting "site takeover" text (eg. the site announcement, Peanut, Hall Monitor, or Boss speaking - including during boss fights). Some fields (`theta` and `iota` at the moment) are currently unused.'
       properties:
         doc:
@@ -2362,7 +2362,7 @@ components:
     TickerMessage:
       type: object
       x-tags:
-        Models
+        - Models
       additionalProperties: false
       properties:
         id:
@@ -2383,7 +2383,7 @@ components:
     Tiebreakers:
       type: object
       x-tags:
-        Models
+        - Models
       additionalProperties: false
       properties:
         id:
@@ -2404,7 +2404,7 @@ components:
       additionalProperties: false
       title: Game Statsheet
       x-tags:
-        Models
+        - Models
       description: |-
         Represents the statsheet of a single game. This object doesn't include much information by itself, but refers to the team statsheets (which in turn refer to the player statsheets) containing most of the useful statistics.
 
@@ -2452,7 +2452,7 @@ components:
       additionalProperties: false
       title: Player Statsheet
       x-tags:
-        Models
+        - Models
       description: Represents the statsheet for a single player during a single game.
       properties:
         id:
@@ -2569,7 +2569,7 @@ components:
     SeasonStatsheet:
       type: object
       x-tags:
-        Models
+        - Models
       additionalProperties: false
       properties:
         id:
@@ -2588,7 +2588,7 @@ components:
       additionalProperties: false
       title: Team Statsheet
       x-tags:
-        Models
+        - Models
       properties:
         id:
           type: string
@@ -2632,7 +2632,7 @@ components:
       title: Tribute Item
       type: object
       x-tags:
-        Models
+        - Models
       properties:
         playerID:
           type: string
@@ -2646,7 +2646,7 @@ components:
       type: object
       description: ''
       x-tags:
-        Models
+        - Models
       properties:
         playerId:
           type: string
@@ -2666,7 +2666,7 @@ components:
       title: Event Result
       type: object
       x-tags:
-        Models
+        - Models
       properties:
         id:
           type: string
@@ -2686,7 +2686,7 @@ components:
       title: Modification
       type: object
       x-tags:
-        Models
+        - Models
       properties:
         id:
           type: string
@@ -2719,7 +2719,7 @@ components:
       title: Item (Seasons 4 to 15)
       type: object
       x-tags:
-        Models
+        - Models
       properties:
         id:
           type: string
@@ -2740,7 +2740,7 @@ components:
       title: Feed Event
       type: object
       x-tags:
-        Models
+        - Models
       description: An event in the game feed.
       properties:
         id:
@@ -2816,7 +2816,7 @@ components:
       type: integer
       title: Feed Event Category
       x-tags:
-        Models
+        - Models
       description: |-
         The category of a feed event.
 
@@ -2830,7 +2830,7 @@ components:
       type: object
       description: ''
       x-tags:
-        Models
+        - Models
       properties:
         id:
           type: string
@@ -2898,7 +2898,7 @@ components:
       title: Item
       type: object
       x-tags:
-        Models
+        - Models
       properties:
         id:
           type: string
@@ -2940,7 +2940,7 @@ components:
       title: Renovation
       type: object
       x-tags:
-        Models
+        - Models
       properties:
         id:
           type: string

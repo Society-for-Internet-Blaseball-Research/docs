@@ -12,503 +12,7 @@ servers:
   - url: 'https://www.blaseball.com'
     description: Main website
 paths:
-  /database/allDivisions:
-    get:
-      summary: Get all divisions
-      description: |-
-        Returns a list of each division and its member teams.
-
-        This will return all divisions known to the database - including retired divisions (eg. Chaotic/Lawful Good/Evil from Season 5 and before).
-      operationId: allDivisions
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Division'
-      tags:
-        - League
-  /database/allTeams:
-    get:
-      summary: Get all teams
-      description: |-
-        Returns a list of team definitions for every team in the league - as well as some teams outside the league (notably the *Baltimore Crabs*, ID `8d87c468-699a-47a8-b40d-cfb73a5660ad`, and *The Hall Stars*, ID `c6c01051-cdd4-47d6-8a98-bb5b754f937f`).
-
-        Note that *THE SHELLED ONE'S PODS* (ID `40b9ec2a-cb43-4dbb-b836-5accb62e7c20`) has been deleted from the server and will not be returned by this endpoint.
-      operationId: allTeams
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: ../models/Team.v1.yaml
-      tags:
-        - Teams
-  /database/bonusResults:
-    get:
-      summary: List bonus (blessing) results
-      description: Get the results of one or more bonuses (blessings). Returns an array. Use commas to separate multiple bonus IDs.
-      operationId: bonusResults
-      parameters:
-        - name: ids
-          in: query
-          description: IDs of bonus results to return
-          style: form
-          explode: false
-          schema:
-            type: string
-            format: uuid
-          required: true
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BonusResult'
-      tags:
-        - Elections
-  /database/decreeResults:
-    get:
-      summary: List decree results
-      description: Get the results of one or more decrees. Returns an array. Use commas to separate multiple decree IDs.
-      operationId: decreeResults
-      parameters:
-        - name: ids
-          in: query
-          description: IDs of decree results to return (comma-separated)
-          required: true
-          style: form
-          explode: false
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/DecreeResult'
-      tags:
-        - Elections
-  /database/division:
-    get:
-      summary: Get division details
-      description: Returns information for a given division ID.
-      operationId: division
-      parameters:
-        - name: id
-          in: query
-          description: ID of division to return
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Division'
-      tags:
-        - League
-  /database/games:
-    get:
-      summary: Get game details by date
-      description: |-
-        Returns the last broadcast game update for a given game day and season or tournament. Completed games will show the final update of the game (generally "Game over."), currently running games will show the update present on www.blaseball.com, and future games (beyond the next game) will be missing data about pitchers and odds.
-
-        This endpoint can return all regular-season games (up to Day 99 - so `98` here) of the current season, even ones that haven't started. New season schedules will become available once the simulation phase changes to `1` (at around Monday 1 AM Pacific). Postseason and tournament games are never available more than a single game in advance.
-      operationId: games
-      parameters:
-        - name: season
-          in: query
-          description: Season (zero-indexed)
-          required: true
-          schema:
-            type: integer
-            minimum: 0
-        - name: day
-          in: query
-          description: Day (zero-indexed)
-          required: true
-          schema:
-            type: integer
-            minimum: 0
-        - name: tournament
-          in: query
-          description: Tournament identifier
-          schema:
-            type: integer
-            minimum: 0
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: ../models/Game.v1.yaml
-      tags:
-        - Games
-  '/database/gameById/{gameId}':
-    get:
-      summary: Get game details by ID
-      description: 'Returns the last broadcast game update for a given game ID. Completed games will show the final update of the game, currently running games will show the update present on www.blaseball.com, and future games will show a placeholder update if the game is already scheduled.'
-      operationId: gameById
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: ../models/Game.v1.yaml
-      tags:
-        - Games
-    parameters:
-      - schema:
-          type: string
-          format: uuid
-        name: gameId
-        in: path
-        required: true
-  /database/gameStatsheets:
-    get:
-      summary: List game statsheets
-      description: Get the statsheets for one or more games. Returns an array. Use commas to separate multiple game statsheet IDs.
-      operationId: gameStatsheets
-      parameters:
-        - name: ids
-          in: query
-          description: IDs of game statsheets to return
-          required: true
-          style: form
-          explode: false
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GameStatsheet'
-      tags:
-        - Statsheets
-        - Games
-  /database/globalEvents:
-    get:
-      summary: Get global events
-      description: An array of messages that make up the content of the ticker at the top of the Blaseball site after logging in.
-      operationId: globalEvents
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TickerMessage'
-      tags:
-        - Global
-  /database/league:
-    get:
-      summary: Get league details
-      description: |-
-        Returns information for a given league ID.
-
-        There is currently only one known league: Internet League Blaseball, with ID `d8545021-e9fc-48a3-af74-48685950a183`.
-      operationId: league
-      parameters:
-        - name: id
-          in: query
-          description: ID of league to return
-          required: true
-          schema:
-            type: string
-            format: uuid
-            example: d8545021-e9fc-48a3-af74-48685950a183
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/League'
-              examples:
-                Internet League Blaseball (as of Season 11):
-                  value:
-                    id: d8545021-e9fc-48a3-af74-48685950a183
-                    subleagues:
-                      - aabc11a1-81af-4036-9f18-229c759ca8a9
-                      - 4fe65afa-804f-4bb2-9b15-1281b2eab110
-                    name: Internet League Blaseball
-                    tiebreakers: 370c436f-79fa-418b-bc98-5db48442ba3f
-      tags:
-        - League
-  /database/offseasonRecap:
-    get:
-      summary: Get election results
-      description: Information about the decrees and bonuses that passed for a given season number (zero indexed).
-      operationId: offseasonRecap
-      parameters:
-        - name: season
-          in: query
-          description: Season index (zero-based)
-          required: true
-          schema:
-            type: integer
-            minimum: 0
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OffseasonRecap'
-      tags:
-        - Elections
-  /database/offseasonSetup:
-    get:
-      summary: Get election details
-      description: List of decrees and blessings for the end of the current season
-      operationId: offseasonSetup
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/OffseasonSetup'
-      tags:
-        - Elections
-  /database/players:
-    get:
-      summary: List player stats
-      description: Get one or more player objects. Returns an array. Use commas to separate multiple player IDs.
-      operationId: players
-      parameters:
-        - name: ids
-          in: query
-          description: IDs of players to return
-          required: true
-          style: form
-          explode: false
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: ../models/Player.v1.yaml
-      tags:
-        - Players
-  /database/playerSeasonStats:
-    get:
-      summary: List player statsheets
-      description: 'Get the statsheets for one or more players. Returns an array. Use commas to separate multiple player statsheet IDs. Keep in mind that each player statsheet is associated with a particular game, so the listed stats are only for that game.'
-      operationId: playerStatsheets
-      parameters:
-        - name: ids
-          in: query
-          description: IDs of player statsheets to return
-          required: true
-          style: form
-          explode: false
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PlayerStatsheet'
-      tags:
-        - Statsheets
-        - Players
-  /database/playoffMatchups:
-    get:
-      summary: List playoff matchup details
-      description: Get information about one or more playoff matchups. Returns an array. Use commas to separate multiple playoff matchup IDs.
-      operationId: playoffMatchups
-      parameters:
-        - name: ids
-          in: query
-          description: IDs of playoff matchups to return
-          required: true
-          style: form
-          explode: false
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PlayoffMatchup'
-      tags:
-        - League
-        - Global
-  /database/playoffRound:
-    get:
-      summary: Get playoff round details
-      description: Information about a specific round in the playoffs.
-      operationId: playoffRound
-      parameters:
-        - name: id
-          in: query
-          description: ID of playoff round to return
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PlayoffRound'
-      tags:
-        - Games
-        - League
-  /database/playoffs:
-    get:
-      summary: Get playoff details
-      description: Get details about the playoffs for a given season number (zero indexed).
-      operationId: playoffs
-      parameters:
-        - name: number
-          in: query
-          description: Season index (zero-based)
-          required: true
-          schema:
-            type: string
-            minimum: 0
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Playoffs'
-      tags:
-        - Games
-        - League
-  /database/season:
-    get:
-      summary: Get season details
-      description: Returns information for a given season number (zero indexed).
-      operationId: season
-      parameters:
-        - name: number
-          in: query
-          description: Season index (zero-based)
-          required: true
-          schema:
-            type: integer
-            minimum: 0
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Season'
-      tags:
-        - League
-  /database/seasonStatsheets:
-    get:
-      summary: List season statsheets
-      description: Get the statsheets for one or more seasons. Returns an array. Use commas to separate multiple season statsheet IDs. Only contains the latest team statsheet for each team.
-      operationId: seasonStatsheets
-      parameters:
-        - name: ids
-          in: query
-          description: IDs of season statsheets to return
-          required: true
-          style: form
-          explode: false
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SeasonStatsheet'
-      tags:
-        - Statsheets
-        - League
-  /database/simulationData:
-    get:
-      summary: Get simulation data
-      description: 'Get current data about the simulation, ie day, season, time to next cycle, etc.'
-      operationId: simulationData
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SimulationData'
-      tags:
-        - Global
-  /database/standings:
-    get:
-      summary: Get standings details
-      description: Returns information for a given standings ID from the season object.
-      operationId: standings
-      parameters:
-        - name: id
-          in: query
-          description: ID of standings to return
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Standings'
-      tags:
-        - League
+  # Global
   /events/streamData:
     get:
       summary: Live data stream
@@ -526,44 +30,81 @@ paths:
                 $ref: '#/components/schemas/StreamData'
       tags:
         - Global
-  /database/subleague:
+  /database/simulationData:
     get:
-      summary: Get subleague details
-      description: Returns information for a given subleague ID. Limited to a single subleague ID.
-      operationId: subleague
-      parameters:
-        - name: id
-          in: query
-          description: ID of subleague to return
-          required: true
-          schema:
-            type: string
-            format: uuid
+      summary: Get simulation data
+      description: 'Get current data about the simulation, ie day, season, time to next cycle, etc.'
+      operationId: simulationData
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Subleague'
+                $ref: '#/components/schemas/SimulationData'
+      tags:
+        - Global
+  /database/globalEvents:
+    get:
+      summary: Get global events
+      description: An array of messages that make up the content of the ticker at the top of the Blaseball site after logging in.
+      operationId: globalEvents
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TickerMessage'
+      tags:
+        - Global
+  /database/shopSetup:
+    get:
+      summary: Get current shop setup
+      description: Get the current shop setup including available snacks and their cost/payout at each tier.
+      operationId: shopSetup
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShopSetupResult'
+      tags:
+        - Global
+  /database/seasondaycount:
+    get:
+      summary: Season Day Count
       tags:
         - League
-  /database/team:
-    get:
-      summary: Get team details
-      description: |-
-        Returns limited stats, player IDs, and other information for a given team ID. Limited to a single team ID.
-
-        Note that the *THE SHELLED ONE'S PODS* team (ID `40b9ec2a-cb43-4dbb-b836-5accb62e7c20`) has been deleted from the server and will not be returned by this endpoint.
-      operationId: team
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dayCount:
+                    type: integer
+                    description: Number of game days
+      operationId: seasondaycount
+      description: Get the number of days in a given season.
       parameters:
-        - name: id
+        - schema:
+            type: integer
           in: query
-          description: ID of team to return
-          schema:
-            type: string
-            format: uuid
-          required: true
+          name: season
+          description: Season number (0-indexed)
+  /database/getPreviousChamp:
+    get:
+      summary: Get Previous Champion
+      tags:
+        - League
       responses:
         '200':
           description: OK
@@ -571,65 +112,115 @@ paths:
             application/json:
               schema:
                 $ref: ../models/Team.v1.yaml
-      tags:
-        - Teams
-  /database/teamStatsheets:
+      operationId: getPreviousChamp
+      description: Returns the team that won the previous championship.
+  # Global stats
+  /database/sunsun:
     get:
-      summary: List team statsheets
-      description: 'Get the statsheets for one or more teams. Returns an array. Use commas to separate multiple team statsheet IDs. Keep in mind that a team statsheet is associated with a particular game, so the player stats are only for that game and the list of players are only those who played in that game.'
-      operationId: teamStatsheets
-      parameters:
-        - name: ids
-          in: query
-          description: IDs of team statsheets to return
-          required: true
-          style: form
-          explode: false
-          schema:
-            type: string
+      summary: Current status of sun(sun)
+      description: Gets the current, max, and recharge values for the sun(sun) pressure.
+      operationId: sunsun
+      tags:
+        - Global_Stats
       responses:
         '200':
           description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  current:
+                    type: integer
+                    description: Current value of sun(sun)
+                  maxium:
+                    type: integer
+                    description: Maximum value of sun(sun)
+                  recharge:
+                    type: integer
+                    description: Seasonal recharge amount of sun(sun)
+  /database/fuelProgress:
+    get:
+      summary: Fuel progress of each team
+      description: Gets the current percentage of fuel each team has for navigating.
+      operationId: fuelProgress
+      tags:
+        - Global_Stats
+      responses:
+        '200':
+          description: OK
+          headers: {}
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/TeamStatsheet'
-      tags:
-        - Statsheets
-        - Teams
-  /database/tiebreakers:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      description: ID of the team
+                    amount:
+                      type: number
+                      description: Percentage of fuel for the team
+  /database/playerNamesIds:
     get:
-      summary: Get tiebreaker details
-      description: 'Returns information for a given tiebreaker ID from the league object. Each of the ids in `order` is an ID for a team object. This represents the "Divine Favor" ranking. (Note: the tiebreaker object is returned inside a single-element array, even though the endpoint''s argument only accepts one ID.)'
-      operationId: tiebreakers
-      parameters:
-        - name: id
-          in: query
-          description: ID of tiebreakers object to return
-          required: true
-          schema:
-            type: string
-            format: uuid
+      summary: Get name for every player id
+      description: Gets the current name for every visible player as displayed on the site. (Including being scattered)
+      operationId: playerNamesIds
+      tags:
+        - Global_Stats
       responses:
         '200':
           description: OK
+          headers: {}
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tiebreakers'
-                minItems: 1
-                maxItems: 1
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      description: ID of the player
+                    name:
+                      type: number
+                      description: Name of the player
+  /database/communityChestProgress:
+    get:
+      summary: Current status the community chest
+      description: Gets the current number of runs/precentage towards the current community chest and how many chests have been unlocked so far.
+      operationId: communityChestProgress
       tags:
-        - League
+        - Global_Stats
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  runs:
+                    type: string
+                    description: String containing the number of runs so far this chest.
+                  progress:
+                    type: string
+                    description: String containing the percentage towards the next chest unlock.
+                  chestsUnlocked:
+                    type: integer
+                    description: Number of chests unlocked so far
+  # Groupings
   /api/getTribute:
     get:
       summary: Get Hall of Flame players
       tags:
-        - Global
+        - Groupings
       responses:
         '200':
           description: OK
@@ -792,7 +383,7 @@ paths:
     get:
       summary: Get Idol board
       tags:
-        - Global
+        - Groupings
       responses:
         '200':
           description: OK
@@ -898,83 +489,139 @@ paths:
                       playerId: 4bf352d2-6a57-420a-9d45-b23b2b947375
       operationId: getIdols
       description: Returns a list of the top 20 players on the Idol leaderboard.
-  /database/eventResults:
+  /api/getRisingStars:
     get:
-      summary: List event results (election Tidings)
+      summary: Get rising stars
+      operationId: getRisingStars
       tags:
-        - Elections
+        - Groupings
       responses:
         '200':
           description: OK
-          headers: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  stars:
+                    type: array
+                    items:
+                      type: string
+      description: Returns a list of all of the rising stars player ids
+  /database/vault:
+    get:
+      summary: Get vault players
+      operationId: vault
+      tags:
+        - Groupings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  legendaryPlayers:
+                    type: array
+                    items:
+                      type: string
+      description: Returns a list of all of the vault player ids
+  /database/allSubleagues:
+    get:
+      summary: Get all subleagues
+      operationId: allSubleagues
+      description: |-
+        Returns a list of each subleague and its member divisions.
+
+        This will return all divisions known to the database - including retired divisions (eg. Good/Evil from Season 5 and before).
+      responses:
+        '200':
+          description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/EventResult'
-      operationId: eventResults
-      description: Get the results of one or more election events. Returns an array. Use commas to separate multiple bonus IDs.
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: ids
-          description: IDs of event results to return (comma-separated)
-          required: true
-  /database/mods:
-    get:
-      summary: List Modifications
+                  $ref: '#/components/schemas/Subleague'
       tags:
-        - Global
+        - Groupings
+  /database/allDivisions:
+    get:
+      summary: Get all divisions
+      description: |-
+        Returns a list of each division and its member teams.
+
+        This will return all divisions known to the database - including retired divisions (eg. Chaotic/Lawful Good/Evil from Season 5 and before).
+      operationId: allDivisions
       responses:
         '200':
           description: OK
-          headers: {}
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Modification'
-      operationId: mods
-      description: Get the name and description of Team or Player Modifications. Returns an array. Use commas to separate multiple modification IDs.
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: ids
-          description: IDs of modifications to return (comma-separated)
-          required: true
-  /database/items:
-    get:
-      summary: List Items
+                  $ref: '#/components/schemas/Division'
       tags:
-        - Global
+        - Groupings
+  /database/allTeams:
+    get:
+      summary: Get all teams
+      description: |-
+        Returns a list of team definitions for every team in the league - as well as some teams outside the league (notably the *Baltimore Crabs*, ID `8d87c468-699a-47a8-b40d-cfb73a5660ad`, and *The Hall Stars*, ID `c6c01051-cdd4-47d6-8a98-bb5b754f937f`).
+
+        Note that *THE SHELLED ONE'S PODS* (ID `40b9ec2a-cb43-4dbb-b836-5accb62e7c20`) has been deleted from the server and will not be returned by this endpoint.
+      operationId: allTeams
       responses:
         '200':
           description: OK
-          headers: {}
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Item'
-      operationId: items
-      description: Get information about a list of Items (Bat or Armor). Returns an array. Use commas to separate multiple item IDs.
-      parameters:
-        - schema:
-            type: string
-          in: query
-          name: ids
-          description: IDs of items to return (comma-separated)
-          required: true
+                  $ref: ../models/Team.v1.yaml
+      tags:
+        - Groupings
+  /database/nullified:
+    get:
+      summary: Get nullified items & smbh size
+      operationId: nullified
+      tags:
+        - Groupings
+      description: Returns a list of items nullified by the black hole, and later in season 24, an array of the black hole's size for each day since day 81.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rules:
+                    type: array
+                    description: Rules nullified by the supermassive black hole
+                    items:
+                      type: string
+                  history:
+                    type: array
+                    description: Size of the supermassive black hole over time.
+                    items:
+                      type: object
+                      properties:
+                        day:
+                          type: integer
+                        season:
+                          type: integer
+                        size:
+                          type: integer
+  # Object Lookup
   /database/blood:
     get:
       summary: List Blood types
       tags:
-        - Global
+        - Object_Lookup
       responses:
         '200':
           description: OK
@@ -999,7 +646,7 @@ paths:
     get:
       summary: List Cofee preferences
       tags:
-        - Global
+        - Object_Lookup
       responses:
         '200':
           description: OK
@@ -1020,6 +667,434 @@ paths:
           name: ids
           description: IDs of coffee preferences to return (comma-separated)
           required: true
+  /database/mods:
+    get:
+      summary: List Modifications
+      tags:
+        - Object_Lookup
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Modification'
+      operationId: mods
+      description: Get the name and description of Team or Player Modifications. Returns an array. Use commas to separate multiple modification IDs.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: ids
+          description: IDs of modifications to return (comma-separated)
+          required: true
+  /database/renovations:
+    get:
+      summary: List Renovations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Renovation'
+      operationId: renovations
+      description: Get the name and description of Stadium renovations. Returns an array. Use commas to separate multiple renovation IDs.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: ids
+          description: IDs of renovations to return (comma-separated)
+      tags:
+        - Object_Lookup
+  /database/items:
+    get:
+      summary: List Items
+      tags:
+        - Object_Lookup
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+      operationId: items
+      description: Get information about a list of Items (Bat or Armor). Returns an array. Use commas to separate multiple item IDs.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: ids
+          description: IDs of items to return (comma-separated)
+          required: true
+  /database/players:
+    get:
+      summary: Get player stats
+      description: Get one or more player objects. Returns an array. Use commas to separate multiple player IDs.
+      operationId: players
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of players to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: ../models/Player.v1.yaml
+      tags:
+        - Object_Lookup
+  /database/playersByItemId:
+    get:
+      summary: Get players by item ID
+      description: Get one or more player objects by querying an item UUID.
+      operationId: playersByItemId
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of items for which to return related players.
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: ../models/Player.v1.yaml
+      tags:
+        - Object_Lookup
+  /database/team:
+    get:
+      summary: Get team details
+      description: |-
+        Returns limited stats, player IDs, and other information for a given team ID. Limited to a single team ID.
+
+        Note that the *THE SHELLED ONE'S PODS* team (ID `40b9ec2a-cb43-4dbb-b836-5accb62e7c20`) has been deleted from the server and will not be returned by this endpoint.
+      operationId: team
+      parameters:
+        - name: id
+          in: query
+          description: ID of team to return
+          schema:
+            type: string
+            format: uuid
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ../models/Team.v1.yaml
+      tags:
+        - Object_Lookup
+  # League
+  /database/league:
+    get:
+      summary: Get league details
+      description: |-
+        Returns information for a given league ID.
+
+        There is currently only one known league: Internet League Blaseball, with ID `d8545021-e9fc-48a3-af74-48685950a183`.
+      operationId: league
+      parameters:
+        - name: id
+          in: query
+          description: ID of league to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: d8545021-e9fc-48a3-af74-48685950a183
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/League'
+              examples:
+                Internet League Blaseball (as of Season 11):
+                  value:
+                    id: d8545021-e9fc-48a3-af74-48685950a183
+                    subleagues:
+                      - aabc11a1-81af-4036-9f18-229c759ca8a9
+                      - 4fe65afa-804f-4bb2-9b15-1281b2eab110
+                    name: Internet League Blaseball
+                    tiebreakers: 370c436f-79fa-418b-bc98-5db48442ba3f
+      tags:
+        - League
+  /database/subleague:
+    get:
+      summary: Get subleague details
+      description: Returns information for a given subleague ID. Limited to a single subleague ID.
+      operationId: subleague
+      parameters:
+        - name: id
+          in: query
+          description: ID of subleague to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subleague'
+      tags:
+        - League
+  /database/division:
+    get:
+      summary: Get division details
+      description: Returns information for a given division ID.
+      operationId: division
+      parameters:
+        - name: id
+          in: query
+          description: ID of division to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Division'
+      tags:
+        - League
+  /database/season:
+    get:
+      summary: Get season details
+      description: Returns information for a given season number (zero indexed).
+      operationId: season
+      parameters:
+        - name: number
+          in: query
+          description: Season index (zero-based)
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Season'
+      tags:
+        - League
+  /database/standings:
+    get:
+      summary: Get standings details
+      description: Returns information for a given standings ID from the season object.
+      operationId: standings
+      parameters:
+        - name: id
+          in: query
+          description: ID of standings to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Standings'
+      tags:
+        - League
+  /database/tiebreakers:
+    get:
+      summary: Get tiebreaker details
+      description: 'Returns information for a given tiebreaker ID from the league object. Each of the ids in `order` is an ID for a team object. This represents the "Divine Favor" ranking. (Note: the tiebreaker object is returned inside a single-element array, even though the endpoint''s argument only accepts one ID.)'
+      operationId: tiebreakers
+      parameters:
+        - name: id
+          in: query
+          description: ID of tiebreakers object to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tiebreakers'
+                minItems: 1
+                maxItems: 1
+      tags:
+        - League
+  # Games
+  /database/games:
+    get:
+      summary: Get game details by date
+      description: |-
+        Returns the last broadcast game update for a given game day and season or tournament. Completed games will show the final update of the game (generally "Game over."), currently running games will show the update present on www.blaseball.com, and future games (beyond the next game) will be missing data about pitchers and odds.
+
+        This endpoint can return all regular-season games (up to Day 99 - so `98` here) of the current season, even ones that haven't started. New season schedules will become available once the simulation phase changes to `1` (at around Monday 1 AM Pacific). Postseason and tournament games are never available more than a single game in advance.
+      operationId: games
+      parameters:
+        - name: season
+          in: query
+          description: Season (zero-indexed)
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: day
+          in: query
+          description: Day (zero-indexed)
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+        - name: tournament
+          in: query
+          description: Tournament identifier
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: ../models/Game.v1.yaml
+      tags:
+        - Games
+  '/database/gameById/{gameId}':
+    get:
+      summary: Get game details by ID
+      description: 'Returns the last broadcast game update for a given game ID. Completed games will show the final update of the game, currently running games will show the update present on www.blaseball.com, and future games will show a placeholder update if the game is already scheduled.'
+      operationId: gameById
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ../models/Game.v1.yaml
+      tags:
+        - Games
+    parameters:
+      - schema:
+          type: string
+          format: uuid
+        name: gameId
+        in: path
+        required: true
+  /database/playoffs:
+    get:
+      summary: Get playoff details
+      description: Get details about the playoffs for a given season number (zero indexed).
+      operationId: playoffs
+      parameters:
+        - name: number
+          in: query
+          description: Season index (zero-based)
+          required: true
+          schema:
+            type: string
+            minimum: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Playoffs'
+      tags:
+        - Games
+  /database/playoffMatchups:
+    get:
+      summary: List playoff matchup details
+      description: Get information about one or more playoff matchups. Returns an array. Use commas to separate multiple playoff matchup IDs.
+      operationId: playoffMatchups
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of playoff matchups to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayoffMatchup'
+      tags:
+        - Games
+  /database/playoffRound:
+    get:
+      summary: Get playoff round details
+      description: Information about a specific round in the playoffs.
+      operationId: playoffRound
+      parameters:
+        - name: id
+          in: query
+          description: ID of playoff round to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayoffRound'
+      tags:
+        - Games
+  # Feed
   /database/feed/global:
     get:
       summary: Global Feed
@@ -1139,6 +1214,90 @@ paths:
           required: true
       operationId: get-database-feed-team
       description: Get a list of feed events tagged with a team.
+  /database/feed/story:
+    get:
+      summary: Story Feed
+      responses:
+        '200':
+          description: '  OK'
+          content:
+            application/json:
+              schema:
+                type: array
+                description: |
+                  List of events
+                items:
+                  $ref: '#/components/schemas/FeedEvent'
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: type
+          description: Event type to return
+        - schema:
+            $ref: '#/components/schemas/FeedCategory'
+          in: query
+          name: category
+          description: Event category to return
+        - schema:
+            type: integer
+            minimum: 0
+          in: query
+          name: limit
+          description: Number of events to return
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: id
+          description: story ID to search for
+          required: true
+      operationId: get-database-feed-story
+      description: Get a list of feed events tagged in a story.
+      tags:
+        - Feed
+  /database/feed/game:
+    get:
+      summary: Game Feed
+      tags:
+        - Feed
+      responses:
+        '200':
+          description: '  OK'
+          content:
+            application/json:
+              schema:
+                type: array
+                description: |
+                  List of events
+                items:
+                  $ref: '#/components/schemas/FeedEvent'
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: type
+          description: Event type to return
+        - schema:
+            $ref: '#/components/schemas/FeedCategory'
+          in: query
+          name: category
+          description: Event category to return
+        - schema:
+            type: integer
+            minimum: 0
+          in: query
+          name: limit
+          description: Number of events to return
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: id
+          description: Game to search for
+          required: true
+      operationId: get-database-feed-game
+      description: Get a list of feed events tagged with a game.
   /database/feedbyphase:
     get:
       summary: Feed by Phase
@@ -1168,9 +1327,22 @@ paths:
           name: phase
           description: The phase to return.
           required: true
-  /database/renovations:
+  # Elections
+  /database/bonusResults:
     get:
-      summary: List Renovations
+      summary: List bonus (blessing) results
+      description: Get the results of one or more bonuses (blessings). Returns an array. Use commas to separate multiple bonus IDs.
+      operationId: bonusResults
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of bonus results to return
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+          required: true
       responses:
         '200':
           description: OK
@@ -1179,60 +1351,100 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Renovation'
-      operationId: renovations
-      description: Get the name and description of Stadium renovations. Returns an array. Use commas to separate multiple renovation IDs.
+                  $ref: '#/components/schemas/BonusResult'
+      tags:
+        - Elections
+  /database/decreeResults:
+    get:
+      summary: List decree results
+      description: Get the results of one or more decrees. Returns an array. Use commas to separate multiple decree IDs.
+      operationId: decreeResults
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of decree results to return (comma-separated)
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DecreeResult'
+      tags:
+        - Elections
+  /database/offseasonRecap:
+    get:
+      summary: Get election results
+      description: Information about the decrees and bonuses that passed for a given season number (zero indexed).
+      operationId: offseasonRecap
+      parameters:
+        - name: season
+          in: query
+          description: Season index (zero-based)
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OffseasonRecap'
+      tags:
+        - Elections
+  /database/offseasonSetup:
+    get:
+      summary: Get election details
+      description: List of decrees and blessings for the end of the current season
+      operationId: offseasonSetup
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OffseasonSetup'
+      tags:
+        - Elections
+  /database/eventResults:
+    get:
+      summary: List event results (election Tidings)
+      tags:
+        - Elections
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventResult'
+      operationId: eventResults
+      description: Get the results of one or more election events. Returns an array. Use commas to separate multiple bonus IDs.
       parameters:
         - schema:
             type: string
           in: query
           name: ids
-          description: IDs of renovations to return (comma-separated)
-      tags:
-        - Teams
-  /database/seasondaycount:
-    get:
-      summary: Season Day Count
-      tags:
-        - League
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  dayCount:
-                    type: integer
-                    description: Number of game days
-      operationId: seasondaycount
-      description: Get the number of days in a given season.
-      parameters:
-        - schema:
-            type: integer
-          in: query
-          name: season
-          description: Season number (0-indexed)
-  /database/getPreviousChamp:
-    get:
-      summary: Get Previous Champion
-      tags:
-        - League
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: ../models/Team.v1.yaml
-      operationId: getPreviousChamp
-      description: Returns the team that won the previous championship.
+          description: IDs of event results to return (comma-separated)
+          required: true
   /database/teamElectionStats:
     get:
       summary: Team Election Stats
       tags:
-        - Teams
+        - Elections
       responses:
         '200':
           description: OK
@@ -1262,7 +1474,7 @@ paths:
     get:
       summary: Stadium Renovation Progress
       tags:
-        - Teams
+        - Elections
       responses:
         '200':
           description: OK
@@ -1297,6 +1509,131 @@ paths:
           in: query
           name: id
           description: Stadium ID
+  /database/giftProgress:
+    get:
+      summary: Get gift/wishlist progress
+      description: Get the current progress for each team on gift funding and wishlist splits.
+      operationId: giftProgress
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  teamProgress:
+                    type: object
+                    description: Dictionary of team ID's to current number of gifts and progress to their next gift.
+                  teamWishLists:
+                    type: integer
+                    description: Dictionary of team ID's to an array of top wishlisted items.
+      tags:
+        - Elections
+  # Statsheets
+  /database/seasonStatsheets:
+    get:
+      summary: List season statsheets
+      description: Get the statsheets for one or more seasons. Returns an array. Use commas to separate multiple season statsheet IDs. Only contains the latest team statsheet for each team.
+      operationId: seasonStatsheets
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of season statsheets to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeasonStatsheet'
+      tags:
+        - Statsheets
+  /database/gameStatsheets:
+    get:
+      summary: List game statsheets
+      description: Get the statsheets for one or more games. Returns an array. Use commas to separate multiple game statsheet IDs.
+      operationId: gameStatsheets
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of game statsheets to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GameStatsheet'
+      tags:
+        - Statsheets
+  /database/teamStatsheets:
+    get:
+      summary: List team statsheets
+      description: 'Get the statsheets for one or more teams. Returns an array. Use commas to separate multiple team statsheet IDs. Keep in mind that a team statsheet is associated with a particular game, so the player stats are only for that game and the list of players are only those who played in that game.'
+      operationId: teamStatsheets
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of team statsheets to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TeamStatsheet'
+      tags:
+        - Statsheets
+  /database/playerSeasonStats:
+    get:
+      summary: List player statsheets
+      description: 'Get the statsheets for one or more players. Returns an array. Use commas to separate multiple player statsheet IDs. Keep in mind that each player statsheet is associated with a particular game, so the listed stats are only for that game.'
+      operationId: playerStatsheets
+      parameters:
+        - name: ids
+          in: query
+          description: IDs of player statsheets to return
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PlayerStatsheet'
+      tags:
+        - Statsheets
 components:
   schemas:
     BonusResult:
@@ -1832,6 +2169,22 @@ components:
         - decrees
         - blessings
         - decreesToPass
+    ShopSetupResult:
+      type: object
+      additionalProperties: false
+      title: Election Setup
+      x-tags:
+        - Models
+      properties:
+        menu:
+          type: array
+          description: An array of available snacks
+          items:
+            type: string
+            format: uuid
+        snackData:
+          type: object
+          description: A dictionary with each entry being an array containing objects containing the price and payout for the stnack at that level.
     PlayoffMatchup:
       type: object
       additionalProperties: false
@@ -2956,12 +3309,13 @@ components:
           type: string
       description: ''
 tags:
-  - name: Elections
-  - name: Feed
-  - name: Games
   - name: Global
-  - name: League
-  - name: Players
+  - name: Global_Stats
+  - name: Groupings
   - name: Statsheets
-  - name: Teams
+  - name: Object_Lookup
+  - name: League
+  - name: Games
+  - name: Feed
+  - name: Elections
   - name: Models

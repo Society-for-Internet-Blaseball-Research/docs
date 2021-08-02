@@ -1,0 +1,32 @@
+openapi: 3.0.0
+info:
+  title: Replay
+  version: '1.0'
+  description: ''
+servers:
+  - url: 'https://api.sibr.dev/replay/v1'
+paths:
+  /replay:
+    get:
+      summary: Get historical SSE streamData
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            text/event-stream:
+              schema:
+                type: object
+                description: Event Stream
+      operationId: get-replay
+      description: Generate an SSE stream from historical stream data. Stream will timeout after about a minute of updates.
+      parameters:
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: from
+          required: true
+          description: Timestamp for start of stream
+components:
+  schemas: {}

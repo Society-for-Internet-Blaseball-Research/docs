@@ -530,7 +530,7 @@ paths:
       description: Get team updates
   /time/map:
     get:
-      summary: Get Time Mapping
+      summary: Get time mapping
       tags: []
       responses:
         '200':
@@ -543,7 +543,7 @@ paths:
       description: Map in-game season/days to real-life timestamp ranges.
   /time/seasons:
     get:
-      summary: Get Season Mapping
+      summary: Get season mapping
       tags: []
       responses:
         '200':
@@ -556,7 +556,7 @@ paths:
       description: Map in-game seasons to real-life timestamp ranges.
   /roster/updates:
     get:
-      summary: Your GET endpoint
+      summary: Get roster updates
       tags: []
       responses:
         '200':

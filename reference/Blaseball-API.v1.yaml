@@ -80,7 +80,7 @@ paths:
     get:
       summary: Season Day Count
       tags:
-        - League
+        - Global
       responses:
         '200':
           description: OK
@@ -117,11 +117,11 @@ paths:
   # Global stats
   /database/sunsun:
     get:
-      summary: Current status of sun(sun)
+      summary: Get sun(sun) status
       description: Gets the current, max, and recharge values for the sun(sun) pressure.
       operationId: sunsun
       tags:
-        - Global_Stats
+        - Global Stats
       responses:
         '200':
           description: OK
@@ -142,11 +142,11 @@ paths:
                     description: Seasonal recharge amount of sun(sun)
   /database/fuelProgress:
     get:
-      summary: Fuel progress of each team
+      summary: Get team fuel progress
       description: Gets the current percentage of fuel each team has for navigating.
       operationId: fuelProgress
       tags:
-        - Global_Stats
+        - Global Stats
       responses:
         '200':
           description: OK
@@ -167,11 +167,11 @@ paths:
                       description: Percentage of fuel for the team
   /database/playerNamesIds:
     get:
-      summary: Get name for every player id
+      summary: Get all player names
       description: Gets the current name for every visible player as displayed on the site. (Including being scattered)
       operationId: playerNamesIds
       tags:
-        - Global_Stats
+        - Global Stats
       responses:
         '200':
           description: OK
@@ -192,11 +192,11 @@ paths:
                       description: Name of the player
   /database/communityChestProgress:
     get:
-      summary: Current status the community chest
+      summary: Get Community Chest progress
       description: Gets the current number of runs/precentage towards the current community chest and how many chests have been unlocked so far.
       operationId: communityChestProgress
       tags:
-        - Global_Stats
+        - Global Stats
       responses:
         '200':
           description: OK
@@ -621,7 +621,7 @@ paths:
     get:
       summary: List Blood types
       tags:
-        - Object_Lookup
+        - Object Lookup
       responses:
         '200':
           description: OK
@@ -646,7 +646,7 @@ paths:
     get:
       summary: List Cofee preferences
       tags:
-        - Object_Lookup
+        - Object Lookup
       responses:
         '200':
           description: OK
@@ -671,7 +671,7 @@ paths:
     get:
       summary: List Modifications
       tags:
-        - Object_Lookup
+        - Object Lookup
       responses:
         '200':
           description: OK
@@ -712,12 +712,12 @@ paths:
           name: ids
           description: IDs of renovations to return (comma-separated)
       tags:
-        - Object_Lookup
+        - Object Lookup
   /database/items:
     get:
       summary: List Items
       tags:
-        - Object_Lookup
+        - Object Lookup
       responses:
         '200':
           description: OK
@@ -761,7 +761,7 @@ paths:
                 items:
                   $ref: ../models/Player.v1.yaml
       tags:
-        - Object_Lookup
+        - Object Lookup
   /database/playersByItemId:
     get:
       summary: Get players by item ID
@@ -786,7 +786,7 @@ paths:
                 items:
                   $ref: ../models/Player.v1.yaml
       tags:
-        - Object_Lookup
+        - Object Lookup
   /database/team:
     get:
       summary: Get team details
@@ -811,7 +811,7 @@ paths:
               schema:
                 $ref: ../models/Team.v1.yaml
       tags:
-        - Object_Lookup
+        - Object Lookup
   # League
   /database/league:
     get:
@@ -1442,7 +1442,7 @@ paths:
           required: true
   /database/teamElectionStats:
     get:
-      summary: Team Election Stats
+      summary: Get wills progress
       tags:
         - Elections
       responses:
@@ -1472,7 +1472,7 @@ paths:
           description: Team ID
   /database/renovationProgress:
     get:
-      summary: Stadium Renovation Progress
+      summary: Get Renovation Progress
       tags:
         - Elections
       responses:
@@ -3310,10 +3310,10 @@ components:
       description: ''
 tags:
   - name: Global
-  - name: Global_Stats
+  - name: Global Stats
   - name: Groupings
   - name: Statsheets
-  - name: Object_Lookup
+  - name: Object Lookup
   - name: League
   - name: Games
   - name: Feed

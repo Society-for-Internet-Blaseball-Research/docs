@@ -2,6 +2,9 @@ openapi: 3.0.0
 info:
   title: Chronicler
   version: '1.0'
+  contact:
+    url: 'https://github.com/xSke/Chronicler'
+  description: API for access to historical records.
 servers:
   - url: 'https://api.sibr.dev/chronicler/v1'
 paths:
@@ -15,9 +18,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GameUpdate'
+                type: object
+                properties:
+                  nextPage:
+                    type: string
+                    description: Token for next Page
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GameUpdate'
       operationId: GetGameUpdates
       description: Get game updates by filter
       parameters:
@@ -70,9 +79,21 @@ paths:
         - schema:
             type: integer
             minimum: 1
+            maximum: 2000
+            default: 100
           in: query
           name: count
           description: How many results to return
+        - schema:
+            type: integer
+          in: query
+          name: tournament
+          description: Filter by tournament
+        - schema:
+            type: string
+          in: query
+          name: page
+          description: Pagination Token
   /games:
     get:
       summary: Get games
@@ -83,9 +104,12 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Game'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Game'
       operationId: GetGames
       parameters:
         - schema:
@@ -145,6 +169,32 @@ paths:
           in: query
           name: count
           description: How many results to return
+        - schema:
+            type: integer
+          in: query
+          name: tournament
+          description: Filter by tournament
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: before
+          description: Filter to games before timestamp
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: after
+          description: Filter to games after timestamp
+        - schema:
+            type: string
+            enum:
+              - json
+              - csv
+            default: json
+          in: query
+          name: format
+          description: Output format
       description: Get games by filter
   /players/names:
     get:
@@ -180,11 +230,34 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Player'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Player'
       operationId: GetPlayers
       description: Returns every known player
+      parameters:
+        - schema:
+            type: boolean
+          in: query
+          name: forbidden
+          description: Filter by players that have not seen active play
+        - schema:
+            type: boolean
+          in: query
+          name: incinerated
+          description: Filter by deceased or non-deceased
+        - schema:
+            type: string
+            enum:
+              - json
+              - csv
+            default: json
+          in: query
+          name: format
+          description: Output format
   /players/updates:
     get:
       summary: Get player updates
@@ -195,9 +268,14 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PlayerUpdate'
+                type: object
+                properties:
+                  nextPage:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlayerUpdate'
       operationId: GetPlayerUpdates
       parameters:
         - schema:
@@ -230,9 +308,16 @@ paths:
         - schema:
             type: integer
             minimum: 1
+            default: 100
+            maximum: 1000
           in: query
           name: count
           description: How many updates to return
+        - schema:
+            type: string
+          in: query
+          name: page
+          description: Pagination Token
       description: Get player updates
   /site/updates:
     get:
@@ -244,9 +329,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SiteUpdate'
+                type: object
+                properties:
+                  nextPage:
+                    type: string
+                    description: Token for next page
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SiteUpdate'
       operationId: GetSiteUpdates
       parameters:
         - schema:
@@ -257,10 +348,40 @@ paths:
           in: query
           name: format
           description: Filter by file format
+        - schema:
+            type: string
+          in: query
+          name: before
+          description: Return only updates before this
+        - schema:
+            type: string
+          in: query
+          name: after
+          description: Return only updates after this
+        - schema:
+            type: string
+          in: query
+          name: page
+          description: Pagination Token
+        - schema:
+            type: integer
+            minimum: 1
+          in: query
+          name: count
+          description: How many updates to return
+        - schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+          in: query
+          name: order
+          description: Order of the returned updates
       description: Get blaseball.com site updates
-  /tributes/hourly:
+  /tributes/updates:
     get:
-      summary: Get tributes by hour
+      summary: Get tribute updates
       tags: []
       responses:
         '200':
@@ -269,13 +390,16 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TributesUpdate'
+                type: object
+                properties:
+                  nextPage:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TributesUpdate'
               examples: {}
-            text/csv:
-              schema: {}
-      operationId: GetTributesHourly
+      operationId: GetTributesUpdates
       parameters:
         - schema:
             type: string
@@ -300,6 +424,7 @@ paths:
         - schema:
             type: integer
             minimum: 1
+            maximum: 1000
           in: query
           name: count
           description: How many updates to return
@@ -312,7 +437,18 @@ paths:
           in: query
           name: format
           description: Return as JSON or CSV?
-      description: Return tribute updates grouped by hour
+        - schema:
+            type: string
+          in: query
+          name: page
+          description: Pagination Token
+        - schema:
+            type: string
+          in: query
+          name: players
+          description: Filter by player IDs (comma-separated)
+      description: Return tribute updates
+    parameters: []
   /teams:
     get:
       summary: Get teams
@@ -323,9 +459,12 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Team'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Team'
       operationId: GetTeams
       description: Get teams
   /teams/updates:
@@ -338,9 +477,15 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/TeamUpdate'
+                type: object
+                properties:
+                  nextPage:
+                    type: string
+                    description: Token for next page
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TeamUpdate'
       operationId: GetTeamUpdates
       parameters:
         - schema:
@@ -372,32 +517,125 @@ paths:
         - schema:
             type: integer
             minimum: 1
+            maximum: 250
+            default: 100
           in: query
           name: count
           description: Amount of updates to return
+        - schema:
+            type: string
+          in: query
+          name: page
+          description: Pagination token
       description: Get team updates
+  /time/map:
+    get:
+      summary: Get Time Mapping
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeMap'
+      operationId: get-time-map
+      description: Map in-game season/days to real-life timestamp ranges.
+  /time/seasons:
+    get:
+      summary: Get Season Mapping
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeSeason'
+      operationId: get-time-seasons
+      description: Map in-game seasons to real-life timestamp ranges.
+  /roster/updates:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nextPage:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RosterUpdate'
+      operationId: get-roster-updates
+      description: Get roster updates
+      parameters:
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: before
+          description: Return only updates before this
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: after
+          description: Return only updates after this
+        - schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+          in: query
+          name: order
+          description: Sort order of the returned updates
+        - schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+          in: query
+          name: count
+          description: Amount of updates to return
+        - schema:
+            type: string
+          in: query
+          name: player
+          description: Filter by player ID (comma-separated)
+        - schema:
+            type: string
+          in: query
+          name: team
+          description: Filter by team ID (comma-separated)
 components:
   schemas:
     Game:
       title: Game
       type: object
       properties:
-        id:
+        gameId:
           type: string
           format: uuid
           description: Game ID
-        start:
+        startTime:
           type: string
           format: date-time
           description: Time when game started (null if future)
-        end:
+        endTime:
           type: string
           format: date-time
           description: Time when game ended (null if running/future)
         data:
           $ref: ../models/Game.v1.yaml
       required:
-        - id
+        - gameId
         - data
     GameUpdate:
       title: Game Update
@@ -433,9 +671,11 @@ components:
         lastUpdate:
           type: string
           description: Timestamp of last update to the player data
+          format: date-time
         teamId:
           type: string
           description: 'Team this player is on, or null if not on team (eg. incinerated)'
+          format: uuid
         position:
           type: string
           enum:
@@ -443,6 +683,7 @@ components:
             - rotation
             - bullpen
             - bench
+            - shadows
           example: lineup
           description: 'Position on team roster (lineup/rotation/etc), null if not on team'
         rosterIndex:
@@ -450,6 +691,9 @@ components:
           description: 'Index of this player on the team roster (zero-indexed, local to each position), null if not on team'
         data:
           $ref: ../models/Player.v1.yaml
+        forbidden:
+          type: boolean
+          description: True if player has not seen active play
       required:
         - id
         - lastUpdate
@@ -461,7 +705,7 @@ components:
       title: Player Update
       type: object
       properties:
-        id:
+        playerId:
           type: string
           format: uuid
           description: Player ID
@@ -473,17 +717,17 @@ components:
           type: string
           format: date-time
           description: Last (consecutive) time we've seen this version
-        hash:
+        updateId:
           type: string
           format: uuid
           description: Hash of the player data
         data:
           $ref: ../models/Player.v1.yaml
       required:
-        - id
+        - playerId
         - firstSeen
         - lastSeen
-        - hash
+        - updateId
         - data
     SiteUpdate:
       title: Site Update
@@ -504,7 +748,7 @@ components:
           type: integer
           format: email
           description: File size in bytes
-        download:
+        downloadUrl:
           type: string
           description: Link to download this version of the file (relative to this API base)
           format: uri
@@ -513,11 +757,14 @@ components:
         - path
         - hash
         - size
-        - download
+        - downloadUrl
     TributesUpdate:
       title: Tributes Update
       type: object
       properties:
+        updateId:
+          type: string
+          format: uuid
         timestamp:
           type: string
           format: date-time
@@ -547,24 +794,112 @@ components:
       title: Team Update
       type: object
       properties:
-        id:
+        teamId:
           type: string
           description: Team ID
+          format: uuid
         firstSeen:
           type: string
           description: First (consecutive) time we've seen this version
+          format: date-time
         lastSeen:
           type: string
           description: Last (consecutive) time we've seen this version
-        hash:
+          format: date-time
+        updateId:
           type: string
           description: Hash of team data
+          format: uuid
         data:
           $ref: ../models/Team.v1.yaml
       required:
-        - id
+        - teamId
         - firstSeen
         - lastSeen
-        - hash
+        - updateId
         - data
+    TimeMap:
+      title: TimeMap
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              season:
+                type: integer
+              tournament:
+                type: integer
+              day:
+                type: integer
+              type:
+                type: string
+                description: 'Phase information (Note: Incorrect after Season 11)'
+              startTime:
+                type: string
+                format: date-time
+              endTime:
+                type: string
+                format: date-time
+    TimeSeason:
+      title: TimeSeason
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              season:
+                type: integer
+              tournament:
+                type: integer
+              startTime:
+                type: string
+                format: date-time
+              seasonStartTime:
+                type: string
+                format: date-time
+              postseasonStartTime:
+                type: string
+                format: date-time
+              endTime:
+                type: string
+                format: date-time
+              days:
+                type: integer
+    RosterUpdate:
+      title: RosterUpdate
+      type: object
+      properties:
+        playerId:
+          type: string
+          format: uuid
+          description: Player ID
+        teamId:
+          type: string
+          format: uuid
+          description: Team ID
+        position:
+          type: string
+          enum:
+            - lineup
+            - rotation
+            - bullpen
+            - bench
+            - shadows
+          description: 'Position on team roster (lineup/rotation/etc), null if not on team'
+          example: lineup
+        rosterIndex:
+          type: integer
+          description: 'Index of this player on the team roster (zero-indexed, local to each position), null if not on team'
+        firstSeen:
+          type: string
+          format: date-time
+          description: First (consecutive) time we've seen this version
+        lastSeen:
+          type: string
+          format: date-time
+          description: Last (consecutive) time we've seen this version
   securitySchemes: {}

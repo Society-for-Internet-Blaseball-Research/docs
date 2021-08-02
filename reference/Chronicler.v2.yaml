@@ -1,0 +1,156 @@
+openapi: 3.0.0
+info:
+  title: Chronicler v2
+  version: '2.0'
+  description: API for access to historical records.
+  contact:
+    url: 'https://github.com/xSke/Chronicler'
+servers:
+  - url: 'https://api.sibr.dev/chronicler/v2'
+paths:
+  /entities:
+    get:
+      summary: Entities
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+      operationId: get-entities
+      description: |-
+        Returns all items of a certain type at a given moment in time.
+
+        Type refers to a type of model, see [the full list](https://github.com/xSke/Chronicler/blob/main/SIBR.Storage.Data/Models/UpdateType.cs) for details. Note that `Game` is not supported in V2, please use V1 endpoints.
+      parameters:
+        - schema:
+            type: string
+            example: player
+          in: query
+          name: type
+          required: true
+          description: Entity type to return
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: id
+          description: Filter by entity ID or list of IDs
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: at
+          description: Timestamp
+        - schema:
+            type: number
+            default: 1000
+            maximum: 2000
+            minimum: 1
+          in: query
+          name: count
+          description: Number of items to return this page
+        - schema:
+            type: string
+          in: query
+          name: page
+          description: Pagination token
+  /versions:
+    get:
+      summary: Versions
+      tags: []
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+      operationId: get-versions
+      description: |-
+        Returns all items of a certain type and all historical variants.
+
+        Type refers to a type of model, see [the full list](https://github.com/xSke/Chronicler/blob/main/SIBR.Storage.Data/Models/UpdateType.cs) for details. Note that `Game` is not supported in V2, please use V1 endpoints.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: type
+          description: Entity type to return
+          required: true
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: id
+          description: Filter by entity ID or list of IDs
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: before
+          description: Filter by items before this timestamp
+        - schema:
+            type: string
+            format: date-time
+          in: query
+          name: after
+          description: Filter by items after this timestamp
+        - schema:
+            type: number
+            default: 100
+            minimum: 1
+            maximum: 1000
+          in: query
+          name: count
+          description: Number of items to return this page
+        - schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+          in: query
+          name: order
+          description: Order to return results in
+        - schema:
+            type: string
+          in: query
+          name: page
+          description: Pagination token
+components:
+  schemas:
+    Response:
+      title: Response
+      type: object
+      properties:
+        nextPage:
+          type: string
+          description: Token for next page
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              entityId:
+                type: string
+                description: ''
+                format: uuid
+              hash:
+                type: string
+                description: Unique hash identifier
+                format: uuid
+              validFrom:
+                type: string
+                format: date-time
+                description: Timestamp first observed
+              validTo:
+                type: string
+                format: date-time
+                description: Timestamp last observed
+              data:
+                type: object
+                description: 'Entity Data, varies with type'

@@ -1,0 +1,26 @@
+title: Tributes
+type: object
+properties:
+  teams:
+    type: array
+    items:
+      type: object
+      properties:
+        teamId:
+          type: string
+          format: uuid
+        peanuts:
+          type: integer
+          description: Number of peanuts payed in tribute
+  players:
+    type: array
+    items:
+      type: object
+      properties:
+        playerId:
+          type: string
+          format: uuid
+        peanuts:
+          type: integer
+          description: Number of peanuts payed in tribute
+description: State of the Hall of Flame

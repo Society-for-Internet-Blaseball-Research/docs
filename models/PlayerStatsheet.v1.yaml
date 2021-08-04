@@ -1,0 +1,96 @@
+title: Player Statsheet
+type: object
+description: |-
+  Represents the statsheet for a single player during a single game or season.
+
+  There are a few known issues with Player Statsheets:
+    - Season 1 statsheets do not have valid player names
+    - Statsheets for the first day of the season have all numbers doubled
+properties:
+  id:
+    type: string
+    format: uuid
+    description: The ID of this player statsheet
+  playerId:
+    type: string
+    format: uuid
+    description: The ID of the player this statsheet is for
+  teamId:
+    type: string
+    format: uuid
+    description: The ID of the team this player played on during this game
+  team:
+    type: string
+    description: The name of the team this player played on during this game
+  name:
+    type: string
+    description: The name of the player
+  atBats:
+    type: integer
+    description: 'Batters: amount of at bats during this game. Not entirely accurate.'
+  caughtStealing:
+    type: integer
+    description: 'Batters: amount of times caught stealing a base'
+  doubles:
+    type: integer
+    description: 'Batters: amount of doubles hit'
+  earnedRuns:
+    type: integer
+    description: 'Pitchers: amount of runs scored by opposing batters'
+  groundIntoDp:
+    type: integer
+    description: 'Batters: amount of ground outs into double plays hit'
+  hits:
+    type: integer
+    description: 'Batters: amount of hits (of any type)'
+  hitsAllowed:
+    type: integer
+    description: 'Pitchers: amount of hits allowed to opposing batters'
+  homeRuns:
+    type: integer
+    description: 'Batters: amount of home runs scored'
+  losses:
+    type: integer
+    description: '1 if the team lost this game, 0 otherwise'
+  outsRecorded:
+    type: integer
+    description: 'Pitchers: the amount of outs this pitcher has thrown the opposing team (27 in a full game)'
+  rbis:
+    type: integer
+    description: 'Batters: amount of runs batted in (includes home runs)'
+  runs:
+    type: integer
+    description: 'Batters: amount of runs scored (any type)'
+  stolenBases:
+    type: integer
+    description: 'Batters: amount of bases stolen'
+  strikeouts:
+    type: integer
+    description: 'Pitchers: amount of times this pitcher has struck out the opposing batter'
+  struckouts:
+    type: integer
+    description: 'Batters: amount of times struck out'
+  triples:
+    type: integer
+    description: 'Batters: amount of triples hit'
+  walks:
+    type: integer
+    description: 'Batters: amount of walks drawn'
+  walksIssued:
+    type: integer
+    description: 'Pitchers: amount of walks issued to opposing batters'
+  wins:
+    type: integer
+    description: '1 if the team won this game, 0 otherwise'
+  hitByPitch:
+    type: integer
+    description: 'Batters: amount of times hit by pitch'
+  hitBatters:
+    type: integer
+    description: 'Pitchers (Jaylen): amount of batters hit by pitch'
+  quadruples:
+    type: integer
+    description: 'Batters: amount of quadruples hit (only relevant with 5th base)'
+  pitchesThrown:
+    type: integer
+    description: 'Pitchers: the amount of pitches thrown'

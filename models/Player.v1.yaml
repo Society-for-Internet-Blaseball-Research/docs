@@ -1,15 +1,15 @@
 type: object
-additionalProperties: false
-description: ''
-x-tags:
-  - Players
-title: Blaseball Player
-x-examples: {}
+description: A Blaseball Player
+title: Player
 properties:
   id:
     type: string
     format: uuid
     description: ID of this player
+  _id:
+    type: string
+    format: uuid
+    deprecated: true
   name:
     type: string
     description: Name of this player
@@ -17,9 +17,11 @@ properties:
   deceased:
     type: boolean
     description: Whether this player is deceased (incinerated)
+    nullable: true
   peanutAllergy:
     type: boolean
     description: Whether this player is allergic to peanuts
+    nullable: true
   baseThirst:
     type: number
     description: 'Baserunning stat: attempts to steal base'
@@ -98,6 +100,7 @@ properties:
   cinnamon:
     type: number
     description: Unknown
+    nullable: true
   pressurization:
     type: number
     description: Unknown
@@ -115,15 +118,19 @@ properties:
   ritual:
     type: string
     description: '"Pre-game ritual" on player page'
+    nullable: true
   coffee:
     type: integer
-    description: This player's preferred coffee type (docs pending)
+    description: This player's preferred coffee type
+    nullable: true
   blood:
     type: integer
-    description: This player's blood type (docs pending)
+    description: This player's blood type
+    nullable: true
   fate:
     type: integer
     description: Unknown?
+    nullable: true
   permAttr:
     type: array
     description: Permanent player attributes
@@ -180,63 +187,15 @@ properties:
     type: integer
     description: Player evolution state
   items:
-    type: array
     description: Player Items
+    type: array
     items:
-      $ref: ../reference/Blaseball-API.v1.yaml#/components/schemas/Item
+      oneOf:
+        - type: string
+          properties: {}
+        - $ref: ./Item.v1.yaml
   itemAttr:
     type: array
     description: Modification provided by Items
     items:
       type: string
-required:
-  - id
-  - name
-  - deceased
-  - peanutAllergy
-  - baseThirst
-  - continuation
-  - groundFriction
-  - indulgence
-  - laserlikeness
-  - anticapitalism
-  - chasiness
-  - omniscience
-  - tenaciousness
-  - watchfulness
-  - buoyancy
-  - divinity
-  - martyrdom
-  - moxie
-  - musclitude
-  - patheticism
-  - thwackability
-  - tragicness
-  - coldness
-  - overpowerment
-  - ruthlessness
-  - shakespearianism
-  - suppression
-  - unthwackability
-  - totalFingers
-  - cinnamon
-  - pressurization
-  - soul
-  - bat
-  - armor
-  - ritual
-  - coffee
-  - blood
-  - fate
-  - permAttr
-  - seasAttr
-  - weekAttr
-  - gameAttr
-  - hitStreak
-  - consecutiveHits
-  - hittingRating
-  - pitchingRating
-  - baserunningRating
-  - defenseRating
-  - leagueTeamId
-  - tournamentTeamId

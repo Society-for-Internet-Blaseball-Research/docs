@@ -1,0 +1,21 @@
+title: Boss Fight
+allOf:
+  - $ref: ./Game.v1.yaml
+  - type: object
+    properties:
+      awayHp:
+        type: string
+        description: Away team's remaining Team Spirit as a string
+      homeHp:
+        type: string
+        description: Home team's remaining Team Spirit as a string
+      awayMaxHp:
+        type: string
+        description: Away team's maximum Team Spirit as a string
+      homeMaxHp:
+        type: string
+        description: Home team's maximum Team Spirit as a string
+      damageResults:
+        type: string
+        description: Stringified object containing info for the current damage event
+description: Represents a boss fight (Day X)

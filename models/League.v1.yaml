@@ -1,0 +1,22 @@
+title: League
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: ID of the league
+  name:
+    type: string
+    description: Name of the league
+    example: Internet League Blaseball
+  subleagues:
+    type: array
+    description: IDs of subleagues in this league
+    items:
+      type: string
+      format: uuid
+  tiebreakers:
+    type: string
+    format: uuid
+    description: ID of the league's tiebreaker list
+description: The current Blaseball League (Internet League Blaseball)

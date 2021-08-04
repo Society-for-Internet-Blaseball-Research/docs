@@ -1,0 +1,36 @@
+title: Modification
+type: object
+description: Represents a Player, Team, Stadium, or League Modification.
+properties:
+  id:
+    type: string
+    description: ID of the modification
+  color:
+    type: string
+    description: Modification icon color
+  background:
+    type: string
+    description: Modification background color
+  textColor:
+    type: string
+    description: Modification text color
+  title:
+    type: string
+    description: Modification name
+  description:
+    type: string
+    description: Modification description
+  descriptions:
+    type: object
+    description: Modification descriptions for various uses.
+x-examples:
+  Fireproof:
+    id: FIREPROOF
+    color: "#a5c5f0"
+    textColor: "#a5c5f0"
+    background: "#4c77b0"
+    title: Fireproof
+    description: A Fireproof Player can not be incinerated.
+    descriptions:
+      player: This Player cannot be incinerated.
+      team: This Team and the Players on it cannot be incinerated.

@@ -1,0 +1,12 @@
+title: Season Statsheet
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+  teamStats:
+    type: array
+    items:
+      type: string
+      format: uuid
+description: 'Represents the statsheet of a whole season. This object doesn''t include much information by itself, but refers to the team statsheets (which in turn refer to the player statsheets) containing most of the useful statistics.'

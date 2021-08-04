@@ -1,0 +1,24 @@
+type: object
+title: Renovation Progress
+description: Progress towards stadium renovations for a midseason
+properties:
+  stats:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of the renovation
+        percent:
+          type: string
+          description: Percentage of gift contributions for this reno
+  progress:
+    type: object
+    properties:
+      total:
+        description: Number of renovations funded
+        type: integer
+      toNext:
+        description: Percentage progress to next renovation
+        type: number

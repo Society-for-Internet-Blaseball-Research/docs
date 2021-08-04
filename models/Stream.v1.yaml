@@ -1,0 +1,103 @@
+title: Stream
+type: object
+description: Data returned by the SSE Event Stream
+properties:
+  value:
+    type: object
+    properties:
+      games:
+        type: object
+        properties:
+          sim:
+            $ref: ./Sim.v1.yaml
+          season:
+            $ref: ./Season.v1.yaml
+          schedule:
+            type: array
+            description: List of games for the current gameday
+            items:
+              $ref: ./Game.v1.yaml
+          standings:
+            $ref: ./Standings.v1.yaml
+          postseason:
+            type: object
+            deprecated: true
+          postseasons:
+            type: array
+            items:
+              type: object
+              properties:
+                round:
+                  $ref: ./PlayoffRound.v1.yaml
+                matchups:
+                  type: array
+                  description: Playoff matchups for the current gameday
+                  items:
+                    $ref: ./PlayoffMatchup.v1.yaml
+                playoffs:
+                  $ref: ./Playoffs.v1.yaml
+                allRounds:
+                  type: array
+                  items:
+                    $ref: ./PlayoffRound.v1.yaml
+                allMatchups:
+                  type: array
+                  items:
+                    $ref: ./PlayoffMatchup.v1.yaml
+                tomorrowRound:
+                  $ref: ./PlayoffRound.v1.yaml
+                tomorrowMatchups:
+                  type: array
+                  description: Playoff matchups for the next gameday
+                  items:
+                    $ref: ./PlayoffMatchup.v1.yaml
+          tomorrowSchedule:
+            type: array
+            description: List of games for the following gameday
+            items:
+              $ref: ./Game.v1.yaml
+          tournament:
+            $ref: ./Tournament.v1.yaml
+      leagues:
+        type: object
+        properties:
+          stats:
+            type: object
+            properties:
+              sunsun:
+                $ref: ./SunSun.v1.yaml
+              communityChest:
+                $ref: ./CommunityChestProgress.v1.yaml
+          teams:
+            type: array
+            items:
+              $ref: ./Team.v1.yaml
+          leagues:
+            type: array
+            items:
+              $ref: ./League.v1.yaml
+          stadiums:
+            type: array
+            items:
+              $ref: ./Stadium.v1.yaml
+          divisions:
+            type: array
+            items:
+              $ref: ./Division.v1.yaml
+          subleagues:
+            type: array
+            items:
+              $ref: ./Subleague.v1.yaml
+          tiebreakers:
+            type: array
+            items:
+              $ref: ./Tiebreakers.v1.yaml
+      temporal:
+        $ref: ./Temporal.v1.yaml
+      fights:
+        type: object
+        properties:
+          bossFights:
+            type: array
+            items:
+              $ref: ./Bossfight.v1.yaml

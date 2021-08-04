@@ -1,0 +1,19 @@
+type: object
+title: Standings
+properties:
+  id:
+    type: string
+    format: uuid
+  losses:
+    type: object
+    description: Number of regular season games lost for each team
+  wins:
+    type: object
+    description: Number of regular season Wins (physical objects) for each team
+  runs:
+    type: object
+    description: Number of regular season runs earned for each team
+  gamesPlayed:
+    type: object
+    description: Number of regular season games played for each team
+description: League standings for the regular season

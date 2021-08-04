@@ -1,0 +1,33 @@
+title: Renovation
+type: object
+description: Represents an available Stadium renovation to build
+properties:
+  id:
+    type: string
+  title:
+    type: string
+    description: Name of renovation
+  type:
+    type: integer
+  effects:
+    type: array
+    items:
+      type: string
+  description:
+    type: string
+    description: Description of renovation
+  data:
+    type: object
+    description: Metadata information about this renovation
+x-examples:
+  Big Buckets:
+    id: big_bucket_mod
+    title: Big Buckets
+    type: 1
+    effects:
+      - Modification
+    description: Place Big Buckets in Home Run territory to make your Home Runs just a little bit bigger.
+    data:
+      mod: BIG_BUCKET
+      addMsg: 'The {tnn} placed Big Buckets in the Home Run territory of {snn}.'
+      rmvMsg: 'The {tnn} removed Big Buckets from the Home Run territory of {snn}.'

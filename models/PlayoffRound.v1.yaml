@@ -1,0 +1,40 @@
+title: Playoff Round
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+  games:
+    type: array
+    description: List of list of games IDs for each gameday
+    items:
+      type: string
+  name:
+    type: string
+    example: Round 1
+  special:
+    type: boolean
+    description: 'True if special round (Internet League Series, etc)'
+  winners:
+    type: array
+    description: List of Team IDs that are progressing to the next round
+    items:
+      type: string
+      format: uuid
+  matchups:
+    type: array
+    description: List of PlayoffMatchups
+    items:
+      type: string
+      format: uuid
+  gameIndex:
+    type: integer
+    description: Current index into the `games` list
+  roundNumber:
+    type: integer
+  winnerSeeds:
+    type: array
+    description: Seeds for each element in `winners`
+    items:
+      type: integer
+description: A single playoff round (eg. Round 3 or The Internet League Series)

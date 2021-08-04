@@ -1,0 +1,96 @@
+title: Item
+type: object
+description: 'Represents a single item that can be held by a player, '
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+    description: Name of the Item
+  forger:
+    type: string
+    description: Unknown
+    nullable: true
+  forgerName:
+    type: string
+    description: Unknown
+    nullable: true
+  prePrefix:
+    type: object
+    description: Adjustments to add before the prefixes
+    nullable: true
+    properties:
+      name:
+        type: string
+      adjustments:
+        type: array
+        items:
+          type: object
+  prefixes:
+    type: array
+    description: Adjustments to add before the item name (eg. Wooden Bat)
+    nullable: true
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        adjustments:
+          type: array
+          items:
+            type: object
+  postPrefix:
+    type: object
+    description: Adjustments to add before the item name buf after the prefix (eg. Traitor 'Head' Sunglasses)
+    nullable: true
+    properties:
+      name:
+        type: string
+      adjustments:
+        type: array
+        items:
+          type: object
+  root:
+    type: object
+    description: 'Base adjustment for this item (eg. Bat, Cap)'
+    properties:
+      name:
+        type: string
+      adjustments:
+        type: array
+        items:
+          type: object
+  suffix:
+    type: object
+    description: Adjustments to add after the item name (eg. Cape of Containment)
+    nullable: true
+    properties:
+      name:
+        type: string
+      adjustments:
+        type: array
+        items:
+          type: object
+  durability:
+    type: integer
+    description: Max health of this item
+  health:
+    type: integer
+    description: Current health of this item
+  baserunningRating:
+    type: number
+    nullable: true
+    description: Amount of baserunning to add overall
+  pitchingRating:
+    type: number
+    nullable: true
+    description: Amount of pitching to add overall
+  hittingRating:
+    type: number
+    nullable: true
+    description: Amount of hitting to add overall
+  defenseRating:
+    type: number
+    nullable: true
+    description: Amount of defense to add overall

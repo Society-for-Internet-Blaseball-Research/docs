@@ -1,0 +1,52 @@
+title: Election Results
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: ID of the offseasonRecap object
+  bonusResults:
+    type: array
+    description: IDs of blessing results
+    items:
+      type: string
+      format: uuid
+  decreeResults:
+    type: array
+    description: IDs of decree results (only passed decrees)
+    items:
+      type: string
+      format: uuid
+  name:
+    type: string
+    description: Name of the election
+  season:
+    type: integer
+    description: Season of this election (zero-indexed)
+  totalBonusVotes:
+    type: integer
+    description: Total votes cast towards blessings
+  totalDecreeVotes:
+    type: integer
+    description: Total votes cast towards decrees
+  voteCount:
+    type: integer
+    description: Total votes cast in this election
+  eventResults:
+    type: array
+    description: IDs of "event results" (listed as "Tidings") on the website
+    items:
+      type: string
+      format: uuid
+  willResults:
+    type: array
+    description: IDs of "will results". These do not map to any known IDs or endpoints
+    nullable: true
+    items:
+      type: string
+      format: uuid
+  totalWillVotes:
+    type: integer
+    description: Total votes cast towards wills
+    nullable: true
+description: Represents the outcome of an election.

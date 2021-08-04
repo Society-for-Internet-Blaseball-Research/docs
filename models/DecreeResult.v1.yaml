@@ -1,0 +1,21 @@
+title: Decree Result
+description: Represents the outcome message of a single passed decree after the election.
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    description: ID of the decree result object
+  decreeId:
+    type: string
+    format: uuid
+    description: Internal ID of the decree
+  decreeTitle:
+    type: string
+    description: Decree title
+  description:
+    type: string
+    description: Decree result description
+  totalVotes:
+    type: integer
+    description: Total votes cast towards this decree

@@ -1,0 +1,10 @@
+title: Event Result
+type: object
+properties:
+  id:
+    type: string
+    description: The internal ID of this event result
+  msg:
+    type: string
+    description: The message displayed on the Blaseball website
+description: Represents a general (usually story-related) event after the election.

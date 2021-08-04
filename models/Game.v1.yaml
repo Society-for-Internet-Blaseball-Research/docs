@@ -1,14 +1,14 @@
 type: object
-additionalProperties: false
-x-tags:
-  - Games
-title: Blaseball Game
-x-examples: {}
-description: ''
+title: Game
+description: A Game of Blaseball
 properties:
   id:
     type: string
     description: ID of this game
+  _id:
+    type: string
+    format: uuid
+    deprecated: true
   basesOccupied:
     type: array
     description: The indices of the currently occupied bases (zero-indexed)
@@ -54,6 +54,7 @@ properties:
     description: ID of the pitcher for the away team. `null` for future games.
   awayPitcherName:
     type: string
+    nullable: true
     description: Name of the pitcher for the away team. `null` for future games.
   awayBatter:
     type: string
@@ -83,12 +84,11 @@ properties:
   awayOdds:
     type: number
     description: Calculated odds of the away team winning. Zero for future games.
-    minimum: 0
-    maximum: 1
     format: double
   awayStrikes:
     type: integer
     description: The amount of strikes needed for the away team to strike out (usually 3)
+    nullable: true
     example: 3
   awayScore:
     type: number
@@ -103,6 +103,7 @@ properties:
     description: ID of the pitcher for the home team. `null` for future games.
   homePitcherName:
     type: string
+    nullable: true
     description: Name of the pitcher for the home team. `null` for future games.
   homeBatter:
     type: string
@@ -131,12 +132,11 @@ properties:
   homeOdds:
     type: number
     description: Calculated odds of the home team winning. Zero for future games.
-    minimum: 0
-    maximum: 1
     format: double
   homeStrikes:
     type: integer
     description: The amount of strikes needed for the home team to strike out (usually 3)
+    nullable: true
   homeScore:
     type: number
     description: Score of the home team
@@ -180,8 +180,6 @@ properties:
     type: integer
     description: |
       Current inning number (zero-indexed)
-    minimum: 0
-    example: 7
   topOfInning:
     type: boolean
     description: |
@@ -205,6 +203,7 @@ properties:
     description: Whether the away team has been shamed this game
   weather:
     type: integer
+    nullable: true
   baserunnerCount:
     type: integer
     description: Amount of players on base at the moment
@@ -281,9 +280,11 @@ properties:
     type: string
     description: Stadium that this game took place in
     nullable: true
+    format: uuid
   secretBaserunner:
     type: string
     nullable: true
+    format: uuid
   topInningScore:
     type: number
     description: Score for the top of this inning
@@ -304,75 +305,7 @@ properties:
     items: {}
   state:
     type: object
-required:
-  - id
-  - basesOccupied
-  - baseRunners
-  - baseRunnerNames
-  - outcomes
-  - terminology
-  - lastUpdate
-  - rules
-  - statsheet
-  - awayPitcher
-  - awayPitcherName
-  - awayBatter
-  - awayBatterName
-  - awayTeam
-  - awayTeamName
-  - awayTeamNickname
-  - awayTeamColor
-  - awayTeamEmoji
-  - awayOdds
-  - awayStrikes
-  - awayScore
-  - awayTeamBatterCount
-  - homePitcher
-  - homePitcherName
-  - homeBatter
-  - homeBatterName
-  - homeTeam
-  - homeTeamName
-  - homeTeamNickname
-  - homeTeamColor
-  - homeTeamEmoji
-  - homeOdds
-  - homeStrikes
-  - homeScore
-  - homeTeamBatterCount
-  - season
-  - isPostseason
-  - day
-  - phase
-  - gameComplete
-  - finalized
-  - gameStart
-  - halfInningOuts
-  - halfInningScore
-  - inning
-  - topOfInning
-  - atBatBalls
-  - atBatStrikes
-  - seriesIndex
-  - seriesLength
-  - shame
-  - weather
-  - baserunnerCount
-  - homeBases
-  - awayBases
-  - repeatCount
-  - awayTeamSecondaryColor
-  - homeTeamSecondaryColor
-  - homeBalls
-  - awayBalls
-  - homeOuts
-  - awayOuts
-  - playCount
-  - tournament
-  - baseRunnerMods
-  - homePitcherMod
-  - homeBatterMod
-  - awayPitcherMod
-  - awayBatterMod
-  - scoreUpdate
-  - scoreLedger
+  endPhase:
+    type: integer
+  newHalfInningPhase:
+    type: integer

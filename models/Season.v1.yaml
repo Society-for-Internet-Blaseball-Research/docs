@@ -1,0 +1,33 @@
+title: Season
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+  league:
+    type: string
+    format: uuid
+    description: League ID
+  rules:
+    type: string
+    format: uuid
+    description: Unknown
+  schedule:
+    type: string
+    format: uuid
+    description: Unknown
+  seasonNumber:
+    type: integer
+  standings:
+    type: string
+    format: uuid
+    description: Standings ID
+  stats:
+    type: string
+    format: uuid
+    description: SeasonStatSheet ID
+  terminology:
+    type: string
+    format: uuid
+    description: Unknown
+description: A single season

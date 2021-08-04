@@ -1,0 +1,81 @@
+title: Stadium
+type: object
+description: Represents a team's stadium.
+x-tags:
+  - Models
+properties:
+  id:
+    type: string
+    format: uuid
+  hype:
+    type: number
+    description: 'Amount of hype in the stadium, if Hype Train is available'
+  mods:
+    type: array
+    description: List of modifications for this stadium
+    items:
+      type: string
+  name:
+    type: string
+    description: Full stadium name
+  birds:
+    type: integer
+    description: Number of birds in this stadium via Birdhouses (or negative from popped baloons)
+  model:
+    type: integer
+    description: Model of stadium
+  state:
+    type: object
+    description: Other state information
+  teamId:
+    type: string
+    format: uuid
+    description: Team this stadium
+  renoLog:
+    type: object
+  weather:
+    type: object
+    description: Weathers this stadium has build renovations for
+  nickname:
+    type: string
+    description: Stadium Nickname
+  renoCost:
+    type: integer
+  renoHand:
+    type: array
+    description: Currently available renovations
+    items:
+      type: string
+  mainColor:
+    type: string
+  mysticism:
+    type: number
+  viscosity:
+    type: number
+  elongation:
+    type: number
+  filthiness:
+    type: number
+  obtuseness:
+    type: number
+  forwardness:
+    type: number
+  grandiosity:
+    type: number
+  ominousness:
+    type: number
+  renoDiscard:
+    type: array
+    description: List of renovations that were not passed
+    items:
+      type: string
+  fortification:
+    type: number
+  inconvenience:
+    type: number
+  luxuriousness:
+    type: number
+  tertiaryColor:
+    type: string
+  secondaryColor:
+    type: string

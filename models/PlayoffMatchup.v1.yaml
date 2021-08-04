@@ -1,0 +1,33 @@
+title: Playoff Matchup
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+    nullable: true
+  awaySeed:
+    type: integer
+    nullable: true
+  awayTeam:
+    type: string
+    format: uuid
+    nullable: true
+    description: Team ID for away team
+  awayWins:
+    type: integer
+  homeSeed:
+    type: integer
+  homeTeam:
+    type: string
+    format: uuid
+  homeWins:
+    type: integer
+  gamesPlayed:
+    type: integer
+    description: ''
+  gamesNeeded:
+    type: string
+    description: Wins needed to progress
+description: 'A single playoff matchup (IE: one series of games)'

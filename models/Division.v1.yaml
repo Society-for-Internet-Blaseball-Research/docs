@@ -1,0 +1,18 @@
+title: Division
+type: object
+description: A single team division (eg. Wild High or Chaotic Good)
+properties:
+  id:
+    type: string
+    format: uuid
+    description: ID of this division
+  name:
+    type: string
+    description: Name of this division
+    example: Wild High
+  teams:
+    type: array
+    description: IDs of teams in this division
+    items:
+      type: string
+      format: uuid

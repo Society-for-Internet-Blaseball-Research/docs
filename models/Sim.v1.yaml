@@ -1,0 +1,175 @@
+title: Simulation Data
+type: object
+additionalProperties: false
+description: Global state data for the sim and frontend
+properties:
+  id:
+    type: string
+    example: thisidisstaticyo
+    description: Always "thisidisstaticyo"
+  day:
+    type: integer
+    description: Current game day
+    example: 6
+  season:
+    type: integer
+    description: Current game season
+    minimum: 0
+  phase:
+    type: integer
+    example: 0
+    description: Current phase of the league (See `Simulation phases`)
+  attr:
+    type: array
+    description: 'Various attributes, major league events, and unlocks. Often used as "feature flags" in the frontend code.'
+    example:
+      - OPENED_BOOK
+      - UNLOCKED_PEANUTS
+      - EAT_THE_RICH
+      - UNLOCKED_INTERVIEWS
+      - UNLOCKED_IDOLS
+      - PARTY_TIME
+      - UNLOCKED_HALL
+    items:
+      type: string
+  menu:
+    type: string
+    description: ''
+  rules:
+    type: string
+    format: uuid
+    description: Unknown
+  terminology:
+    type: string
+    format: uuid
+    description: Unknown
+  league:
+    type: string
+    format: uuid
+    description: ID of the current league object
+  seasonId:
+    type: string
+    format: uuid
+    description: ID of the season object
+  state:
+    description: Unknown
+    type: object
+  nextElectionEnd:
+    type: string
+    format: date-time
+    description: Time when the current election ends
+    deprecated: true
+  nextPhaseTime:
+    type: string
+    format: date-time
+    description: Time the next game phase starts (very unreliable)
+  nextSeasonStart:
+    type: string
+    format: date-time
+    description: Time when next season starts
+    deprecated: true
+  eraColor:
+    type: string
+    description: Theme color of the current game era
+    example: '#ff0000'
+    nullable: true
+  eraTitle:
+    type: string
+    example: The Discipline Era
+    description: Name of the current game era (displayed in the Blaseball.com page header)
+  subEraColor:
+    type: string
+    example: '#5988FF'
+    description: Theme color of the current game sub-era
+    nullable: true
+  subEraTitle:
+    type: string
+    description: Name of the current game sub-era (displayed in the Blaseball.com page header)
+    example: Rest in Violence
+  playoffs:
+    description: ID or list of current playoffs object(s)
+    oneOf:
+      - type: array
+        items:
+          type: string
+      - type: string
+        deprecated: true
+  playOffRound:
+    type: integer
+    description: 'Current round of playoffs (zero-indexed, 0 if not in playoffs)'
+    deprecated: true
+  twgo:
+    type: string
+    description: Concatenated initials of every player incinerated between Season 2 and Season 6
+    example: JHFMTOJMNPSMLMDGFOSEZDTMJWHPADAACGRTBBPBBCJRTPMJCSNKKAOMVMSTAJTVTCJIMPSSSTBFHRSSMSDKIRLWLVWSSMEIMCCDMDRTEIFBCLRMMW
+    deprecated: true
+  agitations:
+    type: integer
+    description: Amount of Black Hole game events (including Season 10 finals). In Season 11 this also counted Sun2 game events.
+  salutations:
+    type: integer
+    description: Amount of Sun2 game events (excluding Season 11)
+  tournament:
+    type: integer
+    description: 'Identifier of current exibition tournament, or -1'
+  tournamentRound:
+    type: integer
+    description: Current round of an active exibtion tournament (if applicable)
+  godsDayDate:
+    type: string
+    format: date-time
+  preseasonDate:
+    type: string
+    format: date-time
+  earlseasonDate:
+    type: string
+    format: date-time
+  earlsiestaDate:
+    type: string
+    format: date-time
+  midseasonDate:
+    type: string
+    format: date-time
+  latesiestaDate:
+    type: string
+    format: date-time
+  lateseasonDate:
+    type: string
+    format: date-time
+  endseasonDate:
+    type: string
+    format: date-time
+  earlpostseasonDate:
+    type: string
+    format: date-time
+  latepostseasonDate:
+    type: string
+    format: date-time
+  electionDate:
+    type: string
+    format: date-time
+  __v:
+    type: integer
+    deprecated: true
+  _id:
+    type: string
+    format: uuid
+    deprecated: true
+  openedBook:
+    type: boolean
+    deprecated: true
+  unlockedPeanuts:
+    type: boolean
+    deprecated: true
+  doTheThing:
+    type: boolean
+    deprecated: true
+  eatTheRich:
+    type: boolean
+    deprecated: true
+  unlockedInterviews:
+    type: boolean
+    deprecated: true
+  labourOne:
+    type: integer
+    deprecated: true

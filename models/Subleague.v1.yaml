@@ -1,0 +1,18 @@
+title: Subleague
+type: object
+properties:
+  id:
+    type: string
+    example: aabc11a1-81af-4036-9f18-229c759ca8a9
+    description: ID of this subleague
+  name:
+    type: string
+    description: Name of this subleague
+    example: The Wild League
+  divisions:
+    type: array
+    description: IDs of divisions in this subleague
+    items:
+      type: string
+      format: uuid
+description: A single team subleague (eg. Wild League or Good League)

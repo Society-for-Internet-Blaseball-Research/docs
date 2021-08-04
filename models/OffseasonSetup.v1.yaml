@@ -1,0 +1,109 @@
+title: Election Setup
+type: object
+description: 'Represents a selection of decrees, blessings, wills, or gifts available for a given election.'
+properties:
+  decrees:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Internal decree ID
+        type:
+          type: integer
+          description: Unknown
+        title:
+          type: string
+          description: Decree title
+        description:
+          type: string
+          description: Decree description
+        source:
+          type: integer
+          description: Unknown
+  blessings:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Internal blessing ID
+        type:
+          type: integer
+          description: Unknown
+        value:
+          type: integer
+          description: Unknown
+        title:
+          type: string
+          description: Blessing title
+        subheader:
+          type: string
+          description: Usually sponsor names
+        description:
+          type: string
+          description: Blessing description
+        metadata:
+          type: object
+          description: Metadata information for the particular blessing
+  decreesToPass:
+    type: integer
+    description: Amount of decrees that will pass
+  wills:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Internal will ID
+        title:
+          type: string
+          description: Will title
+        description:
+          type: string
+          description: Will description
+        info:
+          type: array
+          description: Information about will selection
+          items:
+            type: object
+            properties:
+              type:
+                type: integer
+                description: Unknown
+              description:
+                type: string
+                description: Description of will filter selection
+              filters:
+                type: object
+                description: Metadata information for the particular filter
+  willsToPass:
+    type: integer
+    description: Amount of wills that will pass per-team
+  gifts:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Internal gift ID
+        type:
+          type: integer
+          description: Unknown
+        title:
+          type: string
+          description: Gift title
+        value:
+          type: integer
+          description: Unknown
+        metadata:
+          type: object
+          description: Metadata information for the particular gift
+        description:
+          type: string
+          description: Gift description

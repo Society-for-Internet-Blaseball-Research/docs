@@ -1,0 +1,25 @@
+type: object
+title: Shop Info
+description: 'Information on availability, price, and payout of snacks in the shop'
+properties:
+  menu:
+    type: array
+    description: An array of available snacks
+    items:
+      type: string
+      format: uuid
+  snackData:
+    type: object
+    description: A dictionary with each entry being an array containing objects containing the price and payout for the stnack at that level.
+    properties:
+      <snack_name>Tiers:
+        type: array
+        items:
+          type: object
+          properties:
+            price:
+              type: integer
+              description: Cost of this tier of item
+            amount:
+              type: integer
+              description: Payout for this tier of item

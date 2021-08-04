@@ -1,0 +1,14 @@
+title: Tiebreakers
+type: object
+properties:
+  id:
+    type: string
+    description: ID of this tiebreaker object
+    format: uuid
+  order:
+    type: array
+    description: List of teams in their tiebreaker order
+    items:
+      type: string
+      format: uuid
+description: The order of teams for use in tiebreaker situations

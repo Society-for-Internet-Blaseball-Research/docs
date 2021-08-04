@@ -1,0 +1,36 @@
+title: Blessing Result
+description: Represents the outcome of a single blessing after the election.
+type: object
+properties:
+  id:
+    type: string
+    description: 'ID of the bonusResult object (usually UUID, not always)'
+  bonusId:
+    type: string
+    description: Internal blessing ID
+  bonusTitle:
+    type: string
+    description: Title of the blessing
+  teamId:
+    type: string
+    format: uuid
+    description: Team that won the blessing
+  totalVotes:
+    type: integer
+    description: Total votes cast towards this blessing
+  description:
+    type: string
+    description: Description of the blessing result
+  teamVotes:
+    type: integer
+    description: Votes cast by the winning team (present starting Season 2)
+    nullable: true
+  highestTeam:
+    type: string
+    format: uuid
+    description: 'Highest bidding team, ie. cast the most votes  (present starting Season 2)'
+    nullable: true
+  highestTeamVotes:
+    type: integer
+    description: Votes cast by the highest bidding team (present starting Season 2)
+    nullable: true

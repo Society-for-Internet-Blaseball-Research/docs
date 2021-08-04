@@ -1,0 +1,35 @@
+title: Playoffs
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+  name:
+    type: string
+    example: Postseason 12
+  numberOfRounds:
+    type: integer
+    description: Total number of playoff rounds
+  playoffDay:
+    type: integer
+    description: ''
+  rounds:
+    type: array
+    description: List of PlayoffRound IDs
+    items:
+      type: string
+      format: uuid
+  season:
+    type: integer
+  tomorrowRound:
+    type: integer
+    description: Playoff round for the next gameday
+  winner:
+    type: string
+    format: uuid
+    nullable: true
+    description: Team ID of playoff winner
+  tournament:
+    type: integer
+    description: Tournament ID (or -1 if not a tournament)
+description: A single playoff bracket

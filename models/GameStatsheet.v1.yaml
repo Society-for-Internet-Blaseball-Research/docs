@@ -1,0 +1,36 @@
+title: Game Statsheet
+type: object
+description: |-
+  Represents the statsheet of a single game. This object doesn't include much information by itself, but refers to the team statsheets (which in turn refer to the player statsheets) containing most of the useful statistics.
+
+  In case of *Black Hole* or *Sun 2* weather, the runs by inning arrays may contain "negative runs" - 10 runs get subtracted from the runs for that inning, and adding up all the innings will still total the team's final score for that game.
+properties:
+  id:
+    type: string
+    description: ID of this game statsheet
+  homeTeamRunsByInning:
+    type: array
+    minItems: 8
+    description: Runs scored by the home team in each inning
+    items:
+      type: integer
+  awayTeamRunsByInning:
+    type: array
+    minItems: 9
+    description: Runs scored by the away team in each inning
+    items:
+      type: integer
+  awayTeamTotalBatters:
+    type: integer
+    description: Always 0 (broken?)
+  homeTeamTotalBatters:
+    type: integer
+    description: Always 0 (broken?)
+  awayTeamStats:
+    type: string
+    format: uuid
+    description: ID of the away team's statsheet for this game
+  homeTeamStats:
+    type: string
+    format: uuid
+    description: ID of the home team's statsheet for this game

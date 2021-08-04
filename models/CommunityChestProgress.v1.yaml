@@ -1,0 +1,13 @@
+type: object
+title: Community Chest
+properties:
+  runs:
+    type: string
+    description: String containing the number of runs so far this chest
+  progress:
+    type: string
+    description: String containing the percentage towards the next chest unlock
+  chestsUnlocked:
+    type: integer
+    description: Number of chests unlocked so far
+description: State of the Community Chest

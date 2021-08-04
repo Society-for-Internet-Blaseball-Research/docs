@@ -1,15 +1,15 @@
 type: object
-additionalProperties: false
-description: ''
-x-tags:
-  - Teams
-title: Blaseball Team
-x-examples: {}
+description: A Blaseball Team
+title: Team
 properties:
   id:
     type: string
     format: uuid
     description: ID of this team
+  _id:
+    type: string
+    format: uuid
+    deprecated: true
   lineup:
     type: array
     description: List of players in the lineup (batters)
@@ -25,12 +25,20 @@ properties:
   bullpen:
     type: array
     description: 'List of players in the bullpen (FK, aka. "Shadows")'
+    deprecated: true
     items:
       type: string
       format: uuid
   bench:
     type: array
     description: 'List of players on the bench (FK, aka. "Shadows")'
+    deprecated: true
+    items:
+      type: string
+      format: uuid
+  shadows:
+    type: array
+    description: List of players in the shadows
     items:
       type: string
       format: uuid
@@ -104,7 +112,7 @@ properties:
     description: Unknown what this does. Seemingly related to boss fights.
   card:
     type: integer
-    description: 'The tarot card this team won in the Season 11 elections, zero-indexed (eg. VII The Chariot is `6`). Teams with no tarot card (eg. Crabs) have a value of -1.'
+    description: "The tarot card this team, zero-indexed (eg. VII The Chariot is `6`). -1 is 'Fool', -2 is '-----'."
   tournamentWins:
     type: integer
     description: Number of tournament wins
@@ -112,6 +120,11 @@ properties:
     type: string
     description: Stadium ID
     nullable: true
+  imPosition:
+    type: array
+    description: Position on the depth chart
+    items:
+      type: number
   eDensity:
     type: number
     description: Current Team eDensity
@@ -127,30 +140,9 @@ properties:
     type: integer
     description: 'Current team level (Low C, AAAAA, etc)'
     nullable: true
-required:
-  - id
-  - lineup
-  - rotation
-  - bullpen
-  - bench
-  - fullName
-  - location
-  - mainColor
-  - nickname
-  - secondaryColor
-  - shorthand
-  - emoji
-  - slogan
-  - shameRuns
-  - totalShames
-  - totalShamings
-  - seasonShames
-  - seasonShamings
-  - championships
-  - rotationSlot
-  - weekAttr
-  - gameAttr
-  - seasAttr
-  - permAttr
-  - teamSpirit
-  - card
+  underchampionships:
+    type: integer
+    description: Amount of ILB underchampionships this team has won
+  deceased:
+    type: boolean
+    description: Whether this team is deceased (incinerated)

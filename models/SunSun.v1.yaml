@@ -1,0 +1,12 @@
+type: object
+title: Sun(Sun) Status
+properties:
+  current:
+    type: number
+    description: Current value of sun(sun)
+  maxium:
+    type: number
+    description: Maximum value of sun(sun)
+  recharge:
+    type: number
+    description: Seasonal recharge amount of sun(sun)

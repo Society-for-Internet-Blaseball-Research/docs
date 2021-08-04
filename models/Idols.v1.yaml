@@ -1,0 +1,16 @@
+title: Idols
+type: object
+description: State of the Idol (MVP) Board
+properties:
+  data:
+    type: object
+    properties:
+      strictlyConfidential:
+        type: integer
+        description: Position of the MVP line (Noodle)
+  idols:
+    type: array
+    description: Sorted list of player IDs by number of idols
+    items:
+      type: string
+      format: uuid

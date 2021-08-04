@@ -1,0 +1,69 @@
+title: Feed Event
+type: object
+description: An event in the feed.
+properties:
+  id:
+    type: string
+    format: uuid
+    description: ID of the event
+  playerTags:
+    type: array
+    description: List of players associated with the event
+    nullable: true
+    items:
+      type: string
+      format: uuid
+  teamTags:
+    type: array
+    description: List of teams associated with the event
+    nullable: true
+    items:
+      type: string
+      format: uuid
+  gameTags:
+    type: array
+    description: List of games associated with the event
+    nullable: true
+    items:
+      type: string
+      format: uuid
+  metadata:
+    type: object
+    nullable: true
+    description: Event-specific metadata
+  created:
+    type: string
+    format: date-time
+    description: Time the event occurred
+  season:
+    type: integer
+    default: -1
+    description: Season the event occurred in
+  tournament:
+    type: integer
+    default: -1
+    description: Tournament the event occurred in
+  type:
+    type: integer
+    description: Feed event type
+  day:
+    type: integer
+    description: Day the event occurred
+  phase:
+    type: integer
+    description: Game phase the event occurred in
+  category:
+    type: integer
+    description: |-
+      Event category
+      * 0: Game
+      * 1: Changes
+      * 2: Abilities
+      * 3: Outcomes
+      * 4: Narrative
+  description:
+    type: string
+    description: Event text
+  nuts:
+    type: integer
+    description: Number of upshells or herring on this event

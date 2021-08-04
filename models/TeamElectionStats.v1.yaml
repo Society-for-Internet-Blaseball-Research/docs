@@ -1,0 +1,15 @@
+type: object
+title: Team Election Stats
+description: Information about a team's election contributions
+properties:
+  wills:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID of a will
+        percent:
+          type: string
+          description: Percentage of this team's will votes for this will

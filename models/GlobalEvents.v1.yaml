@@ -1,0 +1,17 @@
+type: array
+items:
+  type: object
+  properties:
+    id:
+      type: string
+      description: ID of this ticker message (not always a UUID)
+    msg:
+      type: string
+      description: Text of this message
+    expire:
+      type: string
+      format: date-time
+      description: Time this message expires (or null for indefinite)
+      nullable: true
+title: Global Events
+description: List of Ticker entries.

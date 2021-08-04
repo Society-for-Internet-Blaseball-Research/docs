@@ -1,0 +1,32 @@
+type: object
+title: Gift Progress
+description: State of the league's gift giving.
+properties:
+  teamProgress:
+    type: object
+    description: Dictionary of team ID's to current number of gifts and progress to their next gift.
+    properties:
+      <team_id>:
+        type: object
+        properties:
+          total:
+            type: integer
+            description: Number of gifts earned
+          toNext:
+            type: number
+            description: Percentage to next gift
+  teamWishLists:
+    type: object
+    description: Dictionary of team ID's to an array of top wishlisted items.
+    properties:
+      <team_id>:
+        type: array
+        items:
+          type: object
+          properties:
+            bonus:
+              type: string
+              description: ID for a gift
+            percent:
+              type: number
+              description: Percentage of wishlist for this gift

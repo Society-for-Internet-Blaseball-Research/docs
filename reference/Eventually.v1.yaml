@@ -30,6 +30,16 @@ paths:
       operationId: events
       parameters:
         - schema:
+            type: boolean
+          in: query
+          name:  expand_children
+          description: expand event's children ids into full events
+        - schema:
+            type: boolean
+          in: query
+          name:  expand_parent
+          description: expand expand event's parent id into full event
+        - schema:
             type: string
           in: query
           name: sortby

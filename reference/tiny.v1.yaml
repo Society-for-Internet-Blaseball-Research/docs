@@ -10,11 +10,32 @@ paths:
     post:
       summary: shorten url
       operationId: submit
+      description: shorten url
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+            examples: {}
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            examples:
+              example-1:
+                value: {}
+        description: url to shorten
       responses:
         '200':
-          description: |
-            shortened url token
-      description: shorten url
+          description: shortened url token
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples: {}
   '/{token}':
     parameters:
       - schema:
@@ -49,6 +70,6 @@ paths:
       tags: []
       responses:
         '200':
-          description: returns original url
+          description: body containing original URL
       operationId: get-lookup-token
       description: returns original URL from shortened url token

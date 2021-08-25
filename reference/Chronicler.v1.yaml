@@ -14,7 +14,7 @@ paths:
       tags: []
       responses:
         '200':
-          description: OK
+          description: Note: blaseball game schema has evolved over time. Not every field is present for every game.
           content:
             application/json:
               schema:

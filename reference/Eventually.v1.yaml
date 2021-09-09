@@ -146,7 +146,12 @@ paths:
             type: string
           in: query
           name: description
-          description: Query the description of the event
+          description: Filter by events that contain an exact phrase
+        - schema:
+            type: string
+          in: query
+          name: description~
+          description: 'Query the description of the event using google-like syntax. (supports -, quoting, and ''or'') '
         - schema:
             type: integer
           in: query

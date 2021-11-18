@@ -7,9 +7,9 @@ info:
     name: The Game Band
   termsOfService: 'https://www.blaseball.com/tos'
 servers:
-  - url: 'https://api.sibr.dev/corsmechanics/www.blaseball.com'
+  - url: 'https://api.sibr.dev/corsmechanics/blaseball'
     description: CORS proxy run by SIBR
-  - url: 'https://www.blaseball.com'
+  - url: 'https://api.blaseball.com'
     description: Main website
 paths:
   # Global

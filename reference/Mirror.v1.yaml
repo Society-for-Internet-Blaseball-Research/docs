@@ -1,209 +1,1087 @@
-openapi: 3.0.0
+openapi: 3.1.0
+x-stoplight:
+  id: 7oq3txmhf7cs2
 info:
-  title: Mirror API
-  description: A mirror of the Blaseball API built for ease of use. Uses caching, which means data may be out of date.
-  version: 1.0.0
+  title: Mirror
+  version: '1.0'
+  summary: A mirror of the Blaseball API.
+  description: 'A mirror of the Blaseball API. Caches the results, so data may be outdated.'
   contact:
-    name: SIBR (?)
+    name: SIBR
 servers:
-  - url: 'https://api2.blaseball.com/mirror'
+  - url: 'https://api2.sibr.dev/mirror'
 paths:
   /games:
     get:
-      summary: Games
+      summary: Returns all games for the current season.
+      tags: []
+      operationId: get-game
+      description: Returns all games for the current season.
       responses:
         '200':
           description: OK
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Game'
-      operationId: get-games
-      description: |-
-        Returns all (?) games for the current season.
-      parameters:
-components:
-  schemas:
-    Game:
-      title: Game
-      type: object
-      properties:
-        id:
-          type: string
-          description: ID for the game.
-        seasonId:
-          type: string
-          description: ID of the season the game is taking place in.
-        seriesLength:
-          type: number
-          description: The length of the series against the same team. (assumption? normally either 3 or 5)
-        numberInSeries:
-          type: number
-          description: The position of the game in the 3-game series - starting from 1.
-        homePitcher:
-          $ref: '#/components/schemas/Player'
-        awayPitcher:
-          $ref: '#/components/schemas/Player'
-        homeTeam:
-          $ref: '#/components/schemas/Team'
-        awayTeam:
-          $ref: '#/components/schemas/Team'
-        cancelled:
-          type: boolean
-          description: "Whether the game was cancelled or not."
-        complete:
-          type: boolean
-          description: "Whether the game has completed or not."
-        startTime:
-          type: string
-          format: date-time
-          description: When the game started.
-        started:
-          type: boolean
-          description: Whether the game has started or not.
-        created:
-          type: string
-          format: date-time
-          description: Timestamp of when this entry was created. (assumption?)
-        updated:
-          type: string
-          format: date-time
-          description: When the game was last updated.
-        day:
-          type: number
-          description: The in-universe day when the game took place.
-        deleted:
-          type: boolean
-          description: Whether the game was deleted. (assumption?)
-        gameLoserId:
-          type: string
-          description: The ID of the losing team.
-        gameWinnerId:
-          type: string
-          description: The ID of the team that won the game.
-        weather:
-          type: object
-          properties:
-            id:
-              type: string
-              description: The ID of the weather.
-            name:
-              type: string
-              description: The name of the weather.
-            weatherEffects:
-              type: array
-              items:
-                type: {} # (unknown?)
-                description: Effects of the weather?
-        gameStates:
-          type: array
-          items:
-            type: object
-              awayScore:
-                type: number
-                description: How much the away team scored.
-              homeScore:
-                type: number
-                description: How much the home team scored.
-              inning:
-                type: number
-                description: The number of the inning - starting from 0.
-              balls:
-                type: number
-                description: Current amount of balls in the count.
-              ballsNeeded:
-                type: number
-                description: Balls needed to cause a walk. (assumption?)
-              strikes:
-                type: number
-                description: Current amount of strikes in the count.
-              strikesNeeded:
-                type: number
-                description: Strikes needed to cause an Out.
-              outs:
-                type: number
-                description: Current amount of outs in the count.
-              outsNeeded:
-                type: number
-                description: Outs needed to change sides. (assumption?)
-              baserunners:
+          content:
+            application/json:
+              schema:
                 type: array
-                description: Baserunners currently on the field. (assumption?)
                 items:
-                  $ref: '#/components/schema/Player' # (assumption?)
-              batter:
-                $ref: '#/components/schema/Player' # (assumption?)
-              pitcher:
-                $ref: '#/components/schema/Player' # (assumption?)
-              shame:
-                type: boolean
-                description: Whether the game entered Shame or not.
-              step:
-                type: number
-                description: (unknown?)
-              teamAtBat:
-                type: string
-                enum:
-                  - "HOME"
-                  - "AWAY" # (assumption?)
-                description: The team currently at bat.
-              topOfInning:
-                type: boolean
-                description: Whether it's the top of the inning or not.
-              totalBases:
-                type: number
-                description: The amount of bases currently on the field.
-
-    Player:
-      title: Player
-      type: object
-      properties:
-        id:
-          type: string
-          description: The player ID.
-        name:
-          type: string
-          description: The player name.
-
-    Team:
-      title: Team
-      type: object
-      properties:
-        emoji:
-          type: string
-          description: Hex value of the emoji.
-          example: "0x1F450"
-        gameWinner:
-          type: boolean
-          description: Whether the team won or not.
-          example: true
-        id:
-          type: string
-          description: ID of the team.
-          example: "a37f9158-7f82-46bc-908c-c9e2dda7c33b"
-        name:
-          type: string
-          description: Full name of the team.
-          example: "Breckenridge Jazz Hands"
-        nickname:
-          type: string
-          description: Short name of the team.
-          example: "Breckenridge"
-        primaryColor:
-          type: string
-          description: A hex value representing the primary colour of the team.
-          example: "#6388ad"
-        secondaryColor:
-          type: string
-          description: A hex value representing the secondary colour of the team.
-          example: "#7ba9d7"
-        shorthand:
-          type: string
-          description: Shorthand for the team - usually 4 characters max and in all caps.
-          example: "JAZZ"
-        slogan:
-          type: string
-          description: The team's slogan.
-          example: "We've Got Winning to Do. Just for You."
+                  type: object
+                  properties:
+                    awayPitcher:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                    awayTeam:
+                      type: object
+                      properties:
+                        emoji:
+                          type: string
+                        gameWinner:
+                          type: boolean
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        nickname:
+                          type: string
+                        primaryColor:
+                          type: string
+                        secondaryColor:
+                          type: string
+                        shorthand:
+                          type: string
+                        slogan:
+                          type: string
+                    cancelled:
+                      type: boolean
+                    complete:
+                      type: boolean
+                    created:
+                      type: string
+                    day:
+                      type: integer
+                    deleted:
+                      type: boolean
+                    gameLoserId:
+                      type:
+                        - 'null'
+                        - string
+                    gameStates:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          awayScore:
+                            type: integer
+                          balls:
+                            type: integer
+                          ballsNeeded:
+                            type: integer
+                          baserunners:
+                            type: array
+                            items:
+                              type: object
+                              properties: {}
+                          batter:
+                            type: 'null'
+                          homeScore:
+                            type: integer
+                          inning:
+                            type: integer
+                          outs:
+                            type: integer
+                          outsNeeded:
+                            type: integer
+                          pitcher:
+                            type: 'null'
+                          shame:
+                            type: boolean
+                          step:
+                            type: integer
+                          strikes:
+                            type: integer
+                          strikesNeeded:
+                            type: integer
+                          teamAtBat:
+                            type: string
+                          topOfInning:
+                            type: boolean
+                          totalBases:
+                            type: integer
+                    gameWinnerId:
+                      type:
+                        - 'null'
+                        - string
+                    homePitcher:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                    homeTeam:
+                      type: object
+                      properties:
+                        emoji:
+                          type: string
+                        gameWinner:
+                          type: boolean
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        nickname:
+                          type: string
+                        primaryColor:
+                          type: string
+                        secondaryColor:
+                          type: string
+                        shorthand:
+                          type: string
+                        slogan:
+                          type: string
+                    id:
+                      type: string
+                    numberInSeries:
+                      type: integer
+                    seasonId:
+                      type: string
+                    seriesLength:
+                      type: integer
+                    startTime:
+                      type: string
+                    started:
+                      type: boolean
+                    updated:
+                      type: string
+                    weather:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        weatherEffects:
+                          type: array
+                          items:
+                            type: object
+                            properties: {}
+                x-examples:
+                  Example 1:
+                    - awayPitcher:
+                        id: d1853fc4-11fd-4468-b5d1-f33fb289dbe7
+                        name: Kitfo Goodwyn
+                      awayTeam:
+                        emoji: '0x1F450'
+                        gameWinner: true
+                        id: a37f9158-7f82-46bc-908c-c9e2dda7c33b
+                        name: Breckenridge Jazz Hands
+                        nickname: Breckenridge
+                        primaryColor: '#6388ad'
+                        secondaryColor: '#7ba9d7'
+                        shorthand: JAZZ
+                        slogan: We’ve Got Winning to Do. Just for You.
+                      cancelled: false
+                      complete: true
+                      created: '2023-01-05T23:18:19.726Z'
+                      day: 10
+                      deleted: false
+                      gameLoserId: bb4a9de5-c924-4923-a0cb-9d1445f1ee5d
+                      gameStates:
+                        - awayScore: 4
+                          balls: 0
+                          ballsNeeded: 4
+                          baserunners: []
+                          batter: null
+                          homeScore: 2
+                          inning: 8
+                          outs: 0
+                          outsNeeded: 3
+                          pitcher: null
+                          shame: false
+                          step: 1268
+                          strikes: 0
+                          strikesNeeded: 3
+                          teamAtBat: HOME
+                          topOfInning: false
+                          totalBases: 3
+                      gameWinnerId: a37f9158-7f82-46bc-908c-c9e2dda7c33b
+                      homePitcher:
+                        id: 6bca5e98-4b0d-4127-83b1-0c4c527940be
+                        name: Denim Alfredo
+                      homeTeam:
+                        emoji: '0x1F40C'
+                        gameWinner: false
+                        id: bb4a9de5-c924-4923-a0cb-9d1445f1ee5d
+                        name: Ohio Worms
+                        nickname: Ohio
+                        primaryColor: '#5c4822'
+                        secondaryColor: '#ba9c65'
+                        shorthand: OHWO
+                        slogan: 'Oh, Worm?'
+                      id: 3ca6a0d3-65a3-4f2e-9586-8eda28fc6511
+                      numberInSeries: 2
+                      seasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+                      seriesLength: 3
+                      startTime: '2023-01-10T02:00:34.473Z'
+                      started: true
+                      updated: '2023-01-10T02:30:42.203Z'
+                      weather:
+                        id: 8b260bb1-2b25-44af-9de4-2e97894b02f0
+                        name: Horizon
+                        weatherEffects: []
+  /teams:
+    get:
+      summary: Retrieve all teams currently in the Sim.
+      tags: []
+      operationId: get-teams
+      description: Retrieve all teams currently in the Sim.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                x-examples:
+                  Example 1:
+                    - activeTeam: true
+                      attributes: []
+                      categoryRatings:
+                        - name: defense
+                          stars: 2.3
+                        - name: running
+                          stars: 2.55
+                        - name: batting
+                          stars: 3.25
+                        - name: pitching
+                          stars: 2.3
+                      deceased: false
+                      division:
+                        id: 8b22bdcf-8cf9-46d4-93da-bb75a6413786
+                        name: Awful Good
+                      emoji: '0x1F31E'
+                      id: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                      locationName: Moab Hellmouth
+                      modifications:
+                        - modification:
+                            backgroundColor: ''
+                            color: ''
+                            description: This Team was Scattered. Official Review pending...
+                            icon: ''
+                            name: scattered
+                            textColor: ''
+                          teamId: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                      name: Moab Hellmouth Sunbeams
+                      nickname: Sunbeams
+                      primaryColor: '#fffbab'
+                      roster:
+                        - id: df94a335-1677-4200-a23f-d794689a5732
+                          modifications: []
+                          name: Pangolin Ruiz
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 0
+                        - id: ceb5606d-ea3f-4471-9ca7-3d2e71a50dde
+                          modifications: []
+                          name: London Simmons
+                          overallRating: 3
+                          rosterSlots:
+                            - active: true
+                              location: ROTATION
+                              orderIndex: 1
+                        - id: 9ba361a1-16d5-4f30-b590-fc4fc2fb53d2
+                          modifications: []
+                          name: Mooney Doctor
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: ROTATION
+                              orderIndex: 4
+                        - id: ff5a37d9-a6dd-49aa-b6fb-b935fd670820
+                          modifications: []
+                          name: Dunn Keyes
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: ROTATION
+                              orderIndex: 3
+                        - id: 51dab868-820b-4969-8bba-bde0be8090d7
+                          modifications: []
+                          name: Cravel Gesundheit
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 7
+                        - id: 8c028571-c7e2-4130-ac5b-1ada3e1b9fe0
+                          modifications: []
+                          name: Willow Dice
+                          overallRating: 2
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 8
+                        - id: 17397256-c28c-4cad-85f2-a21768c66e67
+                          modifications: []
+                          name: Cory Ross
+                          overallRating: 2
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 2
+                        - id: 9c23702b-f0c2-4668-8bcc-61bbdbbfd93e
+                          modifications: []
+                          name: Grollis Zephyr
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: ROTATION
+                              orderIndex: 2
+                        - id: 90768354-957e-4b4c-bb6d-eab6bbda0ba3
+                          modifications: []
+                          name: Eugenia Garbage
+                          overallRating: 3
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 4
+                        - id: d002946f-e7ed-4ce4-a405-63bdaf5eabb5
+                          modifications: []
+                          name: Jorge Owens
+                          overallRating: 3
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 6
+                        - id: 81fbf8e9-e02f-4d0b-ac62-4ced4e6eef8c
+                          modifications: []
+                          name: Grizz El Sayed
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 1
+                        - id: ed8363a6-2aaa-4d27-9441-ac4d7ae42a00
+                          modifications: []
+                          name: Guozhi Ong
+                          overallRating: 1.5
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 5
+                        - id: 0c7df8ee-c90a-4149-a2a0-791acb918fdc
+                          modifications: []
+                          name: Kajjala Aliyev
+                          overallRating: 3
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 3
+                        - id: 9deaddad-0dfa-4aaf-a893-eb62f21b620b
+                          modifications: []
+                          name: Carter Grimsley
+                          overallRating: 2
+                          rosterSlots:
+                            - active: true
+                              location: ROTATION
+                              orderIndex: 0
+                      secondaryColor: '#fffbab'
+                      shorthand: SUN
+                      slogan: Stare into the Sun...
+                      standings:
+                        - losses: 24
+                          seasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+                          teamId: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                          wins: 66
+                      attributes: []
+                      categoryRatings:
+                        - name: defense
+                          stars: 2.090909090909091
+                        - name: running
+                          stars: 2.4545454545454546
+                        - name: batting
+                          stars: 2.6818181818181817
+                        - name: pitching
+                          stars: 2.3181818181818183
+                      deceased: false
+                      division:
+                        id: 0b684565-ecaf-4afc-96d2-f4100f127197
+                        name: Chaotic Evil
+                      emoji: '0x1f3cb'
+                      id: c73b705c-40ad-4633-a6ed-d357ee2e2bcf
+                      locationName: Tokyo
+                      modifications:
+                        - modification:
+                            backgroundColor: null
+                            color: null
+                            description: This Team has been eliminated from Postseason contention and must now Party.
+                            icon: null
+                            name: Party Time
+                            textColor: null
+                          teamId: c73b705c-40ad-4633-a6ed-d357ee2e2bcf
+                        - modification:
+                            backgroundColor: ''
+                            color: ''
+                            description: This Team was Entangled. Official Review pending...
+                            icon: ''
+                            name: entangled
+                            textColor: ''
+                          teamId: c73b705c-40ad-4633-a6ed-d357ee2e2bcf
+                      name: Tokyo Lift
+                      nickname: Tokyo
+                      primaryColor: '#821f60'
+                      roster:
+                        - id: 089af518-e27c-4256-adc8-62e3f4b30f43
+                          modifications: []
+                          name: Silvia Rugrat
+                          overallRating: 2
+                          rosterSlots:
+                            - active: true
+                              location: ROTATION
+                              orderIndex: 1
+                        - id: 6fa08e08-6a95-4fbc-9d00-5c39c5302b60
+                          modifications: []
+                          name: Barry Burkhard
+                          overallRating: 2
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 1
+                        - id: bbf9543f-f100-445a-a467-81d7aab12236
+                          modifications: []
+                          name: Farrell Seagull
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 5
+                        - id: f5807c24-b644-4498-a62c-f4a531fe79c9
+                          modifications: []
+                          name: Vernon Cotterpin
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 8
+                        - id: c57222fd-df55-464c-a44e-b15443e61b70
+                          modifications: []
+                          name: Natha Spruce
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: SHADOWS
+                              orderIndex: null
+                        - id: c9a22fa4-1721-4eef-a1a6-620cdf7d377f
+                          modifications: []
+                          name: Roscoe Sundae
+                          overallRating: 2
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 3
+                        - id: a7edbf19-caf6-45dd-83d5-46496c99aa88
+                          modifications: []
+                          name: Rush Valenzuela
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: ROTATION
+                              orderIndex: 4
+                        - id: 21cbbfaa-100e-48c5-9cea-7118b0d08a34
+                          modifications: []
+                          name: Juice Collins
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: ROTATION
+                              orderIndex: 2
+                        - id: d2a1e734-60d9-4989-b7d9-6eacda70486b
+                          modifications: []
+                          name: Tiana Takahashi
+                          overallRating: 3
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 7
+                        - id: 6caa8180-e178-4f8b-865c-f1af47119bc2
+                          modifications: []
+                          name: Tad Blortles
+                          overallRating: 3
+                          rosterSlots:
+                            - active: true
+                              location: ROTATION
+                              orderIndex: 3
+                        - id: 1c5a388b-93ef-4c67-8909-7419d39af8d6
+                          modifications: []
+                          name: Gumdrop Che Amran
+                          overallRating: 2
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 6
+                        - id: 0135e76a-cc80-41f5-bb1c-b6c0de9b35c7
+                          modifications: []
+                          name: Özlem Suttner
+                          overallRating: 2
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 2
+                        - id: ef199eed-69c6-4c9b-b4c6-a172c72dabca
+                          modifications: []
+                          name: Katy Hermoso
+                          overallRating: 3
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 4
+                        - id: 551039a6-1ed0-4ac2-b7ba-935fae732953
+                          modifications: []
+                          name: 'Aya Chartreuse '
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: ROTATION
+                              orderIndex: 0
+                        - id: 30fa4bf1-8f3b-45dc-9aa3-6511e998040a
+                          modifications: []
+                          name: Kaj Murphy
+                          overallRating: 2.5
+                          rosterSlots:
+                            - active: true
+                              location: LINEUP
+                              orderIndex: 0
+                      secondaryColor: '#e830ab'
+                      shorthand: TKO
+                      slogan: Heart and Swole
+                      standings:
+                        - losses: 61
+                          seasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+                          teamId: c73b705c-40ad-4633-a6ed-d357ee2e2bcf
+                          wins: 29
+                items:
+                  type: object
+                  properties:
+                    activeTeam:
+                      type: boolean
+                    attributes:
+                      type: array
+                      items:
+                        type: object
+                    categoryRatings:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          stars:
+                            type: number
+                    deceased:
+                      type: boolean
+                    division:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                    emoji:
+                      type: string
+                    id:
+                      type: string
+                    locationName:
+                      type: string
+                    modifications:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          modification:
+                            type: object
+                            properties:
+                              backgroundColor:
+                                type:
+                                  - 'null'
+                                  - string
+                              color:
+                                type:
+                                  - 'null'
+                                  - string
+                              description:
+                                type: string
+                              icon:
+                                type:
+                                  - 'null'
+                                  - string
+                              name:
+                                type: string
+                              textColor:
+                                type:
+                                  - 'null'
+                                  - string
+                          teamId:
+                            type: string
+                    name:
+                      type: string
+                    nickname:
+                      type: string
+                    primaryColor:
+                      type: string
+                    roster:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          modifications:
+                            type: array
+                            items:
+                              type: object
+                          name:
+                            type: string
+                          overallRating:
+                            type:
+                              - integer
+                              - number
+                          rosterSlots:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                active:
+                                  type: boolean
+                                location:
+                                  type: string
+                                  enum:
+                                    - LINEUP
+                                    - ROTATION
+                                    - SHADOWS
+                                orderIndex:
+                                  type: integer
+                    secondaryColor:
+                      type: string
+                    shorthand:
+                      type: string
+                    slogan:
+                      type: string
+                    standings:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          losses:
+                            type: integer
+                          seasonId:
+                            type: string
+                          teamId:
+                            type: string
+                          wins:
+                            type: integer
+  /players:
+    get:
+      summary: Gets all players currently within the Sim.
+      tags: []
+      operationId: get-players
+      description: Gets all players currently within the Sim.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                x-examples:
+                  Example 1:
+                    - attributeRatings:
+                        - category: batting
+                          name: sight
+                          stars: 3
+                        - category: batting
+                          name: thwack
+                          stars: 4
+                        - category: batting
+                          name: ferocity
+                          stars: 4.5
+                        - category: pitching
+                          name: control
+                          stars: 4
+                        - category: pitching
+                          name: stuff
+                          stars: 0.5
+                        - category: pitching
+                          name: guile
+                          stars: 0.5
+                        - category: defense
+                          name: reach
+                          stars: 1
+                        - category: defense
+                          name: magnet
+                          stars: 1.5
+                        - category: defense
+                          name: reflex
+                          stars: 2
+                        - category: running
+                          name: hustle
+                          stars: 4
+                        - category: running
+                          name: stealth
+                          stars: 0.5
+                        - category: running
+                          name: dodge
+                          stars: 4.5
+                        - category: vibes
+                          name: thrive
+                          stars: 1
+                        - category: vibes
+                          name: survive
+                          stars: 0.5
+                        - category: vibes
+                          name: drama
+                          stars: 4.5
+                      attributes:
+                        - name: Sight
+                          value: 0.5867593039182801
+                        - name: Thwack
+                          value: 0.8222615876151491
+                        - name: Ferocity
+                          value: 0.9225835335266065
+                        - name: Control
+                          value: 0.7973795530519381
+                        - name: Stuff
+                          value: 0.09766236550822815
+                        - name: Guile
+                          value: 0.06458656635394633
+                        - name: Reach
+                          value: 0.24692973917918037
+                        - name: Magnet
+                          value: 0.33296544676077966
+                        - name: Reflex
+                          value: 0.42077864538129517
+                        - name: Hustle
+                          value: 0.8475850300846017
+                        - name: Stealth
+                          value: 0.08588677294893077
+                        - name: Dodge
+                          value: 0.9008262945998768
+                        - name: Thrive
+                          value: 0.20748184629832056
+                        - name: Survive
+                          value: 0.07727673783220645
+                        - name: Drama
+                          value: 0.9330422601649672
+                      categoryRatings:
+                        - name: batting
+                          stars: 4
+                        - name: pitching
+                          stars: 1.5
+                        - name: defense
+                          stars: 1.5
+                        - name: running
+                          stars: 3
+                        - name: vibes
+                          stars: 2
+                      id: df94a335-1677-4200-a23f-d794689a5732
+                      items: []
+                      modifications: []
+                      name: Pangolin Ruiz
+                      overallRating: 2.5
+                      playerHeatMaps:
+                        - currentValue: 0.7842911829636396
+                        - currentValue: 0.4266450824830118
+                        - currentValue: 0.26848314107903826
+                        - currentValue: 0.658421730847486
+                        - currentValue: 0.967270637996818
+                        - currentValue: 0.3314515212199015
+                        - currentValue: 0.9735606679976347
+                        - currentValue: 0.8078562048615933
+                        - currentValue: 0.5258283048883408
+                        - currentValue: 0.21073992249693707
+                        - currentValue: 0.3630622037506931
+                        - currentValue: 0.8833824859897469
+                        - currentValue: 0.8713103354963087
+                        - currentValue: 0.3293413607449429
+                        - currentValue: 0.8905944675156986
+                        - currentValue: 0.5504104735079319
+                        - currentValue: 0.2925820273721077
+                        - currentValue: 0.6427235476316349
+                        - currentValue: 0.7414767323038897
+                        - currentValue: 0.9206843040434899
+                        - currentValue: 0.6547713398339164
+                        - currentValue: 0.9442688988923978
+                        - currentValue: 0.471217094670225
+                        - currentValue: 0.7021741891304338
+                        - currentValue: 0.853123796336651
+                        - currentValue: 0.2075989912446372
+                        - currentValue: 0.7219623221454138
+                        - currentValue: 0.45663952895066795
+                        - currentValue: 0.21783943870622235
+                        - currentValue: 0.435622796619761
+                        - currentValue: 0.20665687063412252
+                        - currentValue: 0.5238707346732032
+                        - currentValue: 0.31638683516325194
+                        - currentValue: 0.7989947221857664
+                        - currentValue: 0.14349964487262523
+                        - currentValue: 0.23281661882083748
+                      positions:
+                        - positionName: null
+                          x: 3
+                          'y': 2
+                      rosterSlots:
+                        - active: true
+                          location: LINEUP
+                          orderIndex: 0
+                      team:
+                        emoji: '0x1F31E'
+                        id: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                        name: Moab Hellmouth Sunbeams
+                        primaryColor: '#fffbab'
+                        secondaryColor: '#fffbab'
+                  items:
+                  type: object
+                  properties:
+                    attributeRatings:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          category:
+                            type: string
+                            enum:
+                              - batting
+                              - pitching
+                              - running
+                              - defense
+                              - vibes
+                          name:
+                            type: string
+                            enum:
+                              - sight
+                              - thwack
+                              - ferocity
+                              - stuff
+                              - guile
+                              - reach
+                              - magnet
+                              - reflex
+                              - hustle
+                              - stealth
+                              - dodge
+                              - thrive
+                              - survive
+                              - drama
+                          stars:
+                            type:
+                              - integer
+                              - number
+                    attributes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            enum:
+                              - Sight
+                              - Thwack
+                              - Ferocity
+                              - Control
+                              - Stuff
+                              - Guile
+                              - Reach
+                              - Magnet
+                              - Reflex
+                              - Hustle
+                              - Stealth
+                              - Dodge
+                              - Thrive
+                              - Survive
+                              - Drama
+                          value:
+                            type: number
+                    categoryRatings:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                            enum:
+                              - batting
+                              - pitching
+                              - defense
+                              - running
+                              - vibes
+                          stars:
+                            type:
+                              - integer
+                              - number
+                    id:
+                      type: string
+                    items:
+                      type: array
+                      items:
+                        type: object
+                    modifications:
+                      type: array
+                      items:
+                        type: object
+                    name:
+                      type: string
+                    overallRating:
+                      type:
+                        - integer
+                        - number
+                    playerHeatMaps:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          currentValue:
+                            type: number
+                    positions:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          positionName:
+                            type: 'null'
+                          x:
+                            type: integer
+                          'y':
+                            type: integer
+                    rosterSlots:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          active:
+                            type: boolean
+                          location:
+                            type: string
+                            enum:
+                              - LINEUP
+                              - ROTATION
+                              - SHADOWS
+                          orderIndex:
+                            type: integer
+                    team:
+                      type: object
+                      properties:
+                        emoji:
+                          type: string
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        primaryColor:
+                          type: string
+                        secondaryColor:
+                          type: string
+  /sim:
+    get:
+      summary: Retrieves simulation data.
+      tags: []
+      operationId: get-sim
+      description: Retrieves simulation data.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  endDayNumber:
+                    type: integer
+                  endTime:
+                    type: string
+                  phase:
+                    type: string
+                  simData:
+                    type: object
+                    properties:
+                      banner:
+                        type: string
+                      currentDay:
+                        type: integer
+                      currentLeagueData:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          subLeagues:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                divisions:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                      name:
+                                        type: string
+                                id:
+                                  type: string
+                      currentSeasonId:
+                        type: string
+                      currentSeasonNumber:
+                        type: integer
+                      currentTournamentId:
+                        type: string
+                      isOffseason:
+                        type: boolean
+                      isTournament:
+                        type: boolean
+                      liveGames:
+                        type: boolean
+                  startDayNumber:
+                    type: integer
+                  startTime:
+                    type: string
+                x-examples:
+                  Example 1:
+                    endDayNumber: 0
+                    endTime: '2023-01-14T04:14:59.000Z'
+                    phase: tournamentPhase
+                    simData:
+                      banner: 'https://blaseball-icons.s3.us-west-2.amazonaws.com/header-image.png'
+                      currentDay: 94
+                      currentLeagueData:
+                        id: d3182b4d-91b6-4b4e-96a5-13d69e0043b7
+                        name: Internet Blaseball League
+                        subLeagues:
+                          - divisions:
+                              - id: 8b22bdcf-8cf9-46d4-93da-bb75a6413786
+                                name: Awful Good
+                              - id: 67a4acf7-60b6-463d-bcff-63fbf538b3d9
+                                name: Chaotic Good
+                            id: 5335d626-db8c-4181-950a-e650f5f11d00
+                          - divisions:
+                              - id: b60a5664-66d8-462a-85ae-9da2d4d9c59e
+                                name: Awful Evil
+                              - id: 0b684565-ecaf-4afc-96d2-f4100f127197
+                                name: Chaotic Evil
+                            id: 226dc71f-b3a2-4d0d-814e-1b963781cda9
+                      currentSeasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+                      currentSeasonNumber: 0
+                      currentTournamentId: 204aa2a9-2610-446c-851a-13648c29d01f
+                      isOffseason: false
+                      isTournament: true
+                      liveGames: true
+                    startDayNumber: 0
+                    startTime: '2023-01-13T23:15:00.000Z'
+components:
+  schemas: {}

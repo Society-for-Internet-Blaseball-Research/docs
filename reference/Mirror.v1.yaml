@@ -1,0 +1,209 @@
+openapi: 3.0.0
+info:
+  title: Mirror API
+  description: A mirror of the Blaseball API built for ease of use. Uses caching, which means data may be out of date.
+  version: 1.0.0
+  contact:
+    name: SIBR (?)
+servers:
+  - url: 'https://api2.blaseball.com/mirror'
+paths:
+  /games:
+    get:
+      summary: Games
+      responses:
+        '200':
+          description: OK
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Game'
+      operationId: get-games
+      description: |-
+        Returns all (?) games for the current season.
+      parameters:
+components:
+  schemas:
+    Game:
+      title: Game
+      type: object
+      properties:
+        id:
+          type: string
+          description: ID for the game.
+        seasonId:
+          type: string
+          description: ID of the season the game is taking place in.
+        seriesLength:
+          type: number
+          description: The length of the series against the same team. (assumption? normally either 3 or 5)
+        numberInSeries:
+          type: number
+          description: The position of the game in the 3-game series - starting from 1.
+        homePitcher:
+          $ref: '#/components/schemas/Player'
+        awayPitcher:
+          $ref: '#/components/schemas/Player'
+        homeTeam:
+          $ref: '#/components/schemas/Team'
+        awayTeam:
+          $ref: '#/components/schemas/Team'
+        cancelled:
+          type: boolean
+          description: "Whether the game was cancelled or not."
+        complete:
+          type: boolean
+          description: "Whether the game has completed or not."
+        startTime:
+          type: string
+          format: date-time
+          description: When the game started.
+        started:
+          type: boolean
+          description: Whether the game has started or not.
+        created:
+          type: string
+          format: date-time
+          description: Timestamp of when this entry was created. (assumption?)
+        updated:
+          type: string
+          format: date-time
+          description: When the game was last updated.
+        day:
+          type: number
+          description: The in-universe day when the game took place.
+        deleted:
+          type: boolean
+          description: Whether the game was deleted. (assumption?)
+        gameLoserId:
+          type: string
+          description: The ID of the losing team.
+        gameWinnerId:
+          type: string
+          description: The ID of the team that won the game.
+        weather:
+          type: object
+          properties:
+            id:
+              type: string
+              description: The ID of the weather.
+            name:
+              type: string
+              description: The name of the weather.
+            weatherEffects:
+              type: array
+              items:
+                type: {} # (unknown?)
+                description: Effects of the weather?
+        gameStates:
+          type: array
+          items:
+            type: object
+              awayScore:
+                type: number
+                description: How much the away team scored.
+              homeScore:
+                type: number
+                description: How much the home team scored.
+              inning:
+                type: number
+                description: The number of the inning - starting from 0.
+              balls:
+                type: number
+                description: Current amount of balls in the count.
+              ballsNeeded:
+                type: number
+                description: Balls needed to cause a walk. (assumption?)
+              strikes:
+                type: number
+                description: Current amount of strikes in the count.
+              strikesNeeded:
+                type: number
+                description: Strikes needed to cause an Out.
+              outs:
+                type: number
+                description: Current amount of outs in the count.
+              outsNeeded:
+                type: number
+                description: Outs needed to change sides. (assumption?)
+              baserunners:
+                type: array
+                description: Baserunners currently on the field. (assumption?)
+                items:
+                  $ref: '#/components/schema/Player' # (assumption?)
+              batter:
+                $ref: '#/components/schema/Player' # (assumption?)
+              pitcher:
+                $ref: '#/components/schema/Player' # (assumption?)
+              shame:
+                type: boolean
+                description: Whether the game entered Shame or not.
+              step:
+                type: number
+                description: (unknown?)
+              teamAtBat:
+                type: string
+                enum:
+                  - "HOME"
+                  - "AWAY" # (assumption?)
+                description: The team currently at bat.
+              topOfInning:
+                type: boolean
+                description: Whether it's the top of the inning or not.
+              totalBases:
+                type: number
+                description: The amount of bases currently on the field.
+
+    Player:
+      title: Player
+      type: object
+      properties:
+        id:
+          type: string
+          description: The player ID.
+        name:
+          type: string
+          description: The player name.
+
+    Team:
+      title: Team
+      type: object
+      properties:
+        emoji:
+          type: string
+          description: Hex value of the emoji.
+          example: "0x1F450"
+        gameWinner:
+          type: boolean
+          description: Whether the team won or not.
+          example: true
+        id:
+          type: string
+          description: ID of the team.
+          example: "a37f9158-7f82-46bc-908c-c9e2dda7c33b"
+        name:
+          type: string
+          description: Full name of the team.
+          example: "Breckenridge Jazz Hands"
+        nickname:
+          type: string
+          description: Short name of the team.
+          example: "Breckenridge"
+        primaryColor:
+          type: string
+          description: A hex value representing the primary colour of the team.
+          example: "#6388ad"
+        secondaryColor:
+          type: string
+          description: A hex value representing the secondary colour of the team.
+          example: "#7ba9d7"
+        shorthand:
+          type: string
+          description: Shorthand for the team - usually 4 characters max and in all caps.
+          example: "JAZZ"
+        slogan:
+          type: string
+          description: The team's slogan.
+          example: "We've Got Winning to Do. Just for You."

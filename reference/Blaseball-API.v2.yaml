@@ -1,0 +1,484 @@
+openapi: 3.1.0
+x-stoplight:
+  id: a3ns7gfbb7au6
+info:
+  title: Scraped.v0
+  version: '1.0'
+  summary: Raw API exposed by Blaseball for its site functionality.
+  description: |-
+    Raw API exposed by Blaseball for its site functionality. In many cases you should use the Mirror API instead. At some point an official developer API should become exposed.
+
+    Many endpoints require **authorization**, provided in the form of a cookie.
+  contact:
+    name: The Game Band
+  termsOfService: 'https://blaseball.com/tos'
+servers:
+  - url: 'https://api2.blaseball.com'
+paths:
+  /sim:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  phase:
+                    type: string
+                  startTime:
+                    type: string
+                  endTime:
+                    type: string
+                  startDayNumber:
+                    type: integer
+                  endDayNumber:
+                    type: integer
+                  simData:
+                    type: object
+                    properties:
+                      banner:
+                        type: string
+                      currentSeasonId:
+                        type: string
+                      currentSeasonNumber:
+                        type: integer
+                      currentDay:
+                        type: integer
+                      liveGames:
+                        type: boolean
+                      isTournament:
+                        type: boolean
+                      isOffseason:
+                        type: boolean
+                      currentLeagueData:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          subLeagues:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                divisions:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                      name:
+                                        type: string
+                x-examples:
+                  Example 1:
+                    phase: restPhase
+                    startTime: '2023-01-14T04:15:00.000Z'
+                    endTime: '2023-01-14T16:59:59.000Z'
+                    startDayNumber: -1
+                    endDayNumber: -1
+                    simData:
+                      banner: 'https://blaseball-icons.s3.us-west-2.amazonaws.com/header-image.png'
+                      currentSeasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+                      currentSeasonNumber: 0
+                      currentDay: 94
+                      liveGames: true
+                      isTournament: false
+                      isOffseason: false
+                      currentLeagueData:
+                        id: d3182b4d-91b6-4b4e-96a5-13d69e0043b7
+                        name: Internet Blaseball League
+                        subLeagues:
+                          - id: 5335d626-db8c-4181-950a-e650f5f11d00
+                            divisions:
+                              - id: 8b22bdcf-8cf9-46d4-93da-bb75a6413786
+                                name: Awful Good
+                              - id: 67a4acf7-60b6-463d-bcff-63fbf538b3d9
+                                name: Chaotic Good
+                          - id: 226dc71f-b3a2-4d0d-814e-1b963781cda9
+                            divisions:
+                              - id: b60a5664-66d8-462a-85ae-9da2d4d9c59e
+                                name: Awful Evil
+                              - id: 0b684565-ecaf-4afc-96d2-f4100f127197
+                                name: Chaotic Evil
+      operationId: get-sim
+      description: Get simulation data.
+  '/seasons/{seasonId}/tournaments/':
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    icon:
+                      type:
+                        - 'null'
+                        - string
+                    rounds:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          index:
+                            type: integer
+                          matchups:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                index:
+                                  type: integer
+                                firstSlotTeam:
+                                  type:
+                                    - 'null'
+                                    - object
+                                  properties:
+                                    id:
+                                      type: string
+                                    emoji:
+                                      type: string
+                                    primaryColor:
+                                      type: string
+                                    secondaryColor:
+                                      type: string
+                                    name:
+                                      type: string
+                                firstSlotScore:
+                                  type: integer
+                                secondSlotTeam:
+                                  type:
+                                    - 'null'
+                                    - object
+                                  properties:
+                                    id:
+                                      type: string
+                                    emoji:
+                                      type: string
+                                    primaryColor:
+                                      type: string
+                                    secondaryColor:
+                                      type: string
+                                    name:
+                                      type: string
+                                secondSlotScore:
+                                  type: integer
+                                complete:
+                                  type: boolean
+                          complete:
+                            type: boolean
+                          startTime:
+                            type: string
+                          endTime:
+                            type: string
+                    complete:
+                      type: boolean
+                x-examples:
+                  Example 1:
+                    - id: 204aa2a9-2610-446c-851a-13648c29d01f
+                      name: Postseason
+                      description: ''
+                      icon: null
+                      rounds:
+                        - index: 0
+                          matchups:
+                            - index: 0
+                              firstSlotTeam:
+                                id: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                                emoji: '0x1F31E'
+                                primaryColor: '#fffbab'
+                                secondaryColor: '#fffbab'
+                                name: Moab Hellmouth Sunbeams
+                              firstSlotScore: 3
+                              secondSlotTeam:
+                                id: b63be8c2-576a-4d6e-8daf-814f8bcea96f
+                                emoji: '0x1F6A4'
+                                primaryColor: '#9141ba'
+                                secondaryColor: '#cd76fa'
+                                name: Miami Dale
+                              secondSlotScore: 0
+                              complete: true
+                            - index: 1
+                              firstSlotTeam:
+                                id: bfd38797-8404-4b38-8b82-341da28b1f83
+                                emoji: '0x1F45F'
+                                primaryColor: '#ffce0a'
+                                secondaryColor: '#ffce0a'
+                                name: Charleston Shoe Thieves
+                              firstSlotScore: 3
+                              secondSlotTeam:
+                                id: adc5b394-8f76-416d-9ce9-813706877b84
+                                emoji: '0x1F36C'
+                                primaryColor: '#178f55'
+                                secondaryColor: '#178f55'
+                                name: Kansas City Breath Mints
+                              secondSlotScore: 0
+                              complete: true
+                            - index: 2
+                              firstSlotTeam:
+                                id: 57ec08cc-0411-4643-b304-0e80dbc15ac7
+                                emoji: '0x1F357'
+                                primaryColor: '#883c17'
+                                secondaryColor: '#ee6300'
+                                name: Mexico City Wild Wings
+                              firstSlotScore: 3
+                              secondSlotTeam:
+                                id: 105bc3ff-1320-4e37-8ef0-8d595cb95dd0
+                                emoji: '0x1F3B8'
+                                primaryColor: '#2b4075'
+                                secondaryColor: '#5a83ea'
+                                name: Seattle Garages
+                              secondSlotScore: 1
+                              complete: true
+                            - index: 3
+                              firstSlotTeam:
+                                id: d9f89a8a-c563-493e-9d64-78e4f9a55d4a
+                                emoji: '0x1F531'
+                                primaryColor: '#00dbc2'
+                                secondaryColor: '#5cffec'
+                                name: Atlantis Georgias
+                              firstSlotScore: 3
+                              secondSlotTeam:
+                                id: 979aee4a-6d80-4863-bf1c-ee1a78e06024
+                                emoji: '0x1F3DD'
+                                primaryColor: '#3ee652'
+                                secondaryColor: '#3ee652'
+                                name: Hawai'i Fridays
+                              secondSlotScore: 0
+                              complete: true
+                          complete: true
+                          startTime: '2023-01-13T23:15:00.000+00:00'
+                          endTime: '2023-01-14T04:14:59.000+00:00'
+                        - index: 1
+                          matchups:
+                            - index: 0
+                              firstSlotTeam:
+                                id: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                                emoji: '0x1F31E'
+                                primaryColor: '#fffbab'
+                                secondaryColor: '#fffbab'
+                                name: Moab Hellmouth Sunbeams
+                              firstSlotScore: 0
+                              secondSlotTeam:
+                                id: bfd38797-8404-4b38-8b82-341da28b1f83
+                                emoji: '0x1F45F'
+                                primaryColor: '#ffce0a'
+                                secondaryColor: '#ffce0a'
+                                name: Charleston Shoe Thieves
+                              secondSlotScore: 0
+                              complete: false
+                            - index: 1
+                              firstSlotTeam:
+                                id: 57ec08cc-0411-4643-b304-0e80dbc15ac7
+                                emoji: '0x1F357'
+                                primaryColor: '#883c17'
+                                secondaryColor: '#ee6300'
+                                name: Mexico City Wild Wings
+                              firstSlotScore: 0
+                              secondSlotTeam:
+                                id: d9f89a8a-c563-493e-9d64-78e4f9a55d4a
+                                emoji: '0x1F531'
+                                primaryColor: '#00dbc2'
+                                secondaryColor: '#5cffec'
+                                name: Atlantis Georgias
+                              secondSlotScore: 0
+                              complete: false
+                          complete: false
+                          startTime: '2023-01-14T17:00:00.000+00:00'
+                          endTime: '2023-01-14T21:59:59.000+00:00'
+                        - index: 2
+                          matchups:
+                            - index: 0
+                              firstSlotTeam: null
+                              firstSlotScore: 0
+                              secondSlotTeam: null
+                              secondSlotScore: 0
+                              complete: false
+                          complete: false
+                          startTime: '2023-01-14T22:00:00.000+00:00'
+                          endTime: '2023-01-15T02:59:59.000+00:00'
+                      complete: false
+      operationId: 'get-seasons-seasonID-tournaments'
+      description: Retrieve tournament data. Functional during the Postseason.
+      parameters:
+        - $ref: '#/components/parameters/blasekeyjwt'
+    parameters:
+      - schema:
+          type: string
+        name: seasonId
+        in: path
+        required: true
+        description: ID of the season
+  '/schedule/{seasonId}/{yyyyMMDD}/hourly':
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    localHour:
+                      type: string
+                    hourTitle:
+                      type: string
+                    betDatas:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          gameId:
+                            type: string
+                          complete:
+                            type: boolean
+                          favoriteTeamMatch:
+                            type: boolean
+                          userBetPlaced:
+                            type: boolean
+                          homeTeamInfo:
+                            type: object
+                            properties:
+                              teamId:
+                                type: string
+                              shorthand:
+                                type: string
+                              primaryColor:
+                                type: string
+                              emoji:
+                                type: string
+                              wins:
+                                type: integer
+                              losses:
+                                type: integer
+                              pitcher:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                  name:
+                                    type: string
+                          homeTeamBetData:
+                            type: object
+                            properties:
+                              currentOdds:
+                                type: number
+                              currentPayout:
+                                type: integer
+                              teamWon:
+                                type:
+                                  - boolean
+                                  - 'null'
+                              userBetOdds:
+                                type:
+                                  - 'null'
+                                  - number
+                              userBetWager:
+                                type:
+                                  - integer
+                                  - 'null'
+                              userBetPayout:
+                                type:
+                                  - integer
+                                  - 'null'
+                          awayTeamInfo:
+                            type: object
+                            properties:
+                              teamId:
+                                type: string
+                              shorthand:
+                                type: string
+                              primaryColor:
+                                type: string
+                              emoji:
+                                type: string
+                              wins:
+                                type: integer
+                              losses:
+                                type: integer
+                              pitcher:
+                                type: object
+                                properties:
+                                  id:
+                                    type: string
+                                  name:
+                                    type: string
+                          awayTeamBetData:
+                            type: object
+                            properties:
+                              currentOdds:
+                                type: number
+                              currentPayout:
+                                type: integer
+                              teamWon:
+                                type: 'null'
+                              userBetOdds:
+                                type:
+                                  - 'null'
+                                  - number
+                              userBetWager:
+                                type: 'null'
+                              userBetPayout:
+                                type: 'null'
+                          awayScore:
+                            type: integer
+                          homeScore:
+                            type: integer
+                          weather:
+                            type: string
+                x-examples:
+                  Example 1:
+                    - localHour: '2023-01-09T00:00:00.000Z'
+                      hourTitle: game day
+                      betDatas: []
+      operationId: 'get-schedule-seasonID-seasonDate-hourly'
+      parameters:
+        - $ref: '#/components/parameters/blasekeyjwt'
+      description: Retrieves the schedule for the season. Includes your own betting data and odds on days with **games** on them.
+    parameters:
+      - schema:
+          type: string
+        name: seasonId
+        in: path
+        required: true
+        description: ID of the season.
+      - schema:
+          type: string
+        name: yyyyMMDD
+        in: path
+        required: true
+        description: Date to start from (?)
+components:
+  schemas: {}
+  securitySchemes: {}
+  parameters:
+    blasekeyjwt:
+      name: blasekeyjwt
+      in: cookie
+      required: true
+      schema:
+        type: string
+      description: Your JWT cookie for authentication.

@@ -13,7 +13,7 @@ servers:
 paths:
   /games:
     get:
-      summary: Returns all games for the current season.
+      summary: Get Games
       tags: []
       operationId: get-game
       description: Returns all games for the current season.
@@ -235,7 +235,7 @@ paths:
                         weatherEffects: []
   /teams:
     get:
-      summary: Retrieve all teams currently in the Sim.
+      summary: Get Teams.
       tags: []
       operationId: get-teams
       description: Retrieve all teams currently in the Sim.
@@ -687,7 +687,7 @@ paths:
                             type: integer
   /players:
     get:
-      summary: Gets all players currently within the Sim.
+      summary: Get Players
       tags: []
       operationId: get-players
       description: Gets all players currently within the Sim.
@@ -987,7 +987,7 @@ paths:
                           type: string
   /sim:
     get:
-      summary: Retrieves simulation data.
+      summary: Get Sim.
       tags: []
       operationId: get-sim
       description: Retrieves simulation data.

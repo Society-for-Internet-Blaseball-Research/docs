@@ -2,8 +2,8 @@ openapi: 3.1.0
 x-stoplight:
   id: a3ns7gfbb7au6
 info:
-  title: Scraped.v0
-  version: '1.0'
+  title: Blaseball
+  version: '2.0'
   summary: Raw API exposed by Blaseball for its site functionality.
   description: |-
     Raw API exposed by Blaseball for its site functionality. In many cases you should use the Mirror API instead. At some point an official developer API should become exposed.

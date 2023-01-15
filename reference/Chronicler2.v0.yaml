@@ -2,8 +2,8 @@ openapi: 3.1.0
 x-stoplight:
   id: 4nnx31zof0m9d
 info:
-  title: Chronicler.v0
-  version: '1.0'
+  title: Chronicler 2
+  version: '0.0'
   summary: An API that shows periodic information regarding Blaseball.
   description: An API that shows periodic information regarding Blaseball.
   contact:

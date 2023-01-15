@@ -399,7 +399,6 @@ paths:
                           seasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
                           teamId: f02aeae2-5e6a-4098-9842-02d2273f25c7
                           wins: 66
-                      attributes: []
                       categoryRatings:
                         - name: defense
                           stars: 2.090909090909091

@@ -2,7 +2,7 @@ openapi: 3.1.0
 x-stoplight:
   id: a3ns7gfbb7au6
 info:
-  title: Blaseball API 2
+  title: Blaseball API
   version: '2.0'
   summary: Raw API exposed by Blaseball for its site functionality.
   description: |-
@@ -17,7 +17,7 @@ servers:
 paths:
   /sim:
     get:
-      summary: Your GET endpoint
+      summary: Get simulation data.
       tags: []
       responses:
         '200':
@@ -112,7 +112,7 @@ paths:
       description: Get simulation data.
   '/seasons/{seasonId}/tournaments/':
     get:
-      summary: Your GET endpoint
+      summary: Get tournament data.
       tags: []
       responses:
         '200':
@@ -330,7 +330,7 @@ paths:
         description: ID of the season
   '/schedule/{seasonId}/{yyyyMMDD}/hourly':
     get:
-      summary: Your GET endpoint
+      summary: Get schedule for season.
       tags: []
       responses:
         '200':

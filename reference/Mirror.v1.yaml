@@ -13,7 +13,7 @@ servers:
 paths:
   /games:
     get:
-      summary: Returns all games for the current season.
+      summary: Get Games
       tags: []
       operationId: get-game
       description: Returns all games for the current season.
@@ -235,7 +235,7 @@ paths:
                         weatherEffects: []
   /teams:
     get:
-      summary: Retrieve all teams currently in the Sim.
+      summary: Get Teams.
       tags: []
       operationId: get-teams
       description: Retrieve all teams currently in the Sim.
@@ -399,172 +399,6 @@ paths:
                           seasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
                           teamId: f02aeae2-5e6a-4098-9842-02d2273f25c7
                           wins: 66
-                      attributes: []
-                      categoryRatings:
-                        - name: defense
-                          stars: 2.090909090909091
-                        - name: running
-                          stars: 2.4545454545454546
-                        - name: batting
-                          stars: 2.6818181818181817
-                        - name: pitching
-                          stars: 2.3181818181818183
-                      deceased: false
-                      division:
-                        id: 0b684565-ecaf-4afc-96d2-f4100f127197
-                        name: Chaotic Evil
-                      emoji: '0x1f3cb'
-                      id: c73b705c-40ad-4633-a6ed-d357ee2e2bcf
-                      locationName: Tokyo
-                      modifications:
-                        - modification:
-                            backgroundColor: null
-                            color: null
-                            description: This Team has been eliminated from Postseason contention and must now Party.
-                            icon: null
-                            name: Party Time
-                            textColor: null
-                          teamId: c73b705c-40ad-4633-a6ed-d357ee2e2bcf
-                        - modification:
-                            backgroundColor: ''
-                            color: ''
-                            description: This Team was Entangled. Official Review pending...
-                            icon: ''
-                            name: entangled
-                            textColor: ''
-                          teamId: c73b705c-40ad-4633-a6ed-d357ee2e2bcf
-                      name: Tokyo Lift
-                      nickname: Tokyo
-                      primaryColor: '#821f60'
-                      roster:
-                        - id: 089af518-e27c-4256-adc8-62e3f4b30f43
-                          modifications: []
-                          name: Silvia Rugrat
-                          overallRating: 2
-                          rosterSlots:
-                            - active: true
-                              location: ROTATION
-                              orderIndex: 1
-                        - id: 6fa08e08-6a95-4fbc-9d00-5c39c5302b60
-                          modifications: []
-                          name: Barry Burkhard
-                          overallRating: 2
-                          rosterSlots:
-                            - active: true
-                              location: LINEUP
-                              orderIndex: 1
-                        - id: bbf9543f-f100-445a-a467-81d7aab12236
-                          modifications: []
-                          name: Farrell Seagull
-                          overallRating: 2.5
-                          rosterSlots:
-                            - active: true
-                              location: LINEUP
-                              orderIndex: 5
-                        - id: f5807c24-b644-4498-a62c-f4a531fe79c9
-                          modifications: []
-                          name: Vernon Cotterpin
-                          overallRating: 2.5
-                          rosterSlots:
-                            - active: true
-                              location: LINEUP
-                              orderIndex: 8
-                        - id: c57222fd-df55-464c-a44e-b15443e61b70
-                          modifications: []
-                          name: Natha Spruce
-                          overallRating: 2.5
-                          rosterSlots:
-                            - active: true
-                              location: SHADOWS
-                              orderIndex: null
-                        - id: c9a22fa4-1721-4eef-a1a6-620cdf7d377f
-                          modifications: []
-                          name: Roscoe Sundae
-                          overallRating: 2
-                          rosterSlots:
-                            - active: true
-                              location: LINEUP
-                              orderIndex: 3
-                        - id: a7edbf19-caf6-45dd-83d5-46496c99aa88
-                          modifications: []
-                          name: Rush Valenzuela
-                          overallRating: 2.5
-                          rosterSlots:
-                            - active: true
-                              location: ROTATION
-                              orderIndex: 4
-                        - id: 21cbbfaa-100e-48c5-9cea-7118b0d08a34
-                          modifications: []
-                          name: Juice Collins
-                          overallRating: 2.5
-                          rosterSlots:
-                            - active: true
-                              location: ROTATION
-                              orderIndex: 2
-                        - id: d2a1e734-60d9-4989-b7d9-6eacda70486b
-                          modifications: []
-                          name: Tiana Takahashi
-                          overallRating: 3
-                          rosterSlots:
-                            - active: true
-                              location: LINEUP
-                              orderIndex: 7
-                        - id: 6caa8180-e178-4f8b-865c-f1af47119bc2
-                          modifications: []
-                          name: Tad Blortles
-                          overallRating: 3
-                          rosterSlots:
-                            - active: true
-                              location: ROTATION
-                              orderIndex: 3
-                        - id: 1c5a388b-93ef-4c67-8909-7419d39af8d6
-                          modifications: []
-                          name: Gumdrop Che Amran
-                          overallRating: 2
-                          rosterSlots:
-                            - active: true
-                              location: LINEUP
-                              orderIndex: 6
-                        - id: 0135e76a-cc80-41f5-bb1c-b6c0de9b35c7
-                          modifications: []
-                          name: Özlem Suttner
-                          overallRating: 2
-                          rosterSlots:
-                            - active: true
-                              location: LINEUP
-                              orderIndex: 2
-                        - id: ef199eed-69c6-4c9b-b4c6-a172c72dabca
-                          modifications: []
-                          name: Katy Hermoso
-                          overallRating: 3
-                          rosterSlots:
-                            - active: true
-                              location: LINEUP
-                              orderIndex: 4
-                        - id: 551039a6-1ed0-4ac2-b7ba-935fae732953
-                          modifications: []
-                          name: 'Aya Chartreuse '
-                          overallRating: 2.5
-                          rosterSlots:
-                            - active: true
-                              location: ROTATION
-                              orderIndex: 0
-                        - id: 30fa4bf1-8f3b-45dc-9aa3-6511e998040a
-                          modifications: []
-                          name: Kaj Murphy
-                          overallRating: 2.5
-                          rosterSlots:
-                            - active: true
-                              location: LINEUP
-                              orderIndex: 0
-                      secondaryColor: '#e830ab'
-                      shorthand: TKO
-                      slogan: Heart and Swole
-                      standings:
-                        - losses: 61
-                          seasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
-                          teamId: c73b705c-40ad-4633-a6ed-d357ee2e2bcf
-                          wins: 29
                 items:
                   type: object
                   properties:
@@ -687,7 +521,7 @@ paths:
                             type: integer
   /players:
     get:
-      summary: Gets all players currently within the Sim.
+      summary: Get Players
       tags: []
       operationId: get-players
       description: Gets all players currently within the Sim.
@@ -987,7 +821,7 @@ paths:
                           type: string
   /sim:
     get:
-      summary: Retrieves simulation data.
+      summary: Get Sim.
       tags: []
       operationId: get-sim
       description: Retrieves simulation data.

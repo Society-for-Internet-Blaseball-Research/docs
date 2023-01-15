@@ -14,7 +14,7 @@ servers:
 paths:
   /versions:
     get:
-      summary: Your GET endpoint
+      summary: Versions
       tags: []
       responses:
         '200':
@@ -529,7 +529,7 @@ paths:
       description: Retrieve data of a certain *kind* chronologically.
   /game-events:
     get:
-      summary: Your GET endpoint
+      summary: Game Events
       tags: []
       responses:
         '200':

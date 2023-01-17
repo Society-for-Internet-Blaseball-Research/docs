@@ -5,41 +5,36 @@ info:
   title: Chronicler 2
   version: '0.0'
   summary: An API that shows periodic information regarding Blaseball.
-  description: An API that shows periodic information regarding Blaseball.
+  description: |-
+    An API that shows periodic information regarding Blaseball.
+
+    Currently there are 3 APIs:
+
+    | Name | Description | Generic |
+    | :-- | :-- | :-- |
+    | [/game-events](Chronicler2.v0.yaml/paths/~1game-events) | Regarding events that happened during games | No |
+    | [/versions](Chronicler2.v0.yaml/paths/~1versions) | Retrieve *chronological* data for a given kind of entity. | Yes |
+    | [/entities](Chronicler2.v0.yaml/paths/~1entities) | Retrieve *latest* data for a given kind of entity. | Yes |
+
+    **Generic** APIs return different kinds of data based on the value behind `?kind=` - For example, to get players you do `/versions?kind=player`. As a result, they *require* a kind to be passed.
+
+    `/versions` should be used if you want to show how data changed over time - whereas `/entities` should be used when you only care about the *latest* data.
+
+    Each response also has common data like the following:
+
+    | attribute | description |
+    | --------: | :---------- |
+    | `next_page` | used to get the next page using `?page=` |
+    | `items[...].kind` | the kind of the data |
+    | `items[...].entity_id` | ID of the entity - useful to get data for a specific entity - such as a player's data over time. |
+    | `items[...].valid_from` | when the data was taken |
+    | `items[...].valid_to` | when the data became out of date |
   contact:
     name: Astrid
-    url: 'https://github.com/xSke/Chronicler/tree/main'
+    url: 'https://github.com/xSke/chron2'
 servers:
   - url: 'https://api2.sibr.dev/chronicler/v0/'
 paths:
-  /versions:
-    get:
-      summary: Versions
-      tags: []
-      operationId: get-versions
-      parameters:
-        - schema:
-            type: string
-            enum:
-              - player
-              - game_bet_data
-          in: query
-          name: kind
-          description: 'The kind of data to return. '
-        - schema:
-            type: string
-            enum:
-              - asc
-              - desc
-          in: query
-          name: order
-          description: How to sort the data.
-      description: |
-        Retrieve data of a certain *kind* chronologically. 
-
-        Click on a specific kind to see what this endpoint would return.
-        - [`player`](Chronicler2.v0.yaml/components/schemas/Player)
-        - [`game_bet_data`](Chronicler2.v0.yaml/components/schemas/GameBetData)
   /game-events:
     get:
       summary: Game Events
@@ -51,6 +46,16 @@ paths:
             application/json:
               schema:
                 type: array
+                x-examples:
+                  Example 1:
+                    - game_id: 6df052eb-8f0e-432b-a6e5-98a4518a1607
+                      timestamp: '2023-01-09T15:02:50.118Z'
+                      data:
+                        changedState: {}
+                        displayDelay: 4
+                        displayOrder: 0
+                        displayText: Play Ball!
+                        displayTime: '2023-01-09T15:02:50.118Z'
                 items:
                   type: object
                   properties:
@@ -78,7 +83,9 @@ paths:
                                   name:
                                     type: string
                             batter:
-                              type: 'null'
+                              type:
+                                - object
+                                - 'null'
                             started:
                               type: boolean
                             strikes:
@@ -91,41 +98,177 @@ paths:
                           type: string
                         displayTime:
                           type: string
-                x-examples:
-                  Example 1:
-                    - game_id: 6df052eb-8f0e-432b-a6e5-98a4518a1607
-                      timestamp: '2023-01-09T15:02:50.118Z'
-                      data:
-                        changedState: {}
-                        displayDelay: 4
-                        displayOrder: 0
-                        displayText: Play Ball!
-                        displayTime: '2023-01-09T15:02:50.118Z'
       operationId: get-game-events
       description: Retrieve past game events.
       parameters:
         - schema:
             type: string
+            example: burp
           in: query
           name: search
-          description: filter for specific keywords in events
+          description: Filter for specific keywords in events.
         - schema:
             type: string
             enum:
               - asc
               - desc
+            default: asc
           in: query
           name: order
+          description: How to order the data.
+  /versions:
+    get:
+      summary: Versions
+      tags: []
+      operationId: get-versions
+      parameters:
+        - $ref: '#/components/parameters/kind'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/before'
+        - $ref: '#/components/parameters/after'
+      description: |
+        Retrieve data of a certain *kind* over time. For just the latest data, use [/entities](Chronicler2.v0.yaml/paths/~1entities).
+
+        Click on a specific kind to see what this endpoint would return.
+
+        | kind | description |
+        | ---: | :---------- |
+        | [`game`](Chronicler2.v0.yaml/components/schemas/Game)                                   | Game data. |
+        | [`player`](Chronicler2.v0.yaml/components/schemas/Player)                               | Player data. |
+        | [`team`](Chronicler2.v0.yaml/components/schemas/Team)                                   | Team data. |
+        | [`flagsmith`](Chronicler2.v0.yaml/components/schemas/Flagsmith)                         | Feature flags. |
+        | [`ticker`](Chronicler2.v0.yaml/components/schemas/Ticker)                               | Ticker messages. |
+        | [`season_elections`](Chronicler2.v0.yaml/components/schemas/SeasonElections)            | Election data. |
+        | [`season_schedule`](Chronicler2.v0.yaml/components/schemas/SeasonSchedule)              | Schedule data. (Unknown) |
+        | [`season_schedule_hourly`](Chronicler2.v0.yaml/components/schemas/SeasonScheduleHourly) | Hourly schedule data. (Unknown) |
+        | [`temporal`](Chronicler2.v0.yaml/components/schemas/Temporal)                           | Temporal (in-game-entity) data. |
+        | [`post`](Chronicler2.v0.yaml/components/schemas/Post)                                   | Post data. |
+        | [`game_bet_data`](Chronicler2.v0.yaml/components/schemas/GameBetData)                   | Game betting data (like odds) |
+        | [`box_score`](Chronicler2.v0.yaml/components/schemas/BoxScore)                          | Box score data. (runs per inning) |
+        | [`sim`](Chronicler2.v0.yaml/components/schemas/Sim)                                     | Simulation data. |
+        | [`season_tournaments`](Chronicler2.v0.yaml/components/schemas/SeasonTournaments)        | Season tournament data. |
+        | [`tournament`](Chronicler2.v0.yaml/components/schemas/Tournament)                       | Single tournament data. |
+        | [`asset`](Chronicler2.v0.yaml/components/schemas/Asset)                                 | Asset (site-content) data. |
+        | [`forbidden_book`](Chronicler2.v0.yaml/components/schemas/ForbiddenBook)                | Forbidden book data. |
   /entities:
     get:
       summary: Entities
       tags: []
       responses: {}
       operationId: get-entities
+      parameters:
+        - $ref: '#/components/parameters/kind'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/at'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/page'
+      description: |-
+        Retrieve latest data of a certain *kind*. For how data changes over time, look to [/versions](Chronicler2.v0.yaml/paths/~1versions).
+
+        Click on a specific kind to see what this endpoint would return.
+
+        | kind | description |
+        | ---: | :---------- |
+        | [`game`](Chronicler2.v0.yaml/components/schemas/Game)                                   | Game data. |
+        | [`player`](Chronicler2.v0.yaml/components/schemas/Player)                               | Player data. |
+        | [`team`](Chronicler2.v0.yaml/components/schemas/Team)                                   | Team data. |
+        | [`flagsmith`](Chronicler2.v0.yaml/components/schemas/Flagsmith)                         | Feature flags. |
+        | [`ticker`](Chronicler2.v0.yaml/components/schemas/Ticker)                               | Ticker messages. |
+        | [`season_elections`](Chronicler2.v0.yaml/components/schemas/SeasonElections)            | Election data. |
+        | [`season_schedule`](Chronicler2.v0.yaml/components/schemas/SeasonSchedule)              | Schedule data. (Unknown) |
+        | [`season_schedule_hourly`](Chronicler2.v0.yaml/components/schemas/SeasonScheduleHourly) | Hourly schedule data. (Unknown) |
+        | [`temporal`](Chronicler2.v0.yaml/components/schemas/Temporal)                           | Temporal (in-game-entity) data. |
+        | [`post`](Chronicler2.v0.yaml/components/schemas/Post)                                   | Post data. |
+        | [`game_bet_data`](Chronicler2.v0.yaml/components/schemas/GameBetData)                   | Game betting data (like odds) |
+        | [`box_score`](Chronicler2.v0.yaml/components/schemas/BoxScore)                          | Box score data. (runs per inning) |
+        | [`sim`](Chronicler2.v0.yaml/components/schemas/Sim)                                     | Simulation data. |
+        | [`season_tournaments`](Chronicler2.v0.yaml/components/schemas/SeasonTournaments)        | Season tournament data. |
+        | [`tournament`](Chronicler2.v0.yaml/components/schemas/Tournament)                       | Single tournament data. |
+        | [`asset`](Chronicler2.v0.yaml/components/schemas/Asset)                                 | Asset (site-content) data. |
+        | [`forbidden_book`](Chronicler2.v0.yaml/components/schemas/ForbiddenBook)                | Forbidden book data. |
 components:
   schemas:
-    Player:
+    Game:
       type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: game
+              entity_id: e1cfeb6f-3b21-4efc-bc41-baf0233b9be1
+              valid_from: '2023-01-09T15:56:38.363078Z'
+              valid_to: null
+              data:
+                awayPitcher:
+                  id: 3be2c730-b351-43f7-a832-a5294fe8468f
+                  name: Amaya Jackson
+                awayTeam:
+                  emoji: '0x1F405'
+                  gameWinner: false
+                  id: 747b8e4a-7e50-4638-a973-ea7950a3e739
+                  name: Hades Tigers
+                  nickname: Hades
+                  primaryColor: '#5c1c1c'
+                  secondaryColor: '#e83622'
+                  shorthand: TGRS
+                  slogan: Never Look Back.
+                cancelled: false
+                complete: true
+                created: '2023-01-05T23:18:18.967Z'
+                day: 0
+                deleted: false
+                gameEventBatches:
+                  - batchData: '[{"displayText":"","displayTime":"2023-01-09T15:55:30.483Z","displayDelay":4,"displayOrder":990,"changedState":{"teamAtBat":"HOME","pitcher":{"id":"3be2c730-b351-43f7-a832-a5294fe8468f","name":"Amaya Jackson"},"batter":{"id":"d89da2d2-674c-4b85-8959-a4bd406f760a","name":"Fish Summer"},"defenders":[{"id":"1dc1b683-baf8-4a3d-9038-20eaac71f5d8","name":"Steals Mondegreen"},{"id":"8cd06abf-be10-4a35-a3ab-1a408a329147","name":"Gloria Bugsnax"},{"id":"41bdb527-1fb2-487d-8237-093958e737e4","name":"Zephyr McCloud"},{"id":"acdad85c-e643-48e0-a62a-8a76685b86ef","name":"Clyde Fetch"},{"id":"4ca52626-58cd-449d-88bb-f6d631588640","name":"Velasquez Alstott"},{"id":"226c36fa-5ca6-48ba-9446-c0c2bf35c7c4","name":"Isla Solo"},{"id":"7b55d484-6ea9-4670-8145-986cb9e32412","name":"Stevenson Heat"},{"id":"20395b48-279d-44ff-b5bf-7cf2624a2d30","name":"Adrian Melon"},{"id":"b4bb9361-212e-4db1-b3d4-45b71bf80b6b","name":"Eddie Tumblehome"}],"started":true}},{"displayText":"Fish Summer hits the pitch to Deep Center Field...","displayTime":"2023-01-09T15:55:34.483Z","displayDelay":4,"displayOrder":993,"changedState":{}},{"displayText":"Isla Solo makes a simple catch.","displayTime":"2023-01-09T15:55:38.483Z","displayDelay":4,"displayOrder":994,"changedState":{"balls":0,"strikes":0,"batter":null,"outs":3,"started":true}},{"displayText":"Game Over.","displayTime":"2023-01-09T15:55:42.483Z","displayDelay":4,"displayOrder":995,"changedState":{"inning":8,"topOfInning":false,"pitcher":null,"batter":null,"defenders":[],"baserunners":[],"balls":0,"strikes":0,"outs":0,"started":true,"complete":true}}]'
+                    batchStep: 37
+                    gameId: e1cfeb6f-3b21-4efc-bc41-baf0233b9be1
+                gameLoserId: 747b8e4a-7e50-4638-a973-ea7950a3e739
+                gameStates:
+                  - awayScore: 0
+                    balls: 0
+                    ballsNeeded: 4
+                    baserunners: []
+                    batter: null
+                    homeScore: 2
+                    inning: 8
+                    outs: 0
+                    outsNeeded: 3
+                    pitcher: null
+                    shame: false
+                    step: 996
+                    strikes: 0
+                    strikesNeeded: 3
+                    teamAtBat: HOME
+                    topOfInning: false
+                    totalBases: 3
+                gameWinnerId: bfd38797-8404-4b38-8b82-341da28b1f83
+                homePitcher:
+                  id: c09e66b3-5847-4cbb-aeba-2b70e7bafedb
+                  name: Premjeet Liu
+                homeTeam:
+                  emoji: '0x1F45F'
+                  gameWinner: true
+                  id: bfd38797-8404-4b38-8b82-341da28b1f83
+                  name: Charleston Shoe Thieves
+                  nickname: Shoe Thieves
+                  primaryColor: '#ffce0a'
+                  secondaryColor: '#ffce0a'
+                  shorthand: SHOE
+                  slogan: Your Kicks are Our Kicks
+                id: e1cfeb6f-3b21-4efc-bc41-baf0233b9be1
+                numberInSeries: 1
+                seasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+                seriesLength: 3
+                startTime: '2023-01-09T15:00:00.000Z'
+                started: false
+                updated: '2023-01-09T15:55:42.535Z'
+                weather:
+                  id: 8b260bb1-2b25-44af-9de4-2e97894b02f0
+                  name: Horizon
+                  weatherEffects: []
+      description: Represents game data at a specific point in time.
+      x-tags:
+        - chronicler
       properties:
         items:
           type: array
@@ -138,102 +281,172 @@ components:
                 type: string
               valid_from:
                 type: string
+                format: date-time
               valid_to:
-                type: 'null'
+                type:
+                  - string
+                  - 'null'
+                format: date-time
               data:
                 type: object
                 properties:
-                  attributeRatings:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        category:
-                          type: string
-                        name:
-                          type: string
-                        stars:
-                          type:
-                            - integer
-                            - number
-                  attributes:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                        value:
-                          type: number
-                  categoryRatings:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        name:
-                          type: string
-                        stars:
-                          type:
-                            - integer
-                            - number
-                  id:
-                    type: string
-                  items:
-                    type: array
-                    items:
-                      type: object
-                      properties: {}
-                  modifications:
-                    type: array
-                    items:
-                      type: object
-                      properties: {}
-                  name:
-                    type: string
-                  overallRating:
-                    type: number
-                  playerHeatMaps:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        currentValue:
-                          type: number
-                  positions:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        positionName:
-                          type: 'null'
-                        x:
-                          type: integer
-                        'y':
-                          type: integer
-                  rosterSlots:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        active:
-                          type: boolean
-                        location:
-                          type: string
-                        orderIndex:
-                          type: integer
-                  team:
+                  awayPitcher:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                  awayTeam:
                     type: object
                     properties:
                       emoji:
                         type: string
+                      gameWinner:
+                        type: boolean
                       id:
                         type: string
                       name:
+                        type: string
+                      nickname:
                         type: string
                       primaryColor:
                         type: string
                       secondaryColor:
                         type: string
+                      shorthand:
+                        type: string
+                      slogan:
+                        type: string
+                  cancelled:
+                    type: boolean
+                  complete:
+                    type: boolean
+                  created:
+                    type: string
+                  day:
+                    type: integer
+                  deleted:
+                    type: boolean
+                  gameEventBatches:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        batchData:
+                          type: string
+                          description: This is in the format of a JSON string.
+                        batchStep:
+                          type: integer
+                        gameId:
+                          type: string
+                  gameLoserId:
+                    type: string
+                  gameStates:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        awayScore:
+                          type: integer
+                        balls:
+                          type: integer
+                        ballsNeeded:
+                          type: integer
+                        baserunners:
+                          type: array
+                          items:
+                            type: object
+                        batter:
+                          type:
+                            - object
+                            - 'null'
+                        homeScore:
+                          type: integer
+                        inning:
+                          type: integer
+                        outs:
+                          type: integer
+                        outsNeeded:
+                          type: integer
+                        pitcher:
+                          type: 'null'
+                        shame:
+                          type: boolean
+                        step:
+                          type: integer
+                        strikes:
+                          type: integer
+                        strikesNeeded:
+                          type: integer
+                        teamAtBat:
+                          type: string
+                        topOfInning:
+                          type: boolean
+                        totalBases:
+                          type: integer
+                  gameWinnerId:
+                    type:
+                      - string
+                      - 'null'
+                  homePitcher:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                  homeTeam:
+                    type: object
+                    properties:
+                      emoji:
+                        type: string
+                      gameWinner:
+                        type: boolean
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      nickname:
+                        type: string
+                      primaryColor:
+                        type: string
+                      secondaryColor:
+                        type: string
+                      shorthand:
+                        type: string
+                      slogan:
+                        type: string
+                  id:
+                    type: string
+                  numberInSeries:
+                    type: integer
+                  seasonId:
+                    type: string
+                  seriesLength:
+                    type: integer
+                  startTime:
+                    type: string
+                  started:
+                    type: boolean
+                    description: '**Note:** Games which have completed may not necessarily have been started.'
+                  updated:
+                    type: string
+                  weather:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      weatherEffects:
+                        type: array
+                        items:
+                          type: object
+        next_page:
+          type: string
+    Player:
+      type: object
       x-examples:
         Example 1:
           items:
@@ -386,13 +599,10 @@ components:
                   name: LA Unlimited Tacos
                   primaryColor: '#64376e'
                   secondaryColor: '#b063c1'
-      description: ''
-      title: versions/Player
+      description: Represents a player at a specific point in time.
+      title: Player
       x-tags:
         - chronicler
-        - versions
-    GameBetData:
-      type: object
       properties:
         items:
           type: array
@@ -405,8 +615,2045 @@ components:
                 type: string
               valid_from:
                 type: string
+                format: date-time
               valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                properties:
+                  attributeRatings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category:
+                          type: string
+                        name:
+                          type: string
+                        stars:
+                          type:
+                            - integer
+                            - number
+                  attributes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: number
+                  categoryRatings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        stars:
+                          type:
+                            - integer
+                            - number
+                  id:
+                    type: string
+                    format: uuid
+                  items:
+                    type: array
+                    items:
+                      type: object
+                  modifications:
+                    type: array
+                    items:
+                      type: object
+                  name:
+                    type: string
+                  overallRating:
+                    type: number
+                  playerHeatMaps:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        currentValue:
+                          type: number
+                  positions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        positionName:
+                          type: 'null'
+                        x:
+                          type: integer
+                        'y':
+                          type: integer
+                  rosterSlots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        active:
+                          type: boolean
+                        location:
+                          type: string
+                        orderIndex:
+                          type: integer
+                  team:
+                    type: object
+                    properties:
+                      emoji:
+                        type: string
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      primaryColor:
+                        type: string
+                      secondaryColor:
+                        type: string
+        next_page:
+          type: string
+    Team:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: team
+              entity_id: 53d473fb-ffee-4fd3-aa1c-671228adc592
+              valid_from: '2023-01-11T21:53:14.021486Z'
+              valid_to: null
+              data:
+                activeTeam: false
+                attributes: []
+                categoryRatings:
+                  - name: defense
+                    stars: null
+                  - name: running
+                    stars: null
+                  - name: batting
+                    stars: null
+                  - name: pitching
+                    stars: null
+                deceased: false
+                division: null
+                emoji: '0x1f346'
+                id: 53d473fb-ffee-4fd3-aa1c-671228adc592
+                locationName: New Hampshire
+                modifications: []
+                name: New Hampshire Eggplants
+                nickname: New Hampshire
+                primaryColor: '#b0fdb8'
+                roster:
+                  - id: e25ba8a8-c084-4141-9022-508cc30f7f83
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: e25ba8a8-c084-4141-9022-508cc30f7f83
+                    name: Boyd English
+                    overallRating: 3
+                    rosterSlots: []
+                  - id: 83634a49-7422-46fe-9afb-6346cca779e1
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 83634a49-7422-46fe-9afb-6346cca779e1
+                    name: Santana Biederman
+                    overallRating: 1.5
+                    rosterSlots: []
+                  - id: 7df00766-95a1-4a95-8018-608d69d58ac3
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 7df00766-95a1-4a95-8018-608d69d58ac3
+                    name: Rocha Hernandez
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: 707c4a70-1184-4081-882b-6f70bbc961f6
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 707c4a70-1184-4081-882b-6f70bbc961f6
+                    name: Reggie Moran
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: 2c029ec7-dfeb-4d4a-8cfd-6f78ab21c51a
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 2c029ec7-dfeb-4d4a-8cfd-6f78ab21c51a
+                    name: Kevin Sharpe
+                    overallRating: 2
+                    rosterSlots: []
+                  - id: 19b78612-65b2-4344-9f2d-c6cb232ef146
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 19b78612-65b2-4344-9f2d-c6cb232ef146
+                    name: Pete Laabs
+                    overallRating: 3
+                    rosterSlots: []
+                  - id: 4c8b4d54-a129-46bd-a1d5-46d3dd1757fc
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 4c8b4d54-a129-46bd-a1d5-46d3dd1757fc
+                    name: Red Bartell
+                    overallRating: 3
+                    rosterSlots: []
+                  - id: 71b1f994-3767-4c58-aace-b5ba1210d911
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 71b1f994-3767-4c58-aace-b5ba1210d911
+                    name: Brooke Lingardo
+                    overallRating: 3
+                    rosterSlots: []
+                  - id: 7529fdc0-aced-47a5-a9df-a17092c9c4ef
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 7529fdc0-aced-47a5-a9df-a17092c9c4ef
+                    name: Mindy Omelette
+                    overallRating: 3
+                    rosterSlots: []
+                  - id: 0a1c3949-8927-4eae-a189-f4e073955ba4
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 0a1c3949-8927-4eae-a189-f4e073955ba4
+                    name: Buddy Herrold
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: 2246bedf-b53d-49f7-ac9e-e52abc1f38ea
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 2246bedf-b53d-49f7-ac9e-e52abc1f38ea
+                    name: Joshua Berger
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: 7118ca3f-413d-4336-90d2-af8fbfc1e8f2
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 7118ca3f-413d-4336-90d2-af8fbfc1e8f2
+                    name: Alison Horne
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: bda2eefc-17fa-4c64-abb6-993320e6a22a
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: bda2eefc-17fa-4c64-abb6-993320e6a22a
+                    name: Simone Valadez
+                    overallRating: 3
+                    rosterSlots: []
+                  - id: c5d1e6f2-f8f7-48fe-bc3d-3aa42b44788d
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: c5d1e6f2-f8f7-48fe-bc3d-3aa42b44788d
+                    name: Claudio Balton
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: 56419d84-76be-4489-85f0-5635c010330e
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 56419d84-76be-4489-85f0-5635c010330e
+                    name: Markel Tenderson
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: 81b9a3d2-3344-4b1e-8a08-7994aa640467
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 81b9a3d2-3344-4b1e-8a08-7994aa640467
+                    name: Chip Alstott
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: 647e574b-5687-4d5b-9e5d-18fcbcdef5aa
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 647e574b-5687-4d5b-9e5d-18fcbcdef5aa
+                    name: Francois Stegmann
+                    overallRating: 3
+                    rosterSlots: []
+                  - id: ed78d22b-d4a3-4270-b2b0-c93f52f445c3
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: ed78d22b-d4a3-4270-b2b0-c93f52f445c3
+                    name: Jut Dembélé
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: c6d91e41-1509-4e5d-84cc-1d8af869d492
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: c6d91e41-1509-4e5d-84cc-1d8af869d492
+                    name: Keanu Highway
+                    overallRating: 1.5
+                    rosterSlots: []
+                  - id: 5727610e-41f2-472c-80e2-56aa47993755
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 5727610e-41f2-472c-80e2-56aa47993755
+                    name: Ridley Macintosh
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: 63d5845d-f077-44ca-91fd-e33ac85af560
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 63d5845d-f077-44ca-91fd-e33ac85af560
+                    name: Blake Moss
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: b215ddc2-196c-4f45-8302-4104e516e530
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: b215ddc2-196c-4f45-8302-4104e516e530
+                    name: Geordi Tolleson
+                    overallRating: 2.5
+                    rosterSlots: []
+                  - id: 42ac4519-eb2a-41bf-b85a-c75129776257
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: 42ac4519-eb2a-41bf-b85a-c75129776257
+                    name: Bistro Mustard
+                    overallRating: 3.5
+                    rosterSlots: []
+                  - id: f1e81503-545c-40b1-ba8c-41ce5a673a4b
+                    modifications:
+                      - modification:
+                          backgroundColor: null
+                          color: null
+                          description: null
+                          icon: null
+                          name: In the vault
+                          textColor: null
+                        playerId: f1e81503-545c-40b1-ba8c-41ce5a673a4b
+                    name: Ohmar Eigengrau
+                    overallRating: 2.5
+                    rosterSlots: []
+                secondaryColor: '#05d41e'
+                shorthand: AUB
+                slogan: Veg Out!
+                standings: []
+            - kind: team
+              entity_id: 4d921519-410b-41e2-882e-9726a4e54a6a
+              valid_from: '2023-01-11T21:53:14.021562Z'
+              valid_to: null
+              data:
+                activeTeam: false
+                attributes: []
+                categoryRatings:
+                  - name: defense
+                    stars: 0
+                  - name: running
+                    stars: 0
+                  - name: batting
+                    stars: 0
+                  - name: pitching
+                    stars: 0
+                deceased: false
+                division: null
+                emoji: '0x2744'
+                id: 4d921519-410b-41e2-882e-9726a4e54a6a
+                locationName: Cold Brew
+                modifications: []
+                name: Cold Brew Crew
+                nickname: Cold Brew
+                primaryColor: '#2a5e6c'
+                roster: []
+                secondaryColor: '#92c7d6'
+                shorthand: CBC
+                slogan: Blaseball Go Brrrrrr
+                standings: []
+            - kind: team
+              entity_id: 49181b72-7f1c-4f1c-929f-928d763ad7fb
+              valid_from: '2023-01-11T21:53:14.021625Z'
+              valid_to: null
+              data:
+                activeTeam: false
+                attributes: []
+                categoryRatings:
+                  - name: defense
+                    stars: 0
+                  - name: running
+                    stars: 0
+                  - name: batting
+                    stars: 0
+                  - name: pitching
+                    stars: 0
+                deceased: false
+                division: null
+                emoji: '0x1F3C6'
+                id: 49181b72-7f1c-4f1c-929f-928d763ad7fb
+                locationName: Latte
+                modifications: []
+                name: Atlético Latte
+                nickname: Latte
+                primaryColor: '#094f12'
+                roster: []
+                secondaryColor: '#36ad45'
+                shorthand: AL
+                slogan: Teamwork makes the steam work
+                standings: []
+      description: Represents a team at a specific point in time.
+      x-tags:
+        - chronicler
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
                 type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                properties:
+                  activeTeam:
+                    type: boolean
+                  attributes:
+                    type: array
+                    items:
+                      type: object
+                  categoryRatings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        stars:
+                          type:
+                            - integer
+                            - 'null'
+                  deceased:
+                    type: boolean
+                  division:
+                    type: 'null'
+                  emoji:
+                    type: string
+                  id:
+                    type: string
+                  locationName:
+                    type: string
+                  modifications:
+                    type: array
+                    items:
+                      type: object
+                  name:
+                    type: string
+                  nickname:
+                    type: string
+                  primaryColor:
+                    type: string
+                  roster:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        modifications:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              modification:
+                                type: object
+                                properties:
+                                  backgroundColor:
+                                    type: 'null'
+                                  color:
+                                    type: 'null'
+                                  description:
+                                    type: 'null'
+                                  icon:
+                                    type: 'null'
+                                  name:
+                                    type: string
+                                  textColor:
+                                    type: 'null'
+                              playerId:
+                                type: string
+                        name:
+                          type: string
+                        overallRating:
+                          type:
+                            - integer
+                            - number
+                        rosterSlots:
+                          type: array
+                          items:
+                            type: object
+                  secondaryColor:
+                    type: string
+                  shorthand:
+                    type: string
+                  slogan:
+                    type: string
+                  standings:
+                    type: array
+                    items:
+                      type: object
+        next_page:
+          type: string
+    Flagsmith:
+      title: Flagsmith
+      x-stoplight:
+        id: eojz7sw1apq6w
+      type: object
+      description: |-
+        Represent flagsmith data at a specific point in time. Presumably, flagsmith data represents multiple feature flags, with information that relates to them.
+
+        Since the nature of the data can be arbitrary, it's not listed in the schema. However, you can refer to the Examples section for an idea on what the data would look like.
+      examples:
+        - items:
+            - kind: flagsmith
+              entity_id: 00000000-0000-0000-0000-000000000000
+              valid_from: '2023-01-15T18:14:43.192741Z'
+              valid_to: null
+              data:
+                blingo: false
+                blingoMobile: false
+                bluejay: false
+                cheering: false
+                coverCta1:
+                  button: ''
+                  heading: Congratulations Shoe Thieves!
+                  icon: 'https://blaseball-icons.s3.us-west-2.amazonaws.com/play+tab/shoethieves.png'
+                  mobileRoute: ''
+                  route: ''
+                  subheading: Season 1 Champions
+                coverCta2:
+                  button: View Book
+                  heading: The Book has been Opened
+                  icon: 'https://blaseball-elections.s3.us-west-2.amazonaws.com/decrees_openForbiddenBook.png'
+                  mobileRoute: ''
+                  route: /thebook
+                  subheading: Read it at your own risk
+                coverCta3:
+                  button: See Results
+                  heading: Election Results are in
+                  icon: 'https://blaseball-icons.s3.us-west-2.amazonaws.com/play+tab/election+icon.png'
+                  mobileRoute: ''
+                  route: /election
+                  subheading: Catch up on what happened
+                coverHeader: Offseason
+                crow: false
+                duck: false
+                fallball: false
+                fallballDropsFinished: false
+                fallballDropsLive: false
+                fallballQr: false
+                flamingo: false
+                forbiddenBook: true
+                gameScheduleUi: false
+                gameScheduleUiText: The next Season begins January 23rd
+                goldfinch: false
+                kestrel: false
+                loggingGameWidget: false
+                login: true
+                mobileRedirect: false
+                newLandingPage: false
+                newVotesPage: false
+                nighthawk: false
+                onboarding: false
+                onboardingModalBetting: true
+                onboardingModalBettingJson:
+                  bodyText:
+                    - Here’s where you can see all the games that will be played this hour.
+                    - Spend any number of your CHIPS to BET on teams you think will win!
+                    - 'During ELECTIONS at the end of each week, you’ll be able to cash in your winnings for VOTES, which you can use to change Blaseball forever.'
+                  buttonText: Got it
+                  headerText: Betting
+                onboardingModalCommunity: false
+                onboardingModalCommunityJson:
+                  bodyText:
+                    - I'm the first paragraph
+                    - I'm the second paragraph
+                  buttonText: Got it
+                  title: Community
+                onboardingModalElections: true
+                onboardingModalElectionsJson:
+                  bodyText:
+                    - ELECTIONS happen every Sunday. This is where every Blaseball Fan -- yourself included -- has a chance to permanently CHANGE THE GAME in big and small ways.
+                    - 'Cash your CHIPS in for VOTES, and use them here to help your TEAM'
+                  buttonText: Got it
+                  headerText: Elections
+                onboardingModalLeague: false
+                onboardingModalLeagueJson:
+                  bodyText:
+                    - I'm the first paragraph
+                    - I'm the second paragraph
+                  buttonText: Got it
+                  title: League
+                onboardingModalPlayCover: true
+                onboardingModalPlayCoverJson:
+                  bodyText:
+                    - This is the PLAY section. It shows you all the things you can do in Blaseball right now.
+                    - 'Blaseball happens in real time, and you can only do some actions—like BETTING or VOTING—at certain times during the week.'
+                  buttonText: Got it
+                  headerText: Play
+                onboardingModalSchedule: true
+                onboardingModalScheduleJson:
+                  bodyText:
+                    - 'This is an overview of all the games that will be—and have been—played this season. '
+                    - 'On weekdays, Blaseball games are played on the hour, almost every hour, 24 hours a day.'
+                    - 'Choose a day at the top to see all the games being played that day.  If you see an interesting matchup, you can view those games and BET on them.'
+                  buttonText: Got it
+                  headerText: Daily Schedule
+                onboardingModalWatch: true
+                onboardingModalWatchJson:
+                  bodyText:
+                    - 'Regular season Blaseball is played on the hour, almost every hour, Monday through Friday.'
+                    - 'Games are happening right now! Find games you’re interested in—your FAVORITE TEAM, or a big BET you placed—and follow along!'
+                  buttonText: Got it
+                  headerText: Watch Live
+                onboardingUiV1: true
+                onboardingUiV1Json:
+                  - buttons:
+                      - action: next
+                        analyticEvent: it-begins
+                        style: primary
+                        text: WHAT
+                    headerText: hey
+                  - bodyText:
+                      - style: primary
+                        text: ''
+                    buttons:
+                      - action: next
+                        analyticEvent: it-begins
+                        style: primary
+                        text: 'YES, FIRST TIME'
+                      - action: next
+                        analyticEvent: it-begins
+                        style: primary
+                        text: 'NO, I''VE PLAYED BEFORE'
+                    headerText: new here?
+                  - bodyText:
+                      - style: primary
+                        text: welcome to internet league blaseball
+                    buttons:
+                      - action: next
+                        style: primary
+                        text: THANKS!
+                    headerText: great
+                  - buttons:
+                      - action: next
+                        style: primary
+                        text: OKAY
+                    headerText: 'blaseball is an ongoing, live competitive sports league'
+                  - buttons:
+                      - action: next
+                        style: primary
+                        text: HOW?
+                    headerText: 'together, you fans can change the game'
+                  - buttons:
+                      - action: next
+                        style: primary
+                        text: DEMOCRACY!
+                    headerText: 'to do that, everyone votes in a weekly election'
+                  - buttons:
+                      - action: next
+                        style: primary
+                        text: GOTCHA
+                    headerText: you can buy votes by cashing in chips
+                  - buttons:
+                      - action: next
+                        style: primary
+                        text: NO RISK NO REWARD!
+                    headerText: earn chips by betting on games throughout the week
+                  - buttons:
+                      - action: next
+                        style: primary
+                        text: I'M ALL IN!
+                    headerText: 'don''t worry, betting is free'
+                  - buttons:
+                      - action: next
+                        style: primary
+                        text: LET'S DO THAT
+                    headerText: first you need to pick your favorite team
+                  - bodyText:
+                      - style: primary
+                        text: you can change it later
+                    headerText: choose the team you want to win it all
+                    teamSelectEnabled: true
+                  - bodyText:
+                      - style: primary
+                        text: that's your pick?
+                    buttons:
+                      - action: next
+                        analyticEvent: confirmed-team
+                        style: primary
+                        text: 'YUP, I LOVE THEM!'
+                      - action: back
+                        analyticEvent: reselect-team
+                        style: secondary
+                        text: I CHANGED MY MIND
+                    selectedTeamDisplayed: true
+                  - buttons:
+                      - action: complete
+                        analyticEvent: finished-onboarding
+                        style: primary
+                        text: Play Ball!
+                    headerText: 'great, time to play ball'
+                oriole: false
+                playTab: false
+                playerAttributes: true
+                playerStars: true
+                postBodyPreview: true
+                postFilterDropdown: false
+                postMoreMenu: false
+                postMultiline: true
+                postReplies: false
+                postSharing: false
+                pusher: true
+                secretFallball: false
+                signup: true
+                silverPeanut: false
+                thirdPartyAuth: false
+                userUsernames: false
+                warbler: false
+                woodpecker: false
+          next_page: iPxy1SCOOhcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      x-tags:
+        - chronicler
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                description: 'The data is somewhat arbitrary, but holds what seems like multiple feature flags.'
+        next_page:
+          type: string
+    Ticker:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: ticker
+              entity_id: 00000000-0000-0000-0000-000000000000
+              valid_from: '2023-01-09T11:38:24.594338Z'
+              valid_to: null
+              data:
+                - expire: null
+                  id: test
+                  msg: YOU ARE NOW PARTICIPATING IN THE CULTURAL EVENT OF BLASEBALL
+                - expire: null
+                  id: test2
+                  msg: I AM THE TICKER
+                - expire: null
+                  id: test3
+                  msg: I HAVE BEEN REBOOTED
+                - expire: null
+                  id: test4
+                  msg: REJOICE PLAY BALL
+                - expire: null
+                  id: test5
+                  msg: PLAY NICE
+                - expire: null
+                  id: test6
+                  msg: NO STEALING
+                - expire: null
+                  id: test7
+                  msg: WHATS THAT ON THE HORIZON
+          next_page: 0MCvCgWhOBcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      description: Represents ticker data at a specific point in time.
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    expire:
+                      type:
+                        - string
+                        - 'null'
+                    id:
+                      type: string
+                    msg:
+                      type: string
+        next_page:
+          type: string
+      x-tags:
+        - chronicler
+    SeasonElections:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: season_elections
+              entity_id: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+              valid_from: '2023-01-15T18:00:27.995487Z'
+              valid_to: null
+              data:
+                blessings:
+                  - choiceType: blessing
+                    description: Compete in the divine raffle
+                    electionComplete: true
+                    electionOptions:
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Steal the best Batter from the Black Hole for your Team.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: 895ed802-7124-4f8e-b1e3-f80743f27c55
+                        name: NEW Steal Best Batter
+                        results:
+                          - outcomeStrings:
+                              - The Baltimore Crabs reaches into the Horizon and steals Tiera Wigdoubt.
+                            overallVoteCount: 80680
+                            resultType: blessing
+                            topVoteCount: 8341
+                            topVotedTeam:
+                              emoji: '0x1F980'
+                              id: 8d87c468-699a-47a8-b40d-cfb73a5660ad
+                              name: Baltimore Crabs
+                              nickname: Baltimore
+                              primaryColor: '#593037'
+                              secondaryColor: '#b05c6b'
+                              shorthand: CRAB
+                              slogan: Claws Up!
+                            winningTeam:
+                              emoji: '0x1F980'
+                              id: 8d87c468-699a-47a8-b40d-cfb73a5660ad
+                              name: Baltimore Crabs
+                              nickname: Baltimore
+                              primaryColor: '#593037'
+                              secondaryColor: '#b05c6b'
+                              shorthand: CRAB
+                              slogan: Claws Up!
+                            winningVoteCount: 8341
+                        subheading: + BATTER
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Max out a random Pitcher on your Team's Zone.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: 1c5740ab-5cd2-4f75-aec7-b2585dfe137f
+                        name: NEW Max Out Pitcher
+                        results:
+                          - outcomeStrings:
+                              - Abner Pothos' entire Zone heats up.
+                              - It's Red Hot!
+                            overallVoteCount: 73414
+                            resultType: blessing
+                            topVoteCount: 6630
+                            topVotedTeam:
+                              emoji: '0x1F40C'
+                              id: bb4a9de5-c924-4923-a0cb-9d1445f1ee5d
+                              name: Ohio Worms
+                              nickname: Ohio
+                              primaryColor: '#5c4822'
+                              secondaryColor: '#ba9c65'
+                              shorthand: OHWO
+                              slogan: 'Oh, Worm?'
+                            winningTeam:
+                              emoji: '0x1F5E3'
+                              id: eb67ae5e-c4bf-46ca-bbbc-425cd34182ff
+                              name: Canada Moist Talkers
+                              nickname: Canada
+                              primaryColor: '#f5feff'
+                              secondaryColor: '#f5feff'
+                              shorthand: CMT
+                              slogan: 'Talk Spit, Get Hits'
+                            winningVoteCount: 3048
+                        subheading: + ZONE
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Call the Alternates for your Team's 5 worst Players.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: c20cb624-3c04-4252-9b41-c18d08a61086
+                        name: NEW Randomize Players
+                        results:
+                          - outcomeStrings:
+                              - Eddie Mulberry's Alternate is Called!
+                              - Una Manhattan's Alternate is Called!
+                              - Edric Tosser's Alternate is Called!
+                              - Serge Shortvat's Alternate is Called!
+                              - Eddie Mulberry's Alternate is Called!
+                            overallVoteCount: 35545
+                            resultType: blessing
+                            topVoteCount: 7970
+                            topVotedTeam:
+                              emoji: '0x1F32E'
+                              id: 878c1bf6-0d21-4659-bfee-916c8314d69c
+                              name: LA Unlimited Tacos
+                              nickname: Tacos
+                              primaryColor: '#64376e'
+                              secondaryColor: '#b063c1'
+                              shorthand: TACO
+                              slogan: 72° and Infinite
+                            winningTeam:
+                              emoji: '0x1F6A4'
+                              id: b63be8c2-576a-4d6e-8daf-814f8bcea96f
+                              name: Miami Dale
+                              nickname: Miami
+                              primaryColor: '#9141ba'
+                              secondaryColor: '#cd76fa'
+                              shorthand: DALE
+                              slogan: ¡Dale!
+                            winningVoteCount: 1017
+                        subheading: ALTERNATE
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Your Team's Defense and Running are boosted by 1 Star.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: b9ea33e0-de4d-4fdf-98b5-55167126a4d7
+                        name: Wind Sprints
+                        results:
+                          - outcomeStrings:
+                              - The Yellowstone Magic' Lineup gains 1 Star of Defense and 1 Star of Running.
+                            overallVoteCount: 214891
+                            resultType: blessing
+                            topVoteCount: 23524
+                            topVotedTeam:
+                              emoji: '0x2728'
+                              id: 7966eb04-efcc-499b-8f03-d13916330531
+                              name: Yellowstone Magic
+                              nickname: Magic
+                              primaryColor: '#bf0043'
+                              secondaryColor: '#f60f63'
+                              shorthand: YELL
+                              slogan: 'As Above, So Below'
+                            winningTeam:
+                              emoji: '0x2728'
+                              id: 7966eb04-efcc-499b-8f03-d13916330531
+                              name: Yellowstone Magic
+                              nickname: Magic
+                              primaryColor: '#bf0043'
+                              secondaryColor: '#f60f63'
+                              shorthand: YELL
+                              slogan: 'As Above, So Below'
+                            winningVoteCount: 23524
+                        subheading: + DEFENSE \n+ RUNNING
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Send your Team's worst Player into the Black Hole and receive a random Player back.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: b3656e69-e162-4de0-b4a0-b9310b3e3d1d
+                        name: Yeet
+                        results:
+                          - outcomeStrings:
+                              - The Hades Tigers yeets Eddie Tumblehome into the Horizon!
+                              - The Black Hole Burps out Frazier Tosser in return.
+                            overallVoteCount: 35266
+                            resultType: blessing
+                            topVoteCount: 5134
+                            topVotedTeam:
+                              emoji: '0x1F36C'
+                              id: adc5b394-8f76-416d-9ce9-813706877b84
+                              name: Kansas City Breath Mints
+                              nickname: Kansas City
+                              primaryColor: '#178f55'
+                              secondaryColor: '#178f55'
+                              shorthand: KCBM
+                              slogan: 'Fresh Breath, Here We Come.'
+                            winningTeam:
+                              emoji: '0x1F405'
+                              id: 747b8e4a-7e50-4638-a973-ea7950a3e739
+                              name: Hades Tigers
+                              nickname: Hades
+                              primaryColor: '#5c1c1c'
+                              secondaryColor: '#e83622'
+                              shorthand: TGRS
+                              slogan: Never Look Back.
+                            winningVoteCount: 901
+                        subheading: SWAP
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Steal the best Pitcher in the Black Hole for your Team.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: 1311e337-733b-4441-a017-9eb95b757ef4
+                        name: NEW Steal Best Pitcher
+                        results:
+                          - outcomeStrings:
+                              - The Charleston Shoe Thieves reaches into the Horizon and steals Derrick Krueger.
+                            overallVoteCount: 97341
+                            resultType: blessing
+                            topVoteCount: 13838
+                            topVotedTeam:
+                              emoji: '0x1F3B8'
+                              id: 105bc3ff-1320-4e37-8ef0-8d595cb95dd0
+                              name: Seattle Garages
+                              nickname: Seattle
+                              primaryColor: '#2b4075'
+                              secondaryColor: '#5a83ea'
+                              shorthand: SEA
+                              slogan: Park It!
+                            winningTeam:
+                              emoji: '0x1F45F'
+                              id: bfd38797-8404-4b38-8b82-341da28b1f83
+                              name: Charleston Shoe Thieves
+                              nickname: Shoe Thieves
+                              primaryColor: '#ffce0a'
+                              secondaryColor: '#ffce0a'
+                              shorthand: SHOE
+                              slogan: Your Kicks are Our Kicks
+                            winningVoteCount: 5505
+                        subheading: + PITCHER
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Max out a random Batter on your Team's Zone.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: e84caaa5-25a8-4f05-995b-adc8e491dcc7
+                        name: NEW Max Out Batter
+                        results:
+                          - outcomeStrings:
+                              - Gumdrop Che Amran' entire Zone heats up.
+                              - It's Red Hot!
+                            overallVoteCount: 53767
+                            resultType: blessing
+                            topVoteCount: 6815
+                            topVotedTeam:
+                              emoji: '0x1F980'
+                              id: 8d87c468-699a-47a8-b40d-cfb73a5660ad
+                              name: Baltimore Crabs
+                              nickname: Baltimore
+                              primaryColor: '#593037'
+                              secondaryColor: '#b05c6b'
+                              shorthand: CRAB
+                              slogan: Claws Up!
+                            winningTeam:
+                              emoji: '0x1f3cb'
+                              id: c73b705c-40ad-4633-a6ed-d357ee2e2bcf
+                              name: Tokyo Lift
+                              nickname: Tokyo
+                              primaryColor: '#821f60'
+                              secondaryColor: '#e830ab'
+                              shorthand: TKO
+                              slogan: Heart and Swole
+                            winningVoteCount: 1027
+                        subheading: + ZONE
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Your Team's Batting is boosted by 1 Star.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: 7030b337-6c57-4494-a72d-5c6e350e5f4c
+                        name: NEW Batting Boost
+                        results:
+                          - outcomeStrings:
+                              - The Moab Hellmouth Sunbeams' Lineup gains 1 Star of Batting.
+                            overallVoteCount: 166154
+                            resultType: blessing
+                            topVoteCount: 27220
+                            topVotedTeam:
+                              emoji: '0x1F405'
+                              id: 747b8e4a-7e50-4638-a973-ea7950a3e739
+                              name: Hades Tigers
+                              nickname: Hades
+                              primaryColor: '#5c1c1c'
+                              secondaryColor: '#e83622'
+                              shorthand: TGRS
+                              slogan: Never Look Back.
+                            winningTeam:
+                              emoji: '0x1F31E'
+                              id: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                              name: Moab Hellmouth Sunbeams
+                              nickname: Sunbeams
+                              primaryColor: '#fffbab'
+                              secondaryColor: '#fffbab'
+                              shorthand: SUN
+                              slogan: Stare into the Sun...
+                            winningVoteCount: 18887
+                        subheading: + BATTING
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Swap your worst Player out for someone in your Shadows.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: c48e1216-3153-4585-879b-570ab612c2ef
+                        name: Shadow Play
+                        results:
+                          - outcomeStrings:
+                              - James Boy is called up to replace Yusef Puddles.
+                              - Yusef Puddles retreats to the shadows...
+                            overallVoteCount: 26542
+                            resultType: blessing
+                            topVoteCount: 4482
+                            topVotedTeam:
+                              emoji: '0x1F32E'
+                              id: 878c1bf6-0d21-4659-bfee-916c8314d69c
+                              name: LA Unlimited Tacos
+                              nickname: Tacos
+                              primaryColor: '#64376e'
+                              secondaryColor: '#b063c1'
+                              shorthand: TACO
+                              slogan: 72° and Infinite
+                            winningTeam:
+                              emoji: '0x1F357'
+                              id: 57ec08cc-0411-4643-b304-0e80dbc15ac7
+                              name: Mexico City Wild Wings
+                              nickname: Mexico City
+                              primaryColor: '#883c17'
+                              secondaryColor: '#ee6300'
+                              shorthand: WWMX
+                              slogan: Pase Lo Que Pase
+                            winningVoteCount: 996
+                        subheading: SWAP
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Boost your Lineup's Thwack by 1 Star.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: 322b4cb5-3008-4a82-92a3-94bea8b46538
+                        name: Guess Whose Thwack
+                        results:
+                          - outcomeStrings:
+                              - The Seattle Garages' Lineup gains 1 Star of Thwack.
+                            overallVoteCount: 97734
+                            resultType: blessing
+                            topVoteCount: 12631
+                            topVotedTeam:
+                              emoji: '0x1F31E'
+                              id: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                              name: Moab Hellmouth Sunbeams
+                              nickname: Sunbeams
+                              primaryColor: '#fffbab'
+                              secondaryColor: '#fffbab'
+                              shorthand: SUN
+                              slogan: Stare into the Sun...
+                            winningTeam:
+                              emoji: '0x1F3B8'
+                              id: 105bc3ff-1320-4e37-8ef0-8d595cb95dd0
+                              name: Seattle Garages
+                              nickname: Seattle
+                              primaryColor: '#2b4075'
+                              secondaryColor: '#5a83ea'
+                              shorthand: SEA
+                              slogan: Park It!
+                            winningVoteCount: 10796
+                        subheading: + THWACK
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Boost a random Player on your Team's worst Attribute by 5 Stars.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: dd5682d9-c11f-48b3-85c1-fed219b1fb2b
+                        name: Shore Up
+                        results:
+                          - outcomeStrings:
+                              - Svetlana Dickens shores up their worst Attribute!
+                            overallVoteCount: 40398
+                            resultType: blessing
+                            topVoteCount: 4252
+                            topVotedTeam:
+                              emoji: '0x1F3DD'
+                              id: 979aee4a-6d80-4863-bf1c-ee1a78e06024
+                              name: Hawai'i Fridays
+                              nickname: Hawai'i
+                              primaryColor: '#3ee652'
+                              secondaryColor: '#3ee652'
+                              shorthand: FRI
+                              slogan: It's Island Time!
+                            winningTeam:
+                              emoji: '0x1F3DD'
+                              id: 979aee4a-6d80-4863-bf1c-ee1a78e06024
+                              name: Hawai'i Fridays
+                              nickname: Hawai'i
+                              primaryColor: '#3ee652'
+                              secondaryColor: '#3ee652'
+                              shorthand: FRI
+                              slogan: It's Island Time!
+                            winningVoteCount: 4252
+                        subheading: '- WEAKNESS'
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Your Team is boosted Overall by 1/2 a Star.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: acd4b001-5140-45b3-9bf0-ab144f1e0e2e
+                        name: NEW Team Boost
+                        results:
+                          - outcomeStrings:
+                              - The Boston Flowers gain 1/2 a Star Overall.
+                            overallVoteCount: 200856
+                            resultType: blessing
+                            topVoteCount: 16802
+                            topVotedTeam:
+                              emoji: '0x1F32E'
+                              id: 878c1bf6-0d21-4659-bfee-916c8314d69c
+                              name: LA Unlimited Tacos
+                              nickname: Tacos
+                              primaryColor: '#64376e'
+                              secondaryColor: '#b063c1'
+                              shorthand: TACO
+                              slogan: 72° and Infinite
+                            winningTeam:
+                              emoji: '0x1F339'
+                              id: 3f8bbb15-61c0-4e3f-8e4a-907a5fb1565e
+                              name: Boston Flowers
+                              nickname: Boston
+                              primaryColor: '#f7d1ff'
+                              secondaryColor: '#f7d1ff'
+                              shorthand: BOS
+                              slogan: Let's Grow!
+                            winningVoteCount: 9631
+                        subheading: + OVERALL
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: A Division Rival will receive the worst Overall Player from the Black Hole.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: 4cc766e1-e942-447f-b6f3-5915224d778c
+                        name: Strike Zero
+                        results:
+                          - outcomeStrings:
+                              - The Black Hole Burps out Shaquille Torres to the Chicago Firefighters!
+                              - The Houston Spies receive Strike 1.
+                            overallVoteCount: 12539
+                            resultType: blessing
+                            topVoteCount: 1015
+                            topVotedTeam:
+                              emoji: '0x1F3B8'
+                              id: 105bc3ff-1320-4e37-8ef0-8d595cb95dd0
+                              name: Seattle Garages
+                              nickname: Seattle
+                              primaryColor: '#2b4075'
+                              secondaryColor: '#5a83ea'
+                              shorthand: SEA
+                              slogan: Park It!
+                            winningTeam:
+                              emoji: '0x1F575'
+                              id: 9debc64f-74b7-4ae1-a4d6-fce0144b6ea5
+                              name: Houston Spies
+                              nickname: Spies
+                              primaryColor: '#67556b'
+                              secondaryColor: '#9e82a4'
+                              shorthand: SPY
+                              slogan: Bang BANG
+                            winningVoteCount: 330
+                        subheading: STRIKE RIVAL
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Your Team's Pitching is boosted by 1 Star.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: a92077bb-b09f-4f41-a806-00dd04137e22
+                        name: NEW Pitching Boost
+                        results:
+                          - outcomeStrings:
+                              - The Breckenridge Jazz Hands' Rotation gains 1 Star of Pitching.
+                            overallVoteCount: 126862
+                            resultType: blessing
+                            topVoteCount: 14850
+                            topVotedTeam:
+                              emoji: '0x2728'
+                              id: 7966eb04-efcc-499b-8f03-d13916330531
+                              name: Yellowstone Magic
+                              nickname: Magic
+                              primaryColor: '#bf0043'
+                              secondaryColor: '#f60f63'
+                              shorthand: YELL
+                              slogan: 'As Above, So Below'
+                            winningTeam:
+                              emoji: '0x1F450'
+                              id: a37f9158-7f82-46bc-908c-c9e2dda7c33b
+                              name: Broken Ridge Jazz Hands
+                              nickname: Breckenridge
+                              primaryColor: '#6388ad'
+                              secondaryColor: '#7ba9d7'
+                              shorthand: JAZZ
+                              slogan: We’ve Got Winning to Do. Just for You.
+                            winningVoteCount: 4280
+                        subheading: + PITCHING
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: Sort your Lineup by Batting Rating.
+                        electionGroupId: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                        icon: ''
+                        iconSizes:
+                          default: ''
+                        id: 26fc7234-e667-42a4-9dbf-061714a86b92
+                        name: Strong Start
+                        results:
+                          - outcomeStrings:
+                              - The Core Mechanics optimized their Lineup!
+                            overallVoteCount: 58154
+                            resultType: blessing
+                            topVoteCount: 16111
+                            topVotedTeam:
+                              emoji: '0x2728'
+                              id: 7966eb04-efcc-499b-8f03-d13916330531
+                              name: Yellowstone Magic
+                              nickname: Magic
+                              primaryColor: '#bf0043'
+                              secondaryColor: '#f60f63'
+                              shorthand: YELL
+                              slogan: 'As Above, So Below'
+                            winningTeam:
+                              emoji: '0x1F6E0'
+                              id: 46358869-dce9-4a01-bfba-ac24fc56f57e
+                              name: Core Mechanics
+                              nickname: Mechanics
+                              primaryColor: '#d13100'
+                              secondaryColor: '#ff5b29'
+                              shorthand: MECH
+                              slogan: We Can Fix This
+                            winningVoteCount: 1272
+                        subheading: OPTIMIZE
+                        tags: []
+                    endTimestamp: 1673805599000
+                    icon: ''
+                    iconSizes:
+                      default: ''
+                    id: 4e6be0a4-a791-4df1-8eec-4b5ee9ca518d
+                    maximumAllowed: 1
+                    name: Blessings
+                    seasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+                    startTimestamp: 1673276400000
+                decrees:
+                  - choiceType: decree
+                    description: The future of Blaseball is in your hands. Choose Wisely.
+                    electionComplete: true
+                    electionOptions:
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: It is Forbidden.
+                        electionGroupId: 977790b3-561a-4ffd-9dbc-d11a98003680
+                        icon: 'https://blaseball-elections.s3.us-west-2.amazonaws.com/decrees_openForbiddenBook.png'
+                        iconSizes:
+                          default: 'https://blaseball-elections.s3.us-west-2.amazonaws.com/decrees_openForbiddenBook.png'
+                        id: 46ffef34-0d5f-4cf0-88df-b78e722b12d1
+                        name: NEW Open the Forbidden Book
+                        results:
+                          - enacted: true
+                            outcomeStrings:
+                              - THE BOOK OPENS
+                              - SOLAR ECLIPSE
+                              - UMPIRES' EYES TURN WHITE
+                              - STAR PLAYER ANASTASIA ISAROBOT IS INCINERATED. THEY ARE REPLACED ON THE MEXICO CITY WILD WINGS BY GÖRAN NDOYE.
+                              - STAR PLAYER TERRELL BRADLEY'S ALTERNATE IS CALLED.
+                              - STAR PLAYER ZEPHYR MCCLOUD IS CURSED. EYES CLEAR. HEART FILLS. THEY CAN'T LOSE.
+                              - STAR PLAYER SIMON HALEY SWEARS IN. THEY EMBARK ON A SIDE QUEST IN THE SHADOWS. PIXIE CARBERRY CLOCKS IN.
+                              - BRECKENRIDGE BREAKS
+                              - THE CORONATION ERA BEGINS.
+                            overallVoteCount: 428784
+                            resultType: decree
+                            winningVoteCount: -1
+                        subheading: ''
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: 'At the end of every Season, the Champion will trade away all of their Players.'
+                        electionGroupId: 977790b3-561a-4ffd-9dbc-d11a98003680
+                        icon: 'https://blaseball-elections.s3.us-west-2.amazonaws.com/decrees_redistributeWealth.png'
+                        iconSizes:
+                          default: 'https://blaseball-elections.s3.us-west-2.amazonaws.com/decrees_redistributeWealth.png'
+                        id: 64a6f351-931b-4db1-a55c-f660d1d1ffe6
+                        name: NEW Redistribute Wealth
+                        results: []
+                        subheading: ''
+                        tags: []
+                      - currentUserVotesPlaced: 0
+                        dataInputFormat: {}
+                        description: 'At the end of every Season, the last place Team''s Roster will be replaced.'
+                        electionGroupId: 977790b3-561a-4ffd-9dbc-d11a98003680
+                        icon: 'https://blaseball-elections.s3.us-west-2.amazonaws.com/decrees_relegation.png'
+                        iconSizes:
+                          default: 'https://blaseball-elections.s3.us-west-2.amazonaws.com/decrees_relegation.png'
+                        id: eb485a5b-68eb-46d2-aec4-b47096a5e5c6
+                        name: NEW Relegation
+                        results: []
+                        subheading: ''
+                        tags: []
+                    endTimestamp: 1673805599000
+                    icon: ''
+                    iconSizes:
+                      default: ''
+                    id: 977790b3-561a-4ffd-9dbc-d11a98003680
+                    maximumAllowed: 1
+                    name: Decrees
+                    seasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+                    startTimestamp: 1673276400000
+          next_page: GHu4t1mNOhcAAAAAAAAAAM0bZxT03k38oDCFGzRZ2NE=
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                properties:
+                  blessings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        choiceType:
+                          type: string
+                        description:
+                          type: string
+                        electionComplete:
+                          type: boolean
+                        electionOptions:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              currentUserVotesPlaced:
+                                type: integer
+                              dataInputFormat:
+                                type: object
+                              description:
+                                type: string
+                              electionGroupId:
+                                type: string
+                              icon:
+                                type: string
+                              iconSizes:
+                                type: object
+                                properties:
+                                  default:
+                                    type: string
+                              id:
+                                type: string
+                              name:
+                                type: string
+                              results:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    outcomeStrings:
+                                      type: array
+                                      items:
+                                        type: string
+                                    overallVoteCount:
+                                      type: integer
+                                    resultType:
+                                      type: string
+                                    topVoteCount:
+                                      type: integer
+                                    topVotedTeam:
+                                      type: object
+                                      properties:
+                                        emoji:
+                                          type: string
+                                        id:
+                                          type: string
+                                        name:
+                                          type: string
+                                        nickname:
+                                          type: string
+                                        primaryColor:
+                                          type: string
+                                        secondaryColor:
+                                          type: string
+                                        shorthand:
+                                          type: string
+                                        slogan:
+                                          type: string
+                                    winningTeam:
+                                      type: object
+                                      properties:
+                                        emoji:
+                                          type: string
+                                        id:
+                                          type: string
+                                        name:
+                                          type: string
+                                        nickname:
+                                          type: string
+                                        primaryColor:
+                                          type: string
+                                        secondaryColor:
+                                          type: string
+                                        shorthand:
+                                          type: string
+                                        slogan:
+                                          type: string
+                                    winningVoteCount:
+                                      type: integer
+                              subheading:
+                                type: string
+                              tags:
+                                type: array
+                                items:
+                                  type: object
+                        endTimestamp:
+                          type: integer
+                        icon:
+                          type: string
+                        iconSizes:
+                          type: object
+                          properties:
+                            default:
+                              type: string
+                        id:
+                          type: string
+                        maximumAllowed:
+                          type: integer
+                        name:
+                          type: string
+                        seasonId:
+                          type: string
+                        startTimestamp:
+                          type: integer
+                  decrees:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        choiceType:
+                          type: string
+                        description:
+                          type: string
+                        electionComplete:
+                          type: boolean
+                        electionOptions:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              currentUserVotesPlaced:
+                                type: integer
+                              dataInputFormat:
+                                type: object
+                              description:
+                                type: string
+                              electionGroupId:
+                                type: string
+                              icon:
+                                type: string
+                              iconSizes:
+                                type: object
+                                properties:
+                                  default:
+                                    type: string
+                              id:
+                                type: string
+                              name:
+                                type: string
+                              results:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    enacted:
+                                      type: boolean
+                                    outcomeStrings:
+                                      type: array
+                                      items:
+                                        type: string
+                                    overallVoteCount:
+                                      type: integer
+                                    resultType:
+                                      type: string
+                                    winningVoteCount:
+                                      type: integer
+                              subheading:
+                                type: string
+                              tags:
+                                type: array
+                                items:
+                                  type: object
+                        endTimestamp:
+                          type: integer
+                        icon:
+                          type: string
+                        iconSizes:
+                          type: object
+                          properties:
+                            default:
+                              type: string
+                        id:
+                          type: string
+                        maximumAllowed:
+                          type: integer
+                        name:
+                          type: string
+                        seasonId:
+                          type: string
+                        startTimestamp:
+                          type: integer
+        next_page:
+          type: string
+      description: Represents election data at a specific point in time.
+      x-tags:
+        - chronicler
+    SeasonSchedule:
+      title: SeasonSchedule
+      x-stoplight:
+        id: r442498c5kyps
+      type: object
+      description: |-
+        Represents season schedule data at a specific point in time. 
+
+        Currently **unknown**.
+      properties:
+        items:
+          type: array
+          items: {}
+        next_page:
+          type: string
+      x-tags:
+        - chronicler
+    SeasonScheduleHourly:
+      title: SeasonScheduleHourly
+      x-stoplight:
+        id: ty738m4nl074j
+      type: object
+      description: |-
+        Represents season schedule data at a specific point in time. 
+
+        Currently **unknown**.
+      properties:
+        items:
+          type: array
+          items: {}
+        next_page:
+          type: string
+      x-tags:
+        - chronicler
+    Temporal:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: temporal
+              entity_id: 00000000-0000-0000-0000-000000000000
+              valid_from: '2023-01-09T14:56:23.373999Z'
+              valid_to: '2023-01-09T14:57:08.372451Z'
+              data:
+                epsilon: true
+                gamma: 7
+                zeta: '[ BURP ]'
+          next_page: 2I7hiJzlOhcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      description: Represents temporal data at a certain point in time. **Temporal** data represents an event where an *entity* takes over the site to send a message - for example Binky or the Umpires.
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                properties:
+                  epsilon:
+                    type: boolean
+                    description: Whether it's the *end* of the broadcast.
+                  gamma:
+                    type: integer
+                    description: The entity is sending the message - using numbers.
+                  zeta:
+                    type: string
+                    description: The message itself.
+        next_page:
+          type: string
+      x-tags:
+        - chronicler
+    Post:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: post
+              entity_id: 35a7c895-112f-43a1-85dd-252c42d48f7c
+              valid_from: '2023-01-09T14:34:38.368019Z'
+              valid_to: '2023-01-09T14:34:53.371508Z'
+              data:
+                body: |-
+                  Previously on Blaseball, the Black Hole consumed the universe as we knew it. As of late, the Black Hole has been burping pieces of Blaseball back out to form a new universe. The void above us contains multitudes—  all sorts of players, mechanics, and information that will continue to fall into place as we go, shaping Blaseball around us. If you’re new around here, that’s all you really need to know.
+
+
+                  We’re starting simple. This is a foundation for you to acquaint yourself with the game. As the Era progresses, the Black Hole will burp out new features and surprises that will gradually build on your experience. The Black Hole might burp out an anomaly or two that will surprise even the developers, but that’s the Blaseball way. Embrace the void; embrace the chaos.
+
+
+                  Blaseball went out with a bang and begins with another. This is the Big Bang- cacophonous and loud, chaotic and messy. A new beginning. We’re so excited to show you what we’ve built. Welcome, and play ball!
+                closed: false
+                commentCount: 0
+                community:
+                  emoji: ''
+                  id: edc04d74-924f-4804-8f57-933a2e4f9f79
+                  name: General
+                downvoteCount: 0
+                id: 35a7c895-112f-43a1-85dd-252c42d48f7c
+                tags: []
+                title: 'Welcome to the beginning of a new Universe. A new Blaseball.                                                                                                                                                                                                                                                '
+                upvoteCount: 134
+                user:
+                  id: a9543710-3a0a-4503-a9e3-bfb0ed0ff67b
+                  profilePinUrl: 'https://live-pins.s3.us-west-2.amazonaws.com/pavatar_tgb_3.png'
+                  username: thegameband
+      description: Represents post data at a specific point in time.
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                properties:
+                  body:
+                    type: string
+                  closed:
+                    type: boolean
+                  commentCount:
+                    type: integer
+                  community:
+                    type: object
+                    properties:
+                      emoji:
+                        type: string
+                      id:
+                        type: string
+                      name:
+                        type: string
+                  downvoteCount:
+                    type: integer
+                  id:
+                    type: string
+                  tags:
+                    type: array
+                    items:
+                      type: object
+                  title:
+                    type: string
+                  upvoteCount:
+                    type: integer
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      profilePinUrl:
+                        type: string
+                      username:
+                        type: string
+        next_page:
+          type: string
+      x-tags:
+        - chronicler
+    GameBetData:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: game_bet_data
+              entity_id: 018b7c6d-ae4c-46b2-8537-66317ceaf543
+              valid_from: '2023-01-09T17:48:25.413754Z'
+              valid_to: '2023-01-09T18:02:24.740502Z'
+              data:
+                awayScore: 0
+                awayTeamBetData:
+                  currentOdds: 0.42569935724399743
+                  currentPayout: 0
+                  teamWon: null
+                  userBetOdds: null
+                  userBetPayout: null
+                  userBetWager: null
+                awayTeamInfo:
+                  emoji: '0x1F575'
+                  losses: 0
+                  pitcher:
+                    id: 718dea1a-d9a8-4c2b-933a-f0667b5250e6
+                    name: Margarito Nava
+                  primaryColor: '#67556b'
+                  shorthand: SPY
+                  teamId: 9debc64f-74b7-4ae1-a4d6-fce0144b6ea5
+                  wins: 2
+                complete: false
+                favoriteTeamMatch: false
+                gameId: 018b7c6d-ae4c-46b2-8537-66317ceaf543
+                homeScore: 0
+                homeTeamBetData:
+                  currentOdds: 0.5743006427560026
+                  currentPayout: 0
+                  teamWon: null
+                  userBetOdds: null
+                  userBetPayout: null
+                  userBetWager: null
+                homeTeamInfo:
+                  emoji: '0x1F45F'
+                  losses: 0
+                  pitcher:
+                    id: 7d388846-8f4c-407f-aacb-b844d2561c5e
+                    name: Kit Adamses
+                  primaryColor: '#ffce0a'
+                  shorthand: SHOE
+                  teamId: bfd38797-8404-4b38-8b82-341da28b1f83
+                  wins: 2
+                userBetPlaced: false
+                weather: Horizon
+      title: GameBetData
+      description: Represents game bet data at a specific point in time.
+      x-tags:
+        - chronicler
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
               data:
                 type: object
                 properties:
@@ -498,57 +2745,1005 @@ components:
                     type: boolean
                   weather:
                     type: string
+        next_page:
+          type: string
+    BoxScore:
+      type: object
       x-examples:
         Example 1:
           items:
-            - kind: game_bet_data
-              entity_id: 018b7c6d-ae4c-46b2-8537-66317ceaf543
-              valid_from: '2023-01-09T17:48:25.413754Z'
-              valid_to: '2023-01-09T18:02:24.740502Z'
+            - kind: box_score
+              entity_id: 2376b471-2aba-49fb-957d-18a6897ebb74
+              valid_from: '2023-01-15T01:28:43.508959Z'
+              valid_to: null
               data:
-                awayScore: 0
-                awayTeamBetData:
-                  currentOdds: 0.42569935724399743
-                  currentPayout: 0
-                  teamWon: null
-                  userBetOdds: null
-                  userBetPayout: null
-                  userBetWager: null
-                awayTeamInfo:
-                  emoji: '0x1F575'
-                  losses: 0
-                  pitcher:
-                    id: 718dea1a-d9a8-4c2b-933a-f0667b5250e6
-                    name: Margarito Nava
-                  primaryColor: '#67556b'
-                  shorthand: SPY
-                  teamId: 9debc64f-74b7-4ae1-a4d6-fce0144b6ea5
-                  wins: 2
-                complete: false
-                favoriteTeamMatch: false
-                gameId: 018b7c6d-ae4c-46b2-8537-66317ceaf543
-                homeScore: 0
-                homeTeamBetData:
-                  currentOdds: 0.5743006427560026
-                  currentPayout: 0
-                  teamWon: null
-                  userBetOdds: null
-                  userBetPayout: null
-                  userBetWager: null
-                homeTeamInfo:
-                  emoji: '0x1F45F'
-                  losses: 0
-                  pitcher:
-                    id: 7d388846-8f4c-407f-aacb-b844d2561c5e
-                    name: Kit Adamses
-                  primaryColor: '#ffce0a'
-                  shorthand: SHOE
-                  teamId: bfd38797-8404-4b38-8b82-341da28b1f83
-                  wins: 2
-                userBetPlaced: false
-                weather: Horizon
-      title: versions/GameBetData
-      description: ''
+                '0':
+                  - 0
+                  - 1
+                '1':
+                  - 0
+                  - 0
+                '2':
+                  - 0
+                  - 0
+                '3':
+                  - 0
+                  - 1
+                '4':
+                  - 0
+                  - 0
+                '5':
+                  - 2
+                  - 0
+                '6':
+                  - 0
+                  - 0
+                '7':
+                  - 0
+                  - 0
+                '8':
+                  - 0
+                  - 1
+      description: |-
+        Represents box score data at a specific point in time. In this case, `data` has keys corresponding to the number of innings. This means that it can have *less* keys - such as an interrupted or incomplete game, or *more* keys in the case of a tie at the 9th inning extending the game.
+
+        In the schema this is represented with `[number]` - see the example for an idea of what the data looks like.
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                properties:
+                  '[number]':
+                    type: array
+                    minItems: 2
+                    maxItems: 2
+                    items:
+                      type: integer
+        next_page:
+          type: string
       x-tags:
         - chronicler
-        - versions
+    Sim:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: sim
+              entity_id: 00000000-0000-0000-0000-000000000000
+              valid_from: '2023-01-16T00:31:57.99392Z'
+              valid_to: null
+              data:
+                endDayNumber: -1
+                endTime: '2023-01-20T23:59:59.000Z'
+                phase: restPhase
+                simData:
+                  banner: 'https://blaseball-icons.s3.us-west-2.amazonaws.com/header-image.png'
+                  currentDay: 102
+                  currentLeagueData:
+                    id: d3182b4d-91b6-4b4e-96a5-13d69e0043b7
+                    name: Internet Blaseball League
+                    subLeagues:
+                      - divisions:
+                          - id: 8b22bdcf-8cf9-46d4-93da-bb75a6413786
+                            name: Awful Good
+                          - id: 67a4acf7-60b6-463d-bcff-63fbf538b3d9
+                            name: Chaotic Good
+                        id: 5335d626-db8c-4181-950a-e650f5f11d00
+                      - divisions:
+                          - id: b60a5664-66d8-462a-85ae-9da2d4d9c59e
+                            name: Awful Evil
+                          - id: 0b684565-ecaf-4afc-96d2-f4100f127197
+                            name: Chaotic Evil
+                        id: 226dc71f-b3a2-4d0d-814e-1b963781cda9
+                  currentSeasonId: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+                  currentSeasonNumber: 0
+                  isOffseason: false
+                  isTournament: false
+                  liveGames: false
+                startDayNumber: -1
+                startTime: '2023-01-15T03:00:00.000Z'
+      description: Represents simulation data at a specific point in time.
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                properties:
+                  endDayNumber:
+                    type: integer
+                  endTime:
+                    type: string
+                  phase:
+                    type: string
+                  simData:
+                    type: object
+                    properties:
+                      banner:
+                        type: string
+                      currentDay:
+                        type: integer
+                      currentLeagueData:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                          subLeagues:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                divisions:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                      name:
+                                        type: string
+                                id:
+                                  type: string
+                      currentSeasonId:
+                        type: string
+                      currentSeasonNumber:
+                        type: integer
+                      isOffseason:
+                        type: boolean
+                      isTournament:
+                        type: boolean
+                      liveGames:
+                        type: boolean
+                  startDayNumber:
+                    type: integer
+                  startTime:
+                    type: string
+        next_page:
+          type: string
+      x-tags:
+        - chronicler
+    SeasonTournaments:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: season_tournaments
+              entity_id: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+              valid_from: '2023-01-15T02:00:14.181548Z'
+              valid_to: null
+              data:
+                - complete: false
+                  description: ''
+                  icon: null
+                  id: a049eb9f-e13b-42ba-b579-359e08a3cf9f
+                  name: Postseason
+                  rounds: []
+                - complete: false
+                  description: this is a description LOL
+                  icon: icon_url_here
+                  id: b195be0b-d5bb-4fbb-8e78-ada4520036b6
+                  name: NEW Postseason
+                  rounds: []
+                - complete: false
+                  description: this is a description LOL
+                  icon: icon_url_here
+                  id: 037d455d-d657-437a-af08-c0f42d400a9d
+                  name: NEW Postseason alpha
+                  rounds: []
+                - complete: true
+                  description: ''
+                  icon: null
+                  id: 204aa2a9-2610-446c-851a-13648c29d01f
+                  name: Postseason
+                  rounds:
+                    - complete: true
+                      endTime: '2023-01-14T04:14:59.000+00:00'
+                      index: 0
+                      matchups:
+                        - complete: true
+                          firstSlotScore: 3
+                          firstSlotTeam:
+                            emoji: '0x1F31E'
+                            id: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                            name: Moab Hellmouth Sunbeams
+                            primaryColor: '#fffbab'
+                            secondaryColor: '#fffbab'
+                          index: 0
+                          secondSlotScore: 0
+                          secondSlotTeam:
+                            emoji: '0x1F6A4'
+                            id: b63be8c2-576a-4d6e-8daf-814f8bcea96f
+                            name: Miami Dale
+                            primaryColor: '#9141ba'
+                            secondaryColor: '#cd76fa'
+                        - complete: true
+                          firstSlotScore: 3
+                          firstSlotTeam:
+                            emoji: '0x1F45F'
+                            id: bfd38797-8404-4b38-8b82-341da28b1f83
+                            name: Charleston Shoe Thieves
+                            primaryColor: '#ffce0a'
+                            secondaryColor: '#ffce0a'
+                          index: 1
+                          secondSlotScore: 0
+                          secondSlotTeam:
+                            emoji: '0x1F36C'
+                            id: adc5b394-8f76-416d-9ce9-813706877b84
+                            name: Kansas City Breath Mints
+                            primaryColor: '#178f55'
+                            secondaryColor: '#178f55'
+                        - complete: true
+                          firstSlotScore: 3
+                          firstSlotTeam:
+                            emoji: '0x1F357'
+                            id: 57ec08cc-0411-4643-b304-0e80dbc15ac7
+                            name: Mexico City Wild Wings
+                            primaryColor: '#883c17'
+                            secondaryColor: '#ee6300'
+                          index: 2
+                          secondSlotScore: 1
+                          secondSlotTeam:
+                            emoji: '0x1F3B8'
+                            id: 105bc3ff-1320-4e37-8ef0-8d595cb95dd0
+                            name: Seattle Garages
+                            primaryColor: '#2b4075'
+                            secondaryColor: '#5a83ea'
+                        - complete: true
+                          firstSlotScore: 3
+                          firstSlotTeam:
+                            emoji: '0x1F531'
+                            id: d9f89a8a-c563-493e-9d64-78e4f9a55d4a
+                            name: Atlantis Georgias
+                            primaryColor: '#00dbc2'
+                            secondaryColor: '#5cffec'
+                          index: 3
+                          secondSlotScore: 0
+                          secondSlotTeam:
+                            emoji: '0x1F3DD'
+                            id: 979aee4a-6d80-4863-bf1c-ee1a78e06024
+                            name: Hawai'i Fridays
+                            primaryColor: '#3ee652'
+                            secondaryColor: '#3ee652'
+                      startTime: '2023-01-13T23:15:00.000+00:00'
+                    - complete: true
+                      endTime: '2023-01-14T21:59:59.000+00:00'
+                      index: 1
+                      matchups:
+                        - complete: true
+                          firstSlotScore: 1
+                          firstSlotTeam:
+                            emoji: '0x1F31E'
+                            id: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                            name: Moab Hellmouth Sunbeams
+                            primaryColor: '#fffbab'
+                            secondaryColor: '#fffbab'
+                          index: 0
+                          secondSlotScore: 3
+                          secondSlotTeam:
+                            emoji: '0x1F45F'
+                            id: bfd38797-8404-4b38-8b82-341da28b1f83
+                            name: Charleston Shoe Thieves
+                            primaryColor: '#ffce0a'
+                            secondaryColor: '#ffce0a'
+                        - complete: true
+                          firstSlotScore: 3
+                          firstSlotTeam:
+                            emoji: '0x1F357'
+                            id: 57ec08cc-0411-4643-b304-0e80dbc15ac7
+                            name: Mexico City Wild Wings
+                            primaryColor: '#883c17'
+                            secondaryColor: '#ee6300'
+                          index: 1
+                          secondSlotScore: 1
+                          secondSlotTeam:
+                            emoji: '0x1F531'
+                            id: d9f89a8a-c563-493e-9d64-78e4f9a55d4a
+                            name: Atlantis Georgias
+                            primaryColor: '#00dbc2'
+                            secondaryColor: '#5cffec'
+                      startTime: '2023-01-14T17:00:00.000+00:00'
+                    - complete: true
+                      endTime: '2023-01-15T02:59:59.000+00:00'
+                      index: 2
+                      matchups:
+                        - complete: true
+                          firstSlotScore: 3
+                          firstSlotTeam:
+                            emoji: '0x1F45F'
+                            id: bfd38797-8404-4b38-8b82-341da28b1f83
+                            name: Charleston Shoe Thieves
+                            primaryColor: '#ffce0a'
+                            secondaryColor: '#ffce0a'
+                          index: 0
+                          secondSlotScore: 1
+                          secondSlotTeam:
+                            emoji: '0x1F357'
+                            id: 57ec08cc-0411-4643-b304-0e80dbc15ac7
+                            name: Mexico City Wild Wings
+                            primaryColor: '#883c17'
+                            secondaryColor: '#ee6300'
+                      startTime: '2023-01-14T22:00:00.000+00:00'
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    complete:
+                      type: boolean
+                    description:
+                      type: string
+                    icon:
+                      type:
+                        - 'null'
+                        - string
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    rounds:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          complete:
+                            type: boolean
+                          endTime:
+                            type: string
+                          index:
+                            type: integer
+                          matchups:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                complete:
+                                  type: boolean
+                                firstSlotScore:
+                                  type: integer
+                                firstSlotTeam:
+                                  type: object
+                                  properties:
+                                    emoji:
+                                      type: string
+                                    id:
+                                      type: string
+                                    name:
+                                      type: string
+                                    primaryColor:
+                                      type: string
+                                    secondaryColor:
+                                      type: string
+                                index:
+                                  type: integer
+                                secondSlotScore:
+                                  type: integer
+                                secondSlotTeam:
+                                  type: object
+                                  properties:
+                                    emoji:
+                                      type: string
+                                    id:
+                                      type: string
+                                    name:
+                                      type: string
+                                    primaryColor:
+                                      type: string
+                                    secondaryColor:
+                                      type: string
+                          startTime:
+                            type: string
+        next_page:
+          type: string
+      description: Represents a season's tournament data at a specific point in time.
+      x-tags:
+        - chronicler
+    Tournament:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: tournament
+              entity_id: cd1b6714-f4de-4dfc-a030-851b3459d8d1
+              valid_from: '2023-01-15T02:00:13.962674Z'
+              valid_to: null
+              data:
+                complete: true
+                description: ''
+                icon: null
+                id: 204aa2a9-2610-446c-851a-13648c29d01f
+                name: Postseason
+                rounds:
+                  - complete: true
+                    endTime: '2023-01-14T04:14:59.000+00:00'
+                    index: 0
+                    matchups:
+                      - complete: true
+                        firstSlotScore: 3
+                        firstSlotTeam:
+                          emoji: '0x1F31E'
+                          id: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                          name: Moab Hellmouth Sunbeams
+                          primaryColor: '#fffbab'
+                          secondaryColor: '#fffbab'
+                        index: 0
+                        secondSlotScore: 0
+                        secondSlotTeam:
+                          emoji: '0x1F6A4'
+                          id: b63be8c2-576a-4d6e-8daf-814f8bcea96f
+                          name: Miami Dale
+                          primaryColor: '#9141ba'
+                          secondaryColor: '#cd76fa'
+                      - complete: true
+                        firstSlotScore: 3
+                        firstSlotTeam:
+                          emoji: '0x1F45F'
+                          id: bfd38797-8404-4b38-8b82-341da28b1f83
+                          name: Charleston Shoe Thieves
+                          primaryColor: '#ffce0a'
+                          secondaryColor: '#ffce0a'
+                        index: 1
+                        secondSlotScore: 0
+                        secondSlotTeam:
+                          emoji: '0x1F36C'
+                          id: adc5b394-8f76-416d-9ce9-813706877b84
+                          name: Kansas City Breath Mints
+                          primaryColor: '#178f55'
+                          secondaryColor: '#178f55'
+                      - complete: true
+                        firstSlotScore: 3
+                        firstSlotTeam:
+                          emoji: '0x1F357'
+                          id: 57ec08cc-0411-4643-b304-0e80dbc15ac7
+                          name: Mexico City Wild Wings
+                          primaryColor: '#883c17'
+                          secondaryColor: '#ee6300'
+                        index: 2
+                        secondSlotScore: 1
+                        secondSlotTeam:
+                          emoji: '0x1F3B8'
+                          id: 105bc3ff-1320-4e37-8ef0-8d595cb95dd0
+                          name: Seattle Garages
+                          primaryColor: '#2b4075'
+                          secondaryColor: '#5a83ea'
+                      - complete: true
+                        firstSlotScore: 3
+                        firstSlotTeam:
+                          emoji: '0x1F531'
+                          id: d9f89a8a-c563-493e-9d64-78e4f9a55d4a
+                          name: Atlantis Georgias
+                          primaryColor: '#00dbc2'
+                          secondaryColor: '#5cffec'
+                        index: 3
+                        secondSlotScore: 0
+                        secondSlotTeam:
+                          emoji: '0x1F3DD'
+                          id: 979aee4a-6d80-4863-bf1c-ee1a78e06024
+                          name: Hawai'i Fridays
+                          primaryColor: '#3ee652'
+                          secondaryColor: '#3ee652'
+                    startTime: '2023-01-13T23:15:00.000+00:00'
+                  - complete: true
+                    endTime: '2023-01-14T21:59:59.000+00:00'
+                    index: 1
+                    matchups:
+                      - complete: true
+                        firstSlotScore: 1
+                        firstSlotTeam:
+                          emoji: '0x1F31E'
+                          id: f02aeae2-5e6a-4098-9842-02d2273f25c7
+                          name: Moab Hellmouth Sunbeams
+                          primaryColor: '#fffbab'
+                          secondaryColor: '#fffbab'
+                        index: 0
+                        secondSlotScore: 3
+                        secondSlotTeam:
+                          emoji: '0x1F45F'
+                          id: bfd38797-8404-4b38-8b82-341da28b1f83
+                          name: Charleston Shoe Thieves
+                          primaryColor: '#ffce0a'
+                          secondaryColor: '#ffce0a'
+                      - complete: true
+                        firstSlotScore: 3
+                        firstSlotTeam:
+                          emoji: '0x1F357'
+                          id: 57ec08cc-0411-4643-b304-0e80dbc15ac7
+                          name: Mexico City Wild Wings
+                          primaryColor: '#883c17'
+                          secondaryColor: '#ee6300'
+                        index: 1
+                        secondSlotScore: 1
+                        secondSlotTeam:
+                          emoji: '0x1F531'
+                          id: d9f89a8a-c563-493e-9d64-78e4f9a55d4a
+                          name: Atlantis Georgias
+                          primaryColor: '#00dbc2'
+                          secondaryColor: '#5cffec'
+                    startTime: '2023-01-14T17:00:00.000+00:00'
+                  - complete: true
+                    endTime: '2023-01-15T02:59:59.000+00:00'
+                    index: 2
+                    matchups:
+                      - complete: true
+                        firstSlotScore: 3
+                        firstSlotTeam:
+                          emoji: '0x1F45F'
+                          id: bfd38797-8404-4b38-8b82-341da28b1f83
+                          name: Charleston Shoe Thieves
+                          primaryColor: '#ffce0a'
+                          secondaryColor: '#ffce0a'
+                        index: 0
+                        secondSlotScore: 1
+                        secondSlotTeam:
+                          emoji: '0x1F357'
+                          id: 57ec08cc-0411-4643-b304-0e80dbc15ac7
+                          name: Mexico City Wild Wings
+                          primaryColor: '#883c17'
+                          secondaryColor: '#ee6300'
+                    startTime: '2023-01-14T22:00:00.000+00:00'
+      description: Represents a tournament's data at a specific point in time.
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                properties:
+                  complete:
+                    type: boolean
+                  description:
+                    type: string
+                  icon:
+                    type: 'null'
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  rounds:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        complete:
+                          type: boolean
+                        endTime:
+                          type: string
+                        index:
+                          type: integer
+                        matchups:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              complete:
+                                type: boolean
+                              firstSlotScore:
+                                type: integer
+                              firstSlotTeam:
+                                type: object
+                                properties:
+                                  emoji:
+                                    type: string
+                                  id:
+                                    type: string
+                                  name:
+                                    type: string
+                                  primaryColor:
+                                    type: string
+                                  secondaryColor:
+                                    type: string
+                              index:
+                                type: integer
+                              secondSlotScore:
+                                type: integer
+                              secondSlotTeam:
+                                type: object
+                                properties:
+                                  emoji:
+                                    type: string
+                                  id:
+                                    type: string
+                                  name:
+                                    type: string
+                                  primaryColor:
+                                    type: string
+                                  secondaryColor:
+                                    type: string
+                        startTime:
+                          type: string
+        next_page:
+          type: string
+      x-tags:
+        - chronicler
+    Asset:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: asset
+              entity_id: 389d2437-3d20-a0a0-4343-22d6d7b68120
+              valid_from: '2023-01-16T20:57:45.285383Z'
+              valid_to: null
+              data:
+                content_type: application/json
+                data: ewogICAgImNvbGxlY3Rpb24iOiBbCiAgICAgICAgewogICAgICAgICAgICAiaWQiOiAicGFnZTEiLAogICAgICAgICAgICAiaGVhZGVyIjogewogICAgICAgICAgICAgICAgInRpdGxlIjogIk9mZmljaWFsIFJ1bGVib29rIiwKICAgICAgICAgICAgICAgICJhcmlhIjogIk9mZmljaWFsIFJ1bGVib29rIgogICAgICAgICAgICB9LAogICAgICAgICAgICAic2VjdGlvbnMiOiBbCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgImJ1bGxldCI6ICJBbiBJbnRyb2R1Y3Rpb24iLAogICAgICAgICAgICAgICAgICAgICJzdWJidWxsZXRzIjogWwogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHx8fHx8IHx8fCB8fHx8fHwgfHwgfHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fCB8fHx8fHwgfHx8fCB8fCB8fHx8fHx8IHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8fCB8fHx8fHwgfHwgfHx8fHx8fHx8fCB8fHwgfHx8IHx8IHx8fHx8IHx8fHx8fHx8fCB8fHwgfHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJCbGFzZWJhbGwgaXMgfCB8fHx8fHx8fHx8fCBzcG9ydCB8fHx8fCB8fHx8IHx8fCBob3Jyb3IgfHwgfHx8fHwgfHx8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAiVGhpcyBCb29rIGRlZmluZXMgdGhlIFJ1bGVzIG9mIEJsYXNlYmFsbC4iCiAgICAgICAgICAgICAgICAgICAgXQogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAiYnVsbGV0IjogIlRoZSBMZWFndWUiLAogICAgICAgICAgICAgICAgICAgICJzdWJidWxsZXRzIjogWwogICAgICAgICAgICAgICAgICAgICAgICAifHwgfHx8fCB8fHx8fHx8IHx8fHx8fCB8fHwgfHx8fHx8fHx8fCB8fHx8fHwgfHx8fHx8fHx8IHx8fHx8fHx8fHwgfHx8fHx8fHx8fCBhIEJsYXNlYmFsbCBMZWFndWUgaXMgZm91bmRlZC4gVGhlIExlYWd1ZSBzaGFsbCBiZSBuYW1lZCB0aGUgSW50ZXJuZXQgTGVhZ3VlLiIsCiAgICAgICAgICAgICAgICAgICAgICAgICJBIExlYWd1ZSBvZiBCbGFzZWJhbGwgc2hvdWxkIGJlIGNvbXBvc2VkIG9mIHR3byB8fHx8fHx8fCBDb25mZXJlbmNlcy4gSW4gdGhlIEludGVybmV0IExlYWd1ZSwgdGhlIHR3byBDb25mZXJlbmNlcyBzaGFsbCBiZSBuYW1lZCBHb29kIGFuZCBFdmlsLiIsCiAgICAgICAgICAgICAgICAgICAgICAgICJBIENvbmZlcmVuY2Ugc2hvdWxkIGJlIGNvbXBvc2VkIG9mIHR3byB8fHx8fHx8fCBEaXZpc2lvbnMuIEluIHRoZSBJbnRlcm5ldCBMZWFndWUsIHRoZSBEaXZpc2lvbnMgc2hhbGwgYmUgc3BsaXQgYmV0d2VlbiBDaGFvdGljIGFuZCBBd2Z1bC4iLAogICAgICAgICAgICAgICAgICAgICAgICAiQSBEaXZpc2lvbiBvZiBCbGFzZWJhbGwgc2hvdWxkIGJlIGNvbXBvc2VkIG9mIHNpeCB8fHx8fHx8fHx8fCBUZWFtcy4iLAogICAgICAgICAgICAgICAgICAgICAgICAiQSBUZWFtIHNob3VsZCBiZSBjb21wb3NlZCBvZiBhIE5hbWUsIGFuIE9yaWdpbiwgYSBTbG9nYW4sIGFuIEltYWdlLCB8IHx8fHx8fHwgfHwgfHx8fCwgYW5kIGEgUm9zdGVyIG9mIFBsYXllcnMuIEEgVGVhbSdzIFJvc3RlciBpcyBvcmdhbml6ZWQgaW50byB0aHJlZSBMb2NhdGlvbnM6IGEgUm90YXRpb24gfHx8fCB8fHx8fHwgYSBMaW5ldXAgfHx8fCB8fHx8fCB8fHwgYW5kIGEgU2hhZG93cyB8fHx8IHx8fHx8fCB8fHx8fCB8fCB8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJBIFBsYXllciBzaG91bGQgYmUgY29tcG9zZWQgb2YgfHx8fHwgfHx8fHx8fCB8fHx8fHx8fHx8fCBhIE5hbWUsIHx8fHx8fHwgfHx8IHx8fHwuIHx8fHx8IHx8fHx8fHx8fHwgfHx8fCB8fHx8fCB8fHx8fHx8IHx8fHx8fHx8fHx8IHx8fHx8fHx8fCBTa2lsbHMsIE1vZGlmaWNhdGlvbnMsIEJsb29kIFR5cGVzLCBDb2ZmZWUgVHlwZXMsIEFsbGVyZ2llcywgUml0dWFscywgfHx8fHx8fCwgUG9zaXRpb25zLCBab25lcywgfHx8fHx8IHx8fHx8fHwgfHx8fHx8fHx8IHx8fHx8fHx8fHx8IHx8fHx8fHwgfHx8fHx8fHwgfHx8fHx8fHx8fCB8fHx8fHx8fCB8fHx8fHwgfHx8fHx8IHx8fHx8fCB8fHx8fHx8IHx8fHx8fHx8LCBWaWJlcywgfHx8fHwsIEZhdGVzLCB8fHwgfCB8fHx8fHx8fHx8IHx8fHx8fHx8fHwgfCB8fHx8fCB8fHx8fHwgfHx8fCB8fCB8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAiUGxhc21hIHx8fHx8fHx8fHx8IHx8fCB8fHx8fHx8fHx8fHwgU3Bpcml0IHx8fHx8fHx8fHx8IHx8fHwgfHx8fHwgfHx8IHx8fHx8fHx8fHx8fCBTb3VsIHx8IHx8fHx8fHx8IHx8fCB8fHwgfHwgfHx8fHwgfHx8fHx8fHx8fCB8fHx8fHx8fCB8fHx8fCB8fHx8fCB8fHx8fHx8IHx8fHx8fCB8fHx8fHx8IHx8fHx8IHx8fCB8fCB8fHx8fHx8IHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8fHx8fCBtYXkgUGxheSBCbGFzZWJhbGwuIgogICAgICAgICAgICAgICAgICAgIF0KICAgICAgICAgICAgICAgIH0sCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgImJ1bGxldCI6ICJ8fHwgfHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgInN1YmJ1bGxldHMiOiBbCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8IHx8fHx8fCB8fHwgfHx8fHx8fHwgfHx8fHx8IHx8fHx8fCB8fCB8fHx8fHx8fHwgfHx8fCB8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8IHx8fHx8fCB8fCB8fHx8fHx8fHwgfHx8fHx8fHwgfHwgfCB8fHx8fHx8IHx8fHx8fHwgfCB8fHx8fHx8fHx8fCB8fHwgfHwgfHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8IHx8fHx8fHwgfHx8fHx8IHx8IHx8fHx8fHx8fCB8fHx8fCB8fHx8IHx8IHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8fCB8fHwgfHx8fHx8IHx8IHx8fHwgfHx8fHwgfHx8fCB8fHx8IHx8fCB8fCB8fHx8fHx8fHwgfHx8fHwgfHx8fCB8fHwgfHx8fHwgfHx8fHwgfHwgfHx8IHx8fHx8IHx8fHwgfHx8fHx8IHx8fHwgfHx8IHx8fHx8IHx8fHx8IHwgfHx8fHx8fHx8IHx8fHx8IHx8fHx8fCB8fHwgfHx8IHx8fHx8IHx8fHx8IHx8IHx8fHx8fHwgfHx8fHwgfHx8IHx8fHwgfHx8fHwgfHx8fHwgfHwgfHx8IHx8fHx8IHx8fHwgfHx8fHx8IHx8fHwgfHx8IHx8fHx8IHx8fHx8fCB8fHwgfHx8fCB8fHx8IHx8IHx8fHx8fHx8fHwgfHx8fCB8fHx8fCB8fHx8IHx8fHwgfHx8IHx8IHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHwgfHx8IHx8fHx8fHwgfHx8fHx8fCB8fHx8fCB8fHx8fHx8IHx8fCB8fHx8fHx8fCB8fCB8fHwgfHx8fHx8fHx8fCB8fHx8fHx8fHwgfHwgfHx8fHx8fHx8IHx8fCB8fHx8fHx8IHx8IHx8fHx8IHx8fCB8fHx8IHx8fHwgfHx8IHx8fHx8fCB8fHx8fHwgfHwgfHx8fCB8fHx8fCB8fCB8fHx8fHx8fHx8IHx8fHx8fCB8fCB8fHwgfHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fCB8fHwgfHx8fHwgfHx8fCB8fHwgfHx8fCB8fHx8fHwgfHwgfHx8fHwgfHx8IHx8fHx8IHx8fHx8fHwgfHx8fHwgfHx8fCB8fHwgfHwgfHx8IHx8IHx8fHx8fCB8fHx8IHx8fCB8fCB8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifCB8fHx8IHx8fHwgfHx8fHwgfHx8fCB8fHx8fHx8fHx8fHx8fCB8fHx8fHx8fHx8IHx8fHwgfHx8fHx8fHx8fCB8fHx8fHx8fHx8fCB8fHx8IHx8fHwgfHx8fHwgfHx8fHwgfHx8fHwgfHx8fCB8fCB8fHx8fHx8fHwgfCB8fHwgfHx8IHx8fHx8fHx8fCB8fHx8IHx8fHx8IHx8fHwgfHwgfHx8fCB8fHx8IHwgfHx8fCB8fCB8fHwgfHx8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHx8fHwgfHx8fCB8fHx8fHx8IHx8fCB8fHx8IHx8IHx8fHx8fCB8IHx8fHx8fHwgIHx8IHx8fHx8IHx8IHx8fHx8fHx8fHx8IHx8fHx8fHx8fHwgfHx8IHx8fHx8fHx8IHx8fHx8IHx8fCB8fCB8fHx8IHx8fHx8fHwgfHx8fHx8IHx8fHx8fHwgfHx8fHwgfHwgfHx8fHx8IHx8fHwgfHx8fHwgfHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fCB8fHwgfHx8fHwgfCB8fHwgfHwgfHx8fHx8fHwgfCB8fHx8fHx8fCB8fHx8fCB8fCB8fHx8fHwgfHx8fCB8fHx8fCB8fHx8IHx8fHx8fCB8fHx8fCB8fHwgfHx8IHx8fCB8fHx8fHx8fHwgfHx8fHx8fCB8fHx8fHwgfHx8fHx8fHx8IHx8fCB8fHx8fHx8fHwgfHx8fHx8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHwgfHx8IHx8fHx8fHx8fHx8IHx8fHx8IHx8fHx8fHwgfHx8IHwgfHx8fHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8IHx8fHx8fHx8fHwgfHwgfHx8fHx8fHx8IHx8fHx8IHx8fHx8fHwgfHwgfCB8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHwgfHx8fHx8fHwgfHx8fHx8fCB8fHx8IHx8fHwgfHx8fHx8fHx8fCB8fHx8fCB8fHx8fHwgfCB8fHx8IHx8IHx8fCB8fHx8fHx8fHx8IHx8fHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fCB8fHx8IHwgfHx8fHx8fHx8IHx8fHwgfHx8fCB8fHx8fHwgfHx8fHwgfHx8fHx8IHwgfHx8fCB8fCB8fHwgfHx8fHx8fHx8fCB8fHx8fHx8fHx8fCB8fHx8fCB8fCB8fHx8fHx8fHx8IHx8fHx8fHx8fHwgfHwgfHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fCB8fHx8fHx8fHx8IHx8fHx8fCB8fHx8fCB8fCB8fHx8fHx8IHx8IHx8fHwgfCB8fCB8IHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHwgfHx8IHx8fHx8fHx8fHx8IHx8IHx8fHx8IHx8fHx8IHx8IHx8fHx8IHx8fHx8fHx8IHx8IHx8fCB8fHx8fHx8fHx8ICB8fHx8fCB8fHwgfHx8fHx8fCB8fHx8fHx8fCB8fHx8fHx8IHx8fHwgfHx8fHx8fHwgfHx8IHx8fHx8IHx8fHx8fCB8fCB8fHwgfHx8fHx8fHx8IHx8fHwgfHx8fCB8fHx8fCB8fHx8fHwgfHx8IHx8fHwgfHx8fCB8fCB8fHx8IHx8fHx8fHx8fHwgfHx8fCB8fHx8fCB8fCB8fHwgfHx8fCB8fHx8IHx8fCB8fHx8IHx8fHx8IHx8fHx8IHx8fCB8fHx8fHwgfHwgfHx8fCB8fHx8fHx8IHx8fHwgfHx8IHx8fHwgfHx8fCB8fHx8fCB8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHx8fHx8fHx8fHx8fCB8fHx8fCB8fHx8fHwgfHx8fHwgfHx8fHx8fCB8fHx8fCB8fHwgfHx8IHx8IHx8fCB8fHx8fHx8IHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHx8fHx8fHx8fCB8fHx8fHwgfHx8IHx8fHx8fHx8fHwgfHx8fHx8fHx8fHx8fHwgfHx8fHx8IHx8fHx8IHx8fHx8IHx8IHx8fCB8fHx8fHx8fHwgfHx8fHwgfHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHwgfHx8fHwgfHx8fHx8IHx8fHx8IHx8IHx8fCB8fHx8fHx8fCB8fHx8fHx8IHx8fHx8fCB8fHx8fCB8fHx8fHx8IHx8fHx8IHx8fCB8fHwgfHwgfHx8IHx8fHx8fHx8fCB8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHx8fHx8fCB8fCB8fHwgfHx8fHx8fHwgfHx8fHx8IHx8fHx8IHx8fHwgfHx8fHwgfHx8fCB8fHwgfHx8fHx8IHx8fHx8fHx8fCB8fHwgfHx8fHx8fCB8fHx8IHwgfHx8fHx8IHx8fHx8fHwgfHx8fHx8fHx8fCB8fHwgfHx8fHwgfHwgfHx8fHx8IHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fCB8fHwgfHx8fHx8fHx8fCB8fHx8IHx8fHx8IHx8IHx8fHx8fHx8fHwgfHwgfHx8fHx8fCB8fCB8fHwgfHx8fHx8fHx8fHx8IHx8IHx8fHx8IHx8fHx8fHx8IHx8fHx8IHx8fCB8fHx8IHx8fHx8fHwgfHx8IHx8fHx8fHx8IHx8fHx8fHwgfHx8IHx8fHx8fHx8fHwgfHx8IHx8fHwgfHx8fHwgfHx8fHx8fHx8fCB8fHx8fHx8fHx8fCB8fHx8fHx8fCB8fHx8IHx8fCB8fHx8fHx8IHx8fHx8fHwgfHx8fHx8fHx8fHwgfHx8fCB8fHwgfHx8fHx8fHx8fCB8fCB8fHwgfHx8fCB8fHx8fHwgfHx8IHx8fHx8fHx8fHwiCiAgICAgICAgICAgICAgICAgICAgXQogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAiYnVsbGV0IjogInx8fCB8fHx8IiwKICAgICAgICAgICAgICAgICAgICAic3ViYnVsbGV0cyI6IFsKICAgICAgICAgICAgICAgICAgICAgICAgInx8fCB8fHx8IHx8IHx8fHx8fHx8fCB8fHx8fCB8fHx8fCB8fHx8IHwgfHx8fHwgfHwgfHx8IHx8fHx8fHx8fHwgfHx8fHx8IHx8fHx8fCB8fHwgfHx8fCB8fCB8fCB8fHx8fHx8fCB8fHx8fCB8fHx8IHx8fCB8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHx8fHwgfHwgfHx8fHx8IHx8IHx8fHx8fHx8IHx8fHwgfHx8fHx8IHx8fCB8fHwgfHx8fHx8IHwgfHx8IHx8fCB8IHx8fHx8fHwgfHx8fHx8fCB8fHwgfHx8fHx8fHwgfHx8fHx8fCB8fCB8fHwgfHx8fHwgfHwgfHx8fHx8IHx8IHx8fCB8fHx8IHx8fCB8fHx8IHx8fHwgfHx8fHx8fCB8fHwgfHx8IHx8fHwgfHx8fCB8fHx8fCB8fCB8fHwgfHx8fHx8fCB8fHwgfHx8fCB8fHx8IHx8fHwgfHx8IHx8fCB8fHx8IHx8fHwgfHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fCB8fCB8fHx8fHwgfHwgfHx8fHx8fHx8fCB8fCB8fHx8fHwgfHx8fCB8fHx8IHx8fHx8IHx8fCB8fCB8fHwgfHx8IHx8fCB8fHx8IHx8IHx8fHx8IHx8fHx8IHx8fHwgfHx8fHx8IHx8fHx8IHx8fHwgfHx8IHx8IHx8fHx8fHx8fCB8fHx8fHwgfHx8fCB8fHwgfHx8fHx8IHx8fHwgfHx8IHx8fCB8fHwgfHx8IHx8fHx8IHx8fCB8fHx8fHwgfHx8fHwgfHx8fHx8IHx8fCB8fHx8fHwgfHwgfHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8IHx8fHx8fHx8fHwgfHx8IHx8fHx8fHwgfHwgfHx8IHx8fHx8fHx8fCB8fHx8fHwgfHx8fHx8IHx8fHwgfHx8IHx8fHx8IHx8IHx8fHx8IHx8fHx8fHx8fCB8fHwgfHx8fHx8fCB8fHx8IHx8fHx8IHx8fCB8fHx8fCB8fCB8fHx8fCB8fHx8fHx8fCB8fHwgfHx8fHwgfHx8fHwgfHx8IHx8fHwgfHx8fCB8fHx8IHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fCB8fHwgfHx8fHx8IHx8fHx8fCB8IHx8fHx8IHx8fHx8fHx8fCB8fHx8fHx8IHx8fCB8fHx8fHx8IHx8fCB8fHx8fHx8IHx8IHx8fCB8fHx8fCB8fHwgfHx8fHx8fHx8fHwgfHwgfHx8fCB8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fCB8fHx8fCB8fHx8IHx8fHx8IHx8fCB8fHx8fHx8IHx8fHwgfHx8fHwgfHx8IHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fCB8fHx8fHwgfHx8IHx8fHx8fCB8fCB8fHx8fCB8fCB8fHwgfHx8fCB8fCB8fHx8IHx8IHx8fCB8fHx8fCB8fCB8IHx8fHx8fCB8fHwgfHx8fHx8ICB8fHx8fHx8fCB8fCB8fHx8IHx8fHx8fHwgfHwgfHx8fHwgfHwgfHx8fHx8IHx8fCB8fHx8IHx8fHx8fCB8fHwgfHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHwgfHx8fHx8fCB8fCB8fHx8fCB8fHwgfHwgfHx8IHx8fHx8fHx8fCB8fHx8fHx8fCB8fHx8fCB8fCB8fHx8fHx8fCB8fHx8IHx8IHx8fCB8fHx8IHx8fHx8fHwgfHx8IHx8fHx8fCB8fHx8IHx8IHx8fCB8fHx8IHx8IHx8fHx8fCB8fCB8IHx8fHx8fHx8fCB8fHx8IHx8fHwgfHwgfHx8IHx8fHwgfHx8fHx8fCB8fHwgfHx8fHwgfHx8fCB8fHx8fCB8fCB8fHwgfHx8fCB8fHx8IHx8fCB8fHx8IHx8fCB8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHwgfHx8IHx8fHwgfHx8fHx8fCB8fHwgfHx8fHx8IHx8fCB8fHx8fHx8fCB8fHwgfHx8fHx8fCB8fCB8fHx8fCB8fHwgfHwgfHx8fHx8fHx8fHwgfHx8fCB8fHx8IHwgfHx8fHwgfHx8fCB8fCB8IHx8fHx8IHx8fHwgfHx8IHx8fHx8fHx8IHx8fHx8fCB8IHx8fHx8fHx8IHx8fHx8IHx8IHx8fHx8IHx8fHwgfHx8IHx8fHx8fHwgfHwgfHx8fHwgfHx8fHx8fCB8fHwgfHx8fHwgfHx8fHwgfHx8fHwgfHx8fCB8fHwgfHx8fHwgfHx8fHx8fHwgfHx8fCB8fCB8fHwgfHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHwgfHx8IHx8fHwgfHx8fHx8fCB8fHwgfHx8fHx8IHx8fCB8fHx8fHx8IHx8fCB8fHx8fHx8fCB8fHx8IHx8fHx8fHwgfHx8IHx8fHx8fHx8fHwgfHx8fCB8fHx8fHx8fHx8fHx8fCB8fHx8fHx8fHx8fCB8fHx8IHx8fCB8fHx8fHx8fCB8fHx8fHx8fHwgfHx8IHx8fCB8fHx8IHx8fCB8fCB8fHx8fCB8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHx8fHwgfHwgfHx8fHx8fHx8fCB8fHx8fHwgfHwgfHwgfHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHx8fHwgfHx8IHx8fHx8fCB8fHx8fCB8fHx8fHx8fHwgfHx8fHx8fHx8fHwgfHx8fHx8fHwgfHwgfHwgfHx8fCB8fHx8fHwgfHx8fHx8IHwgfHx8IHx8fCB8fHwgfHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHx8fHwgfHx8fHx8fHx8IHx8fHwgfHx8IHx8fHwgfHx8fCB8fCB8fHx8fHx8IHx8IHx8fCB8fHwgfHwgfHx8IHx8fCB8fCB8fHwgfHx8IHx8IHx8fHx8IHx8fHx8fHwgfHwgfHx8fCB8fHx8fHwgfHx8fCB8fCB8fHx8fHx8IHx8IHx8fCB8fHwgfHwgfHx8IHx8fHx8fCB8fCB8fHwgfHx8IHx8IHx8fHx8IHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHx8fHwgfHx8fCB8fHx8IHx8fHwgfHx8fCB8fHx8fCB8fHx8fHx8fCB8fCB8fHwgfHx8fHx8fHx8fCB8fCB8IHx8fHwgfHx8fHx8fHwgfCB8fHx8IHx8fHwgfHx8IHx8fHx8fCB8fCB8fHwgfHx8fHwgfHwgfHx8IHx8fCB8fHwgfHx8fCB8fCB8IHx8fHx8IHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8IHx8fCB8fHx8IHx8fHwgfHx8fHx8IHx8fCB8fHx8fHx8IHx8fCB8fCB8fHwgfHx8fHx8IHx8IHx8fCB8fHx8fCB8fHx8fHx8IHx8fCB8fHx8IHx8fHwgfHx8fCB8fHx8fHx8fCB8fHwgfHx8fCB8fCB8fHx8fHwgfHx8fHx8fCB8fHx8fCB8fHx8fHx8fHx8fHx8fCB8fHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8fHx8IHx8fHx8IHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHx8fCB8fCB8fHx8fHx8fHwgfHwgfHx8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHx8fHx8fHx8fHwgfHx8fHx8fHx8fHx8fHwgfHx8fHx8fHx8fHx8fHwiCiAgICAgICAgICAgICAgICAgICAgXQogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAiYnVsbGV0IjogInx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgInN1YmJ1bGxldHMiOiBbCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8IHx8fHx8fCB8fHx8fHx8IHx8fHx8fHx8fCB8fHx8fHx8IHx8fCB8fCB8fHx8IHx8fHx8fHx8IHx8IHwgfHx8fCB8fHx8fHx8fHwgfHx8fCB8fHwgfHx8fHx8fHx8fCB8fHx8fHx8fCB8fHx8fHx8fHx8fCB8fHx8fHx8fHx8IHx8fCB8fHx8fHx8fHx8IHx8fCB8fHx8fHx8IHx8fHx8IHx8fHx8IHx8fCB8fHx8fHx8IHx8fHx8fHx8fCB8fHx8fCB8fHx8fHx8fHwgfHwgfHwgfHx8fHx8fHx8fCB8fHx8fHx8fCB8fHx8fHx8IHx8fCB8fCB8fCB8fHx8fHx8IHx8fHx8fCB8fHx8fHx8IHx8IHx8fHx8fHx8fHx8IHx8fHwgfHx8IHx8fHwgfHx8fHx8fCB8fHx8fHx8IHx8IHx8fHx8fHx8fHx8IHx8fHx8fHwgfHx8IHx8IHx8fHx8fHx8fCB8fCB8fHx8IHx8fHwgfHx8IHx8fHx8fHwgfHx8fCB8fCB8fHwgfHx8fHx8fHwgfHx8fHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHwgfHx8fHwgfHx8fHx8fHx8IHx8IHx8IHx8fHx8fCB8fCB8fHx8IHx8fHwgfHx8fHx8fHx8fHwgfHx8fHx8fHwgfHx8fHx8fHwgfHx8fHx8fCB8fHwgfHx8fHx8IHx8fHx8fHx8fHx8IHx8fHx8fHx8IHx8fHx8fHx8fHx8fHwgfHx8IHx8fHx8fHx8fCB8fHx8fHx8fHwgfHwgfHx8fHwgfHx8fHx8fHx8fCB8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHx8fHwgfHx8fHwgfHwgfHx8fHx8fCB8fCB8fHx8fHx8IHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHx8fHx8fCB8fHx8fCB8fCB8fHx8fHx8IHx8IHwgfHx8fHx8fCB8fHx8IHx8fHx8fHx8IHx8IHx8fCB8fCB8IHx8fHx8fCB8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8fHx8fHx8fHx8fCB8fHx8fCB8fCB8fHx8fHx8IHx8IHx8fHx8fHwgfHx8fHwgfHx8fCB8fHx8IHx8fHx8fHx8IHx8fHx8IHx8fCB8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHx8fCB8fHx8IHx8fHx8IHx8IHx8fHwgfHx8IHx8fHx8fHx8fCB8fHx8fCB8fHwgfHx8fHx8fHx8fCB8fHwgfHx8fHx8IHx8fHx8fCB8fHx8fHx8fCB8fHx8fHx8IHx8fCB8fHx8fHx8fHwgfHx8fCB8fHwgfHx8fHx8fCB8fHx8fHwgfHx8fCB8fHwgfHx8fHx8fCB8fHx8fHx8fHwgfHwgfHwgfHx8IHx8fHx8fHwgfHx8fHx8fHx8IHx8fHx8fHwgfHx8fHx8IHx8fHwgfHx8fHx8fHx8IHx8fHx8fHx8IHx8fCB8fHx8fHx8IHx8fCB8fHx8fCB8fCB8fHx8fCB8fHwgfHx8fHx8IHx8fCB8fHx8fHx8IHx8fCB8fHx8fHx8IHx8fHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHwgfHx8fHwgfHwgfHx8fHx8fCB8fCB8fHwgfHwgfHx8fHx8fHx8IHx8IHx8fHwgfHx8fHx8IHx8fCB8fHx8fHx8fCB8fCB8fHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHx8fHwgfHx8fHx8IHx8IHx8fHx8fHx8IHx8IHx8fCB8fHx8fCB8fCB8fHx8fHwgfHwgfHx8fHx8fCB8fHwgfHx8fHx8fCB8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHx8IHx8fHx8IHx8fHx8IHx8IHx8fHx8fHx8fHx8IHx8IHx8fCB8fHx8IHx8IHx8fHx8fHwgfHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8IHx8fHwgfHx8fHwgfHx8fCB8fHwgfHx8fCB8fHx8fCB8fHx8fHx8IHx8IHx8fHx8fHx8fCB8fCB8fHx8fCB8fHwgfHx8fHx8IHx8fHx8IHx8IHx8fHx8IHx8fHx8fHx8fCB8fHx8IHx8fCB8fHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHwgfHx8fHx8IHx8IHx8fHx8fHwgfHwgfHx8IHx8IHx8fHx8fHwgfHx8fHx8fCB8fHx8fHx8fHwgfHx8IHx8fCB8fHx8fHx8IHx8IHx8fHwgfHx8fHx8fHwgfHx8fHx8IHx8fHx8fHx8fHwgfHx8fHx8fHwgfHx8fHx8fHx8fHx8IHx8fCB8fHx8IHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8IHx8fCB8fHx8fHwgfHwgfCB8fHx8fHwgfHx8IHx8IHx8fCB8fHx8fHwgfHwgfHx8fHx8fCB8fHwgfHx8fHwgfHx8fHx8IHx8fCB8fCB8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8IHx8IHwgfHx8fHx8IHx8fCB8IHx8fHx8fHx8fHx8fCB8fCB8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHx8fHx8fCB8fHx8fCB8fCB8fHx8fCB8fHwgfHx8fHx8fHx8fHwgfHwgfHx8fCB8fHwgfHx8IHx8fHx8IHx8fHx8fCB8fHwgfHx8fHx8fCB8fHwgfHx8fHwgfHx8fHx8fHwgfHx8fHx8fCB8fHx8fHx8fHx8IHx8fHwgfHx8fCB8fHx8fHx8IHx8fHx8fHwgfHx8fCB8fHx8IHx8fHx8IHx8fHx8IHx8fHx8IHx8fHx8fHwgfHx8fHx8fHx8fCB8fHx8IHx8fHwgfHx8fHx8fHx8fHwgfHx8fHx8fCB8fHx8fHx8IHx8fHwgfHx8IHx8fCB8fCB8fCB8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8fHx8fHx8fHx8IHx8fHwgfHx8IHx8IHx8fHx8fHx8fCB8fCB8fHx8fCB8fCB8fHx8fHx8fHx8IHx8fHwgfHx8fCB8fHwgfHx8fHx8fHx8fHwgfHx8fHx8fCB8fHx8IHx8fHx8fHx8fCB8fHx8fHx8fCB8fHwgfHx8fCB8fHx8fCB8fHx8fHwgfHx8fHx8fHx8fHwgfHx8IHx8fHwgfHx8IHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8IHx8fCB8fCB8fHx8fCB8fHwgfHx8fHx8fHx8fHwgfHwgfHx8fHwgfHx8IHx8fCB8fCB8fHx8IHx8fHx8IHx8fHx8fCB8IHx8fHx8fHx8fCB8fHx8IHx8IHx8fHx8IHx8IHx8fHx8fCB8fHx8fCB8fHx8fHx8fHwgfHx8fHx8IHx8fCB8fHx8fHx8fHwgfHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8IHx8fHx8fHx8fCB8fHx8IHx8fHx8fCB8fHwgfHx8fHwgfHx8fHwgfHx8fHx8fHwgfHwgfHx8IHx8fHwgfHwgfHx8fHx8fCB8fHx8IHx8fHwgfHwgfHx8fHx8fCIKICAgICAgICAgICAgICAgICAgICBdCiAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgewogICAgICAgICAgICAgICAgICAgICJidWxsZXQiOiAifHx8fHx8IHx8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICJzdWJidWxsZXRzIjogWwogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHx8fHx8fCB8fCB8fHx8fHx8fCB8fCB8fHwgfHx8fCB8fHwgfHx8IHx8fCB8fHx8fHx8fHwgfHx8fHx8IHx8fHx8fHx8fHwgfHx8fHx8fHx8IHx8fHx8fHwgfHx8IHx8fHx8fHx8fCB8fHx8fHx8fHwgfHx8fCB8fHwgfHx8fHx8fCB8fCB8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHx8fCB8fHwgfHx8fCB8fHwgfHwgfHx8fCB8fHx8fHwgfHx8fHx8fCB8fHx8fCB8fHx8fHx8fCB8fHx8fCB8fCB8fHx8fHwgfHx8fCB8fHx8fHx8IHx8fHx8fCB8fHx8IHx8fCB8fHx8fCB8fHx8fHx8fHx8fHwgfHx8fHx8fHx8IHx8fHwgfHx8fHx8fHx8fCB8fCB8fCB8fHx8fHx8fHx8fHwgfHwgfHx8IHx8fHx8IHx8fHwgfHx8IHx8fHx8fHx8IHx8fHx8fCB8fHx8fHx8IHx8fCB8fHx8fHx8IHx8fHx8fHwgfHx8fCB8fHx8fHx8IHx8fHx8fHwgfHx8fCB8fHwgfHx8fCB8fHx8fHwgfHx8fCB8fHx8fHwgfHx8IHx8fHwgfHwgfHx8IHx8fHx8IHx8fCB8fHx8fCB8fHx8IHx8fHwgfHx8fHx8fCB8fHx8fHx8fHwgfHx8fCB8fHwgfHx8fCB8fHwgfHx8fHwgfHwgfHx8fHx8IHx8fCB8fHx8fHx8fHx8fCB8fHx8IHx8fHx8fHwgfHx8fHx8fCB8fHx8IHx8fCB8fHwgfHx8fCB8fCB8fHx8IHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHwgfHx8IHx8fHx8IHx8fHx8IHx8IHx8fHwgfHwgfHx8IHx8fHwgfHx8IHx8fHx8IHx8fHx8IHx8fHwgfHx8fHx8fHwgfHwgfHx8IHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fCB8fHwgfHx8IHx8fHwgfCB8fHx8fHx8fHx8IHx8fHx8fCB8fHwgfHx8IHx8fHx8fHx8IHx8fCB8fHx8fHwgfHx8IHx8fHx8IHx8fHx8fHx8fCB8fHx8fCB8fCB8fHx8fCB8fHwgfHx8IHx8fHwgfHx8fHx8IHwgfHx8fHx8fCB8fHx8fHwgfHx8IHx8fHwgfHx8IHx8fHx8fHwgfHx8fHwgfHwgfHx8fHx8fCB8fHx8fCB8fHx8fHx8IHx8IHx8fCB8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHx8IHx8fCB8fHwgfHwgfHx8fHx8fHx8fCB8fHx8fHx8fCB8fHx8IHx8fCB8fHx8fHwgfHwgfHx8IHx8fHx8IHx8IHx8fHx8fHwgfHx8fHx8fHx8IHx8fHx8fHx8fHx8fHwgfHx8IHx8fHx8fHx8fCB8fHx8fHwgfHx8IHx8fHx8fCB8fHx8fHx8fCB8fCB8fHx8fHx8IHx8fCB8fHx8fHx8IHx8fHx8IHx8fHx8IHx8fHx8IHx8IHx8fHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8IHx8fCB8fHwgfHwgfHx8fHx8fCB8fCB8fHx8fHx8fHwgfHx8fHx8fCB8fHx8fHwgfCB8fHx8fHx8fHx8IHwgfHx8fHwgfHx8fHx8IHx8fHx8IHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgIkluIHRoZSBldmVudCBvZiBhIFBvd2VyIFZhY3V1bSwgYSBUb3VybmFtZW50IG9mIENoYW1waW9ucyBzaGFsbCBiZSBjYWxsZWQgdG8gbmFtZSBhIG5ldyBBY2UgYW5kIGNsYWltIHRoZSBNb3VuZC4iLAogICAgICAgICAgICAgICAgICAgICAgICAiQSBDcmV3IG9mIFVtcGlyZXMgc2hhbGwgYXNzZW1ibGUgdG8gaGVyYWxkIHRoZSBUb3VybmFtZW50IG9mIENoYW1waW9ucyBhbmQgRW5mb3JjZSB0aGUgUnVsZXMgb2YgUGxheS4iLAogICAgICAgICAgICAgICAgICAgICAgICAiQSBUZWFtIG11c3QgaG9sZCBhIEdvbGRlbiBSZWNvcmQgdG8gcGFydGljaXBhdGUgaW4gdGhlIFRvdXJuYW1lbnQgb2YgQ2hhbXBpb25zLiBPbmx5IG9mZmljaWFsbHkgTm90YXJpemVkIEdvbGRlbiBSZWNvcmRzIHNoYWxsIGJlIHJlY29nbml6ZWQuIiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHwgfHx8fHwgfHwgfHx8IHx8fHx8fHx8fHx8IHwgfHx8fHx8fHwgfHx8fHwgfHwgfHx8fHx8fHwgfHx8IHx8fHwgfHx8fHwgfHx8fHx8fHx8IHx8fHx8fCB8fHx8IHx8fCB8fHx8fHx8fHwgfHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fCB8fHx8IHx8fHx8IHx8IHx8fCB8fHx8fHx8fHx8fCB8fHx8IHx8fHx8fHx8IHx8fHx8IHx8fHx8IHx8fHx8IHx8fHx8fCB8fHx8fHwgfHwgfHx8IHx8fHx8fCB8fHwgfHx8fHx8IHx8IHx8fCB8fHx8fHx8fHx8IHx8IHx8fHx8fHx8fCB8fHx8fCB8fCB8fHx8fHx8IHx8fCB8fHwgfHx8IHx8fHwgfHx8IHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHwgfHx8fHx8fHx8fCB8fHx8fCB8fCB8fHx8fHwgfHwgfHx8IHx8fHx8IHx8IHx8fHwgfHx8fHx8fHx8fCB8fHx8fHwgfHx8fHx8fCB8fHx8fCB8fCB8fHwgfHx8fHx8IHx8IHx8fHwgfHx8fCB8fHx8IHx8fHwgfHx8fHx8fHwiCiAgICAgICAgICAgICAgICAgICAgXQogICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAiYnVsbGV0IjogInx8fCB8fHx8fHx8fHx8IHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAic3ViYnVsbGV0cyI6IFsKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHx8IHx8IHx8IHx8fHx8fHx8fHwgfHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fCB8fHx8fHx8fHx8IHx8fHx8IHx8IHx8fHwgfHwgfHx8fCB8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fCB8fHx8fHx8IHx8IHx8fHx8fHx8IHx8IHx8fHx8fHwgfHx8IHx8fHx8fCB8fCB8fHx8fHx8fCB8fCB8fHwgfHx8fHx8fCB8fCB8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHx8IHx8fHx8IHx8IHx8fCB8fHx8fHx8fCB8fHx8fHx8fHwgfHx8IHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHx8fHx8fCB8fHx8fCB8fHx8fHx8fHx8IHx8fCB8fHx8fHx8fHwgfHx8fHwgfHx8IHx8fCB8fHx8fCB8fHwgfHx8fHx8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHx8fCB8fHx8fHwgfHx8IHx8fCB8fHx8fHx8fHx8fHx8IHx8IHx8fHx8fHx8fHwgfHx8fHx8fHx8fHx8fCB8fCB8fCB8fHx8fHwgfHwgfHx8fHx8fHx8IHx8fCB8fHx8fHx8fHx8fCB8fHx8fHx8fCB8fHx8fHx8fHx8fCB8fHx8IHx8fHx8fHx8IHx8fHx8fHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHwgfHx8fHx8IHx8IHwgfHx8fHx8IHx8IHx8fHx8fHwgfHx8IHx8fHwgfHx8fHx8IHx8fHx8fHx8IHx8fCB8fHx8IHx8fHwgfHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fCB8fHx8IHx8fHx8fHwgfHx8fHx8fCB8IHx8fHx8fHx8fHwgfHwgfHx8fHx8fCB8fHwgfHx8fHx8IHx8fCB8fHx8IHx8IHx8fHx8fHx8fHwgfHx8IHx8fHwgfHx8fHx8fCB8fHx8fHwgfHx8IHx8fHx8IHx8fCB8fHx8IHx8fCB8fHx8fHx8fCB8fHx8fCB8fCB8fHx8fHwgfHwgfHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8fHx8fHx8IHx8fHx8fCB8fCB8fHwgfHx8fHwgfHx8fHx8fHx8fHwgfHwgfHx8IHx8fCB8fHx8fHx8fHx8fHwgfHwgfHx8fHx8fCB8fHx8IHx8fCB8fHx8fHwgfHwgfHx8fHx8fHx8fCB8fHx8fHx8fHx8IHx8IHx8fHx8fHx8IHx8fHwgfCB8fHx8fHx8IHx8fHwgfHx8IHx8fHx8fHwgfHx8fHx8fHwgfHx8fHwgfHx8fHx8fCB8fHx8fHwgfHx8fHwgfHx8IHx8fHx8fHx8fHx8fCB8fHwgfHx8fHx8fCB8fCB8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8fHwgfHx8fHx8fHwgfHx8fHx8fCB8fHx8fHx8fHwgfHx8fHx8fCB8fHx8fHx8fHx8IHx8fHx8fHx8fCB8fHwgfHx8fHx8fCB8fHx8fHx8fHx8fHwgfHx8fHwgfHx8IHx8fHwgfHx8fHx8IHx8fHx8fHx8fHwgfHx8fHwgfHwgfHx8fHx8fHx8fCB8fHwgfHx8IHx8IHx8fHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHwgfHx8fHx8IHx8fHx8fCB8fHx8IHx8fCB8fHx8fCB8fHx8fHx8fHx8IHx8fHx8IHx8fHx8fCB8fHx8fHx8fHx8IHx8fHx8fHx8fCB8fHwgfHx8fHx8fHx8IHx8fHx8fCB8fHx8fHwgfHx8fHwgfHx8fCB8fHwgfHx8fHx8fCB8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fCB8fHx8fHwgfHx8fHx8fCB8fHwgfHx8fHx8fHx8fHx8IHx8fHx8fCB8fCB8fHwgfHx8fCB8fHx8fHwgfHwgfHx8fHx8fCB8fCB8fHwgfHx8fHx8fHx8fHx8IHx8IHx8fHwgfHx8fCB8fHwgfHx8fHx8fHx8IHx8fHx8IHx8fHx8fHx8fHwgfHx8IHx8fHx8fHx8IHx8fHx8fHwiLAogICAgICAgICAgICAgICAgICAgICAgICAifHx8IHx8fHx8fCB8fHwgfHx8fHx8fCB8fHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8fCB8fHx8fHwgfHx8fHx8fCB8fHwgfHx8IHx8fCB8fHx8fHx8IHx8IHx8fHx8fHx8IHx8fHx8fCB8fHx8fCB8fHx8fHx8IHx8fCB8fHx8fHx8fHx8fHx8fCIsCiAgICAgICAgICAgICAgICAgICAgICAgICJ8fHx8fHx8IHx8fCB8fHx8fHwgfHwgfHx8fHx8fCB8fHwgfHx8fHx8IHx8fHwgfHx8fHx8fHx8IHx8fCB8fHx8IHx8fHx8fHx8IHx8fHx8fHwgfHx8IHx8fHwgfHx8fHx8fHx8IHx8fHx8IHx8fHx8IHx8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHx8fHwgfHx8fHx8fHwgfHx8fCB8fCB8fHx8fHwgfHx8fHwgfHx8fHx8fCB8fHwgfHx8fHx8IHx8fHx8fCB8fCB8fHx8fCB8fHx8IHx8fHx8IHx8fCB8fCB8fHx8fCB8fCB8fHwgfHx8fCB8fCB8fHx8fCB8fCB8fHx8fHwgfHx8IHx8fHx8fHwgfHx8IHx8fHx8IHx8IHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInwgfHx8fHx8fHx8fHx8IHx8fHx8IHx8IHx8fHx8IHx8IHx8fHx8fHwgfCB8fHx8fHwgfHwgfHx8fHx8fHx8fHx8fHx8fHwgfHx8fHx8fHx8IHx8fCB8fHwgfHx8fHx8fCB8fCB8fHx8fHwgfHx8fHx8fHx8fHx8fHwgfHx8fHx8fHx8fHx8fHx8IHx8fHx8fHx8fHx8fCB8fHx8fHwgfHx8fHx8fHx8fCB8fHx8fHx8fHwgfHx8IHx8fHx8fHx8fHwgfHx8IHx8fHx8fCB8fCB8fHx8fCB8fHx8fHwgfHx8IHx8fCB8fHx8fHx8IHx8fHx8fHx8fHx8fHwgfHx8IHx8fHx8fHwgfHx8fHx8fHwgfHx8IHx8fHx8fHx8fHx8IHx8fHwgfHx8IHx8IHx8fHx8fHwgfHx8fHx8fCB8fHx8fHx8fHx8IHx8fCB8fHx8fHx8fCB8fHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fHx8fCB8fHwgfHx8fHx8fHx8fHx8IHx8fHx8fHx8IHx8fHx8IHx8fHx8IHx8IHx8IHx8fHx8fHx8IHwgfHx8fHx8fCB8fHx8fCB8fHx8fHwgfHx8IHx8fHx8IiwKICAgICAgICAgICAgICAgICAgICAgICAgInx8fCB8fHx8fHx8fHx8fHwgfHx8fCB8fCB8IHx8fHx8IHx8fHwiCiAgICAgICAgICAgICAgICAgICAgXQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICBdLAogICAgICAgICAgICAiZm9vdGVyIjogewogICAgICAgICAgICAgICAgImxhYmVsIjogIlNpZ25hdHVyZXMiLAogICAgICAgICAgICAgICAgImhlYWRlciI6ICJTaWduZWQsIiwKICAgICAgICAgICAgICAgICJ0ZXh0IjogW10KICAgICAgICAgICAgfQogICAgICAgIH0KICAgIF0KfQ==
+                hash: 41df5173-1cca-b254-8d0d-5f6fd032f71a
+                id: 389d2437-3d20-a0a0-4343-22d6d7b68120
+                last_modified: 'Mon, 16 Jan 2023 20:57:25 GMT'
+                url: 'https://blaseball-texts.s3.us-west-2.amazonaws.com/forbiddenbook.json'
+      description: Represents site assets at a certain point in time. The data is **Base64** encoded.
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                properties:
+                  content_type:
+                    type: string
+                  data:
+                    type: string
+                    description: Base64 encoded contents.
+                  hash:
+                    type: string
+                  id:
+                    type: string
+                  last_modified:
+                    type: string
+                  url:
+                    type: string
+        next_page:
+          type: string
+      x-tags:
+        - chronicler
+    ForbiddenBook:
+      type: object
+      x-examples:
+        Example 1:
+          items:
+            - kind: forbidden_book
+              entity_id: 00000000-0000-0000-0000-000000000000
+              valid_from: '2023-01-16T20:57:45.285383Z'
+              valid_to: null
+              data:
+                collection:
+                  - footer:
+                      header: 'Signed,'
+                      label: Signatures
+                      text: []
+                    header:
+                      aria: Official Rulebook
+                      title: Official Rulebook
+                    id: page1
+                    sections:
+                      - bullet: An Introduction
+                        subbullets:
+                          - '||||||||| ||| |||||| || ||||||'
+                          - '||| |||||| |||| || ||||||| ||||||'
+                          - '||||| |||||| || |||||||||| ||| ||| || ||||| ||||||||| ||| |||||||'
+                          - Blaseball is | ||||||||||| sport ||||| |||| ||| horror || ||||| |||||||||||
+                          - This Book defines the Rules of Blaseball.
+                      - bullet: The League
+                        subbullets:
+                          - '|| |||| ||||||| |||||| ||| |||||||||| |||||| ||||||||| |||||||||| |||||||||| a Blaseball League is founded. The League shall be named the Internet League.'
+                          - 'A League of Blaseball should be composed of two |||||||| Conferences. In the Internet League, the two Conferences shall be named Good and Evil.'
+                          - 'A Conference should be composed of two |||||||| Divisions. In the Internet League, the Divisions shall be split between Chaotic and Awful.'
+                          - A Division of Blaseball should be composed of six ||||||||||| Teams.
+                          - 'A Team should be composed of a Name, an Origin, a Slogan, an Image, | ||||||| || ||||, and a Roster of Players. A Team''s Roster is organized into three Locations: a Rotation |||| |||||| a Lineup |||| ||||| ||| and a Shadows |||| |||||| ||||| || |||||'
+                          - 'A Player should be composed of ||||| ||||||| ||||||||||| a Name, ||||||| ||| ||||. ||||| |||||||||| |||| ||||| ||||||| ||||||||||| ||||||||| Skills, Modifications, Blood Types, Coffee Types, Allergies, Rituals, |||||||, Positions, Zones, |||||| ||||||| ||||||||| ||||||||||| ||||||| |||||||| |||||||||| |||||||| |||||| |||||| |||||| ||||||| ||||||||, Vibes, |||||, Fates, ||| | |||||||||| |||||||||| | ||||| |||||| |||| || ||||||'
+                          - Plasma ||||||||||| ||| |||||||||||| Spirit ||||||||||| |||| ||||| ||| |||||||||||| Soul || |||||||| ||| ||| || ||||| |||||||||| |||||||| ||||| ||||| ||||||| |||||| ||||||| ||||| ||| || ||||||| |||||||||
+                          - '|||||||| may Play Blaseball.'
+                      - bullet: '||| |||||||'
+                        subbullets:
+                          - '|||| |||||| ||| |||||||| |||||| |||||| || ||||||||| |||| ||||||||'
+                          - '| |||||| || ||||||||| |||||||| || | ||||||| ||||||| | ||||||||||| ||| || ||||||||||'
+                          - '|||| ||||||| |||||| || ||||||||| ||||| |||| || ||||||'
+                          - '||||| ||| |||||| || |||| ||||| |||| |||| ||| || ||||||||| ||||| |||| ||| ||||| ||||| || ||| ||||| |||| |||||| |||| ||| ||||| ||||| | ||||||||| ||||| |||||| ||| ||| ||||| ||||| || ||||||| ||||| ||| |||| ||||| ||||| || ||| ||||| |||| |||||| |||| ||| ||||| |||||| ||| |||| |||| || |||||||||| |||| ||||| |||| |||| ||| || |||||||'
+                          - '|| ||| ||||||| ||||||| ||||| ||||||| ||| |||||||| || ||| |||||||||| ||||||||| || ||||||||| ||| ||||||| || ||||| ||| |||| |||| ||| |||||| |||||| || |||| ||||| || |||||||||| |||||| || ||| ||||||||||'
+                          - '|| ||| ||||| |||| ||| |||| |||||| || ||||| ||| ||||| ||||||| ||||| |||| ||| || ||| || |||||| |||| ||| || ||||||'
+                          - '| |||| |||| ||||| |||| |||||||||||||| |||||||||| |||| |||||||||| ||||||||||| |||| |||| ||||| ||||| ||||| |||| || ||||||||| | ||| ||| ||||||||| |||| ||||| |||| || |||| |||| | |||| || ||| |||||||||||'
+                          - '||| |||| |||| ||||||| ||| |||| || |||||| | |||||||  || ||||| || ||||||||||| |||||||||| ||| |||||||| ||||| ||| || |||| ||||||| |||||| ||||||| ||||| || |||||| |||| ||||| ||||'
+                          - '|| ||| ||||| | ||| || |||||||| | |||||||| ||||| || |||||| |||| ||||| |||| |||||| ||||| ||| ||| ||| ||||||||| ||||||| |||||| ||||||||| ||| ||||||||| ||||||||||||||'
+                          - '|| ||| ||||||||||| ||||| ||||||| ||| | |||||||||||||'
+                          - '|||| |||||||||| || ||||||||| ||||| ||||||| || | ||||||'
+                          - '||| | |||||||| ||||||| |||| |||| |||||||||| ||||| |||||| | |||| || ||| |||||||||| |||||||||||'
+                          - '||| |||| | ||||||||| |||| |||| |||||| ||||| |||||| | |||| || ||| |||||||||| ||||||||||| ||||| || |||||||||| |||||||||| || |||||||||'
+                          - '||| |||||||||| |||||| ||||| || ||||||| || |||| | || | |||||||'
+                          - '||||| ||| ||||||||||| || ||||| ||||| || ||||| |||||||| || ||| ||||||||||  ||||| ||| ||||||| |||||||| ||||||| |||| |||||||| ||| ||||| |||||| || ||| ||||||||| |||| |||| ||||| |||||| ||| |||| |||| || |||| |||||||||| |||| ||||| || ||| |||| |||| ||| |||| ||||| ||||| ||| |||||| || |||| ||||||| |||| ||| |||| |||| ||||| |||||||||'
+                          - '||| |||||||||||| ||||| |||||| ||||| ||||||| ||||| ||| ||| || ||| ||||||| |||||||'
+                          - '||| ||||||||| |||||| ||| |||||||||| |||||||||||||| |||||| ||||| ||||| || ||| ||||||||| ||||| ||||'
+                          - '||| ||||| |||||| ||||| || ||| |||||||| ||||||| |||||| ||||| ||||||| ||||| ||| ||| || ||| ||||||||| ||||||'
+                          - '||| |||||| || ||| |||||||| |||||| ||||| |||| ||||| |||| ||| |||||| ||||||||| ||| ||||||| |||| | |||||| ||||||| |||||||||| ||| ||||| || |||||| |||||||||'
+                          - '|| ||| |||||||||| |||| ||||| || |||||||||| || ||||||| || ||| |||||||||||| || ||||| |||||||| ||||| ||| |||| ||||||| ||| |||||||| ||||||| ||| |||||||||| ||| |||| ||||| |||||||||| ||||||||||| |||||||| |||| ||| ||||||| ||||||| ||||||||||| |||| ||| |||||||||| || ||| |||| |||||| ||| ||||||||||'
+                      - bullet: '||| ||||'
+                        subbullets:
+                          - '||| |||| || ||||||||| ||||| ||||| |||| | ||||| || ||| |||||||||| |||||| |||||| ||| |||| || || |||||||| ||||| |||| ||| ||||||'
+                          - '||| |||| || |||||| || |||||||| |||| |||||| ||| ||| |||||| | ||| ||| | ||||||| ||||||| ||| |||||||| ||||||| || ||| ||||| || |||||| || ||| |||| ||| |||| |||| ||||||| ||| ||| |||| |||| ||||| || ||| ||||||| ||| |||| |||| |||| ||| ||| |||| |||| ||||||||'
+                          - '|||| || |||||| || |||||||||| || |||||| |||| |||| ||||| ||| || ||| ||| ||| |||| || ||||| ||||| |||| |||||| ||||| |||| ||| || ||||||||| |||||| |||| ||| |||||| |||| ||| ||| ||| ||| ||||| ||| |||||| ||||| |||||| ||| |||||| || |||||||'
+                          - '|||| |||||||||| ||| ||||||| || ||| ||||||||| |||||| |||||| |||| ||| ||||| || ||||| ||||||||| ||| ||||||| |||| ||||| ||| ||||| || ||||| |||||||| ||| ||||| ||||| ||| |||| |||| |||| |||||||||'
+                          - '|| ||| |||||| |||||| | ||||| ||||||||| ||||||| ||| ||||||| ||| ||||||| || ||| ||||| ||| ||||||||||| || |||| ||||||||'
+                          - '|| ||||| |||| ||||| ||| ||||||| |||| ||||| ||| |||||'
+                          - '||| |||||| ||| |||||| || ||||| || ||| |||| || |||| || ||| ||||| || | |||||| ||| ||||||  |||||||| || |||| ||||||| || ||||| || |||||| ||| |||| |||||| ||| ||||||'
+                          - '|||| ||||||| || ||||| ||| || ||| ||||||||| |||||||| ||||| || |||||||| |||| || ||| |||| ||||||| ||| |||||| |||| || ||| |||| || |||||| || | ||||||||| |||| |||| || ||| |||| ||||||| ||| ||||| |||| ||||| || ||| |||| |||| ||| |||| ||| ||||||'
+                          - '|| ||| |||| ||||||| ||| |||||| ||| |||||||| ||| ||||||| || ||||| ||| || ||||||||||| |||| |||| | ||||| |||| || | ||||| |||| ||| |||||||| |||||| | |||||||| ||||| || ||||| |||| ||| ||||||| || ||||| ||||||| ||| ||||| ||||| ||||| |||| ||| ||||| |||||||| |||| || ||| |||||'
+                          - '||||| ||| |||| ||||||| ||| |||||| ||| ||||||| ||| |||||||| |||| ||||||| ||| |||||||||| |||| |||||||||||||| ||||||||||| |||| ||| |||||||| ||||||||| ||| ||| |||| ||| || ||||| |||||||||'
+                          - '|||||||| || |||||||||| |||||| || || ||||||||'
+                          - '|||||||| ||| |||||| ||||| ||||||||| ||||||||||| |||||||| || || |||| |||||| |||||| | ||| ||| ||| ||||||||'
+                          - '||| |||| ||||||||| |||| ||| |||| |||| || ||||||| || ||| ||| || ||| ||| || ||| ||| || ||||| ||||||| || |||| |||||| |||| || ||||||| || ||| ||| || ||| |||||| || ||| ||| || ||||| |||||||'
+                          - '||| |||| |||| |||| |||| |||| ||||| |||||||| || ||| |||||||||| || | |||| |||||||| | |||| |||| ||| |||||| || ||| ||||| || ||| ||| ||| |||| || | ||||| |||||'
+                          - '|| ||| |||| |||| |||||| ||| ||||||| ||| || ||| |||||| || ||| ||||| ||||||| ||| |||| |||| |||| |||||||| ||| |||| || |||||| ||||||| ||||| |||||||||||||| |||||||||||'
+                          - '||||||| ||||| ||||||||'
+                          - '|||||| || ||||||||| || |||||||||||'
+                          - '|||||||||||||| |||||||||||||| ||||||||||||||'
+                      - bullet: '||||||'
+                        subbullets:
+                          - '|||| |||||| ||||||| ||||||||| ||||||| ||| || |||| |||||||| || | |||| ||||||||| |||| ||| |||||||||| |||||||| ||||||||||| |||||||||| ||| |||||||||| ||| ||||||| ||||| ||||| ||| ||||||| ||||||||| ||||| ||||||||| || || |||||||||| |||||||| ||||||| ||| || || ||||||| |||||| ||||||| || ||||||||||| |||| ||| |||| ||||||| ||||||| || ||||||||||| ||||||| ||| || ||||||||| || |||| |||| ||| ||||||| |||| || ||| |||||||| ||||||||||||'
+                          - '|||| ||||| ||||||||| || || |||||| || |||| |||| ||||||||||| |||||||| |||||||| ||||||| ||| |||||| ||||||||||| |||||||| ||||||||||||| ||| ||||||||| ||||||||| || ||||| |||||||||| |||||||'
+                          - '||||||| ||||| || ||||||| || ||||||| |||||'
+                          - '||||||||| ||||| || ||||||| || | ||||||| |||| |||||||| || ||| || | |||||| |||||'
+                          - '|||||||||||||| ||||| || ||||||| || ||||||| ||||| |||| |||| |||||||| ||||| ||| |||||||'
+                          - '|||||| |||| ||||| || |||| ||| ||||||||| ||||| ||| |||||||||| ||| |||||| |||||| |||||||| ||||||| ||| ||||||||| |||| ||| ||||||| |||||| |||| ||| ||||||| ||||||||| || || ||| ||||||| ||||||||| ||||||| |||||| |||| ||||||||| |||||||| ||| ||||||| ||| ||||| || ||||| ||| |||||| ||| ||||||| ||| ||||||| |||||||||||'
+                          - '|||| ||||| || ||||||| || ||| || ||||||||| || |||| |||||| ||| |||||||| || ||||||||||'
+                          - '||||||| |||||| || |||||||| || ||| ||||| || |||||| || ||||||| ||| ||||||| ||||||'
+                          - '|||||| ||||| ||||| || ||||||||||| || ||| |||| || ||||||| |||||||||'
+                          - '|| |||| ||||| |||| ||| |||| ||||| ||||||| || ||||||||| || ||||| ||| |||||| ||||| || ||||| ||||||||| |||| ||| ||||||||||'
+                          - '|||| |||||| || ||||||| || ||| || ||||||| ||||||| ||||||||| ||| ||| ||||||| || |||| |||||||| |||||| |||||||||| |||||||| |||||||||||| ||| |||| |||||'
+                          - '|| ||| |||||| || | |||||| ||| || ||| |||||| || ||||||| ||| ||||| |||||| ||| || ||||||||'
+                          - '|||| || | |||||| ||| | |||||||||||| || ||||||'
+                          - '||| |||||| ||||| || ||||| ||| ||||||||||| || |||| ||| ||| ||||| |||||| ||| ||||||| ||| ||||| |||||||| ||||||| |||||||||| |||| |||| ||||||| ||||||| |||| |||| ||||| ||||| ||||| ||||||| |||||||||| |||| |||| ||||||||||| ||||||| ||||||| |||| ||| ||| || || ||||||||'
+                          - '||||||||||||| |||| ||| || ||||||||| || ||||| || |||||||||| |||| |||| ||| ||||||||||| ||||||| |||| ||||||||| |||||||| ||| |||| ||||| |||||| ||||||||||| ||| |||| ||| |||||||||'
+                          - '|||| ||| || ||||| ||| ||||||||||| || ||||| ||| ||| || |||| ||||| |||||| | ||||||||| |||| || ||||| || |||||| ||||| ||||||||| |||||| ||| ||||||||| |||||||'
+                          - '|||| ||||||||| |||| |||||| ||| ||||| ||||| |||||||| || ||| |||| || ||||||| |||| |||| || |||||||'
+                      - bullet: '|||||| ||||||||||'
+                        subbullets:
+                          - '|||||||||| || |||||||| || ||| |||| ||| ||| ||| ||||||||| |||||| |||||||||| ||||||||| ||||||| ||| ||||||||| ||||||||| |||| ||| ||||||| || |||||||||'
+                          - '||| ||| ||| |||| ||| || |||| |||||| ||||||| ||||| |||||||| ||||| || |||||| |||| ||||||| |||||| |||| ||| ||||| |||||||||||| ||||||||| |||| |||||||||| || || |||||||||||| || ||| ||||| |||| ||| |||||||| |||||| ||||||| ||| ||||||| ||||||| |||| ||||||| ||||||| |||| ||| |||| |||||| |||| |||||| ||| |||| || ||| ||||| ||| ||||| |||| |||| ||||||| ||||||||| |||| ||| |||| ||| ||||| || |||||| ||| ||||||||||| |||| ||||||| ||||||| |||| ||| ||| |||| || |||| |||'
+                          - '||| ||| ||||| ||||| || |||| || ||| |||| ||| ||||| ||||| |||| |||||||| || ||| ||||||||'
+                          - '||| ||| ||| |||| | |||||||||| |||||| ||| ||| |||||||| ||| |||||| ||| ||||| ||||||||| ||||| || ||||| ||| ||| |||| |||||| | ||||||| |||||| ||| |||| ||| ||||||| ||||| || ||||||| ||||| ||||||| || ||| ||||||'
+                          - '|||||| ||| ||| || |||||||||| |||||||| |||| ||| |||||| || ||| ||||| || ||||||| ||||||||| ||||||||||||| ||| ||||||||| |||||| ||| |||||| |||||||| || ||||||| ||| ||||||| ||||| ||||| ||||| || |||||||||||'
+                          - '|| ||| ||| || ||||||| || ||||||||| ||||||| |||||| | |||||||||| | ||||| |||||| ||||| |||||'
+                          - 'In the event of a Power Vacuum, a Tournament of Champions shall be called to name a new Ace and claim the Mound.'
+                          - A Crew of Umpires shall assemble to herald the Tournament of Champions and Enforce the Rules of Play.
+                          - A Team must hold a Golden Record to participate in the Tournament of Champions. Only officially Notarized Golden Records shall be recognized.
+                          - '|||| ||||| || ||| ||||||||||| | |||||||| ||||| || |||||||| ||| |||| ||||| ||||||||| |||||| |||| ||| ||||||||| ||||||||'
+                          - '|||| |||| ||||| || ||| ||||||||||| |||| |||||||| ||||| ||||| ||||| |||||| |||||| || ||| |||||| ||| |||||| || ||| |||||||||| || ||||||||| ||||| || ||||||| ||| ||| ||| |||| ||| ||||||'
+                          - '||| |||||||||| ||||| || |||||| || ||| ||||| || |||| |||||||||| |||||| ||||||| ||||| || ||| |||||| || |||| |||| |||| |||| ||||||||'
+                      - bullet: '||| |||||||||| |||||'
+                        subbullets:
+                          - '||||| || || |||||||||| ||||||'
+                          - '||| |||||||||| ||||| || |||| || |||| |||||||||'
+                          - '|||| ||||||| || |||||||| || ||||||| ||| |||||| || |||||||| || ||| ||||||| || |||||||||'
+                          - '|||||| ||||| || ||| |||||||| ||||||||| ||| ||||||||'
+                          - '||||||||| ||||| |||||||||| ||| ||||||||| ||||| ||| ||| ||||| ||| ||||||||||||||'
+                          - '||||||| |||||| ||| ||| ||||||||||||| || |||||||||| ||||||||||||| || || |||||| || ||||||||| ||| ||||||||||| |||||||| ||||||||||| |||| |||||||| ||||||||||||||'
+                          - '|||| |||||| || | |||||| || ||||||| ||| |||| |||||| |||||||| ||| |||| |||| |||||||'
+                          - '|| |||| ||||||| ||||||| | |||||||||| || ||||||| ||| |||||| ||| |||| || |||||||||| ||| |||| ||||||| |||||| ||| ||||| ||| |||| ||| |||||||| ||||| || |||||| || ||||||||||'
+                          - '|||||||||| |||||| || ||| ||||| ||||||||||| || ||| ||| |||||||||||| || ||||||| |||| ||| |||||| || |||||||||| |||||||||| || |||||||| |||| | ||||||| |||| ||| ||||||| |||||||| ||||| ||||||| |||||| ||||| ||| |||||||||||| ||| ||||||| || ||||||'
+                          - '||||| |||||||| ||||||| ||||||||| ||||||| |||||||||| ||||||||| ||| ||||||| |||||||||||| ||||| ||| |||| |||||| |||||||||| ||||| || |||||||||| ||| ||| || ||||||||||'
+                          - '|| |||||| |||||| |||| ||| ||||| |||||||||| ||||| |||||| |||||||||| ||||||||| ||| ||||||||| |||||| |||||| ||||| |||| ||| ||||||| |||||||'
+                          - '||| |||||| ||||||| ||| |||||||||||| |||||| || ||| |||| |||||| || ||||||| || ||| |||||||||||| || |||| |||| ||| ||||||||| ||||| |||||||||| ||| |||||||| |||||||'
+                          - '||| |||||| ||| ||||||| |||||||||||'
+                          - '||||| |||||| ||||||| ||| ||| ||| ||||||| || |||||||| |||||| ||||| ||||||| ||| ||||||||||||||'
+                          - '||||||| ||| |||||| || ||||||| ||| |||||| |||| ||||||||| ||| |||| |||||||| ||||||| ||| |||| ||||||||| ||||| ||||| ||||||||'
+                          - '||||||| |||||||| |||| || |||||| ||||| ||||||| ||| |||||| |||||| || ||||| |||| ||||| ||| || ||||| || ||| |||| || ||||| || |||||| ||| ||||||| ||| ||||| || |||||'
+                          - '| |||||||||||| ||||| || ||||| || ||||||| | |||||| || ||||||||||||||||| ||||||||| ||| ||| ||||||| || |||||| |||||||||||||| ||||||||||||||| |||||||||||| |||||| |||||||||| ||||||||| ||| |||||||||| ||| |||||| || ||||| |||||| ||| ||| ||||||| ||||||||||||| ||| ||||||| |||||||| ||| ||||||||||| |||| ||| || ||||||| ||||||| |||||||||| ||| |||||||| |||||||'
+                          - '|||||| ||| |||||||||||| |||||||| ||||| ||||| || || |||||||| | ||||||| ||||| |||||| ||| |||||'
+                          - '||| |||||||||||| |||| || | ||||| ||||'
+      description: Represents forbidden book data at different points in time.
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+                format: date-time
+              valid_to:
+                type:
+                  - string
+                  - 'null'
+                format: date-time
+              data:
+                type: object
+                properties:
+                  collection:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        footer:
+                          type: object
+                          properties:
+                            header:
+                              type: string
+                            label:
+                              type: string
+                            text:
+                              type: array
+                              items:
+                                type: object
+                        header:
+                          type: object
+                          properties:
+                            aria:
+                              type: string
+                            title:
+                              type: string
+                        id:
+                          type: string
+                        sections:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              bullet:
+                                type: string
+                              subbullets:
+                                type: array
+                                items:
+                                  type: string
+        next_page:
+          type: string
+      x-tags:
+        - chronicler
+  responses: {}
+  parameters:
+    kind:
+      name: kind
+      in: query
+      required: true
+      schema:
+        type: string
+        enum:
+          - game
+          - player
+          - team
+          - flagsmith
+          - ticker
+          - season_elections
+          - season_schedule
+          - season_schedule_hourly
+          - temporal
+          - post
+          - game_bet_data
+          - box_score
+          - sim
+          - season_tournaments
+          - tournament
+          - asset
+          - forbidden_book
+      description: Kind of data to return.
+    order:
+      name: order
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - asc
+          - desc
+        default: asc
+      description: How to order the data.
+    at:
+      name: at
+      in: query
+      required: false
+      schema:
+        type: string
+        example: '2023-01-14T12:00:00Z'
+      description: The point in time to get data for.
+    id:
+      name: id
+      in: query
+      required: false
+      schema:
+        type: string
+        example: 38a1e7ce-64ed-433d-b29c-becc4720caa1
+      description: ID of the entity to retrieve data for.
+    page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: string
+        example: iIq-13kOOhcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      description: The page of the data. Used with `next_page`.
+    before:
+      name: before
+      in: query
+      schema:
+        type: string
+        format: date-time
+        example: '2023-01-14T12:00:00Z'
+      description: Get data before a certain point in time.
+    after:
+      name: after
+      in: query
+      required: false
+      schema:
+        type: string
+        example: '2023-01-14T12:00:00Z'
+        format: date-time
+      description: Get data after a certain point in time.

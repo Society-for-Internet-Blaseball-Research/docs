@@ -31,7 +31,7 @@ info:
     | `items[...].valid_to` | when the data became out of date |
   contact:
     name: Astrid
-    url: 'https://github.com/xSke/Chronicler/tree/main'
+    url: 'https://github.com/xSke/chron2'
 servers:
   - url: 'https://api2.sibr.dev/chronicler/v0/'
 paths:

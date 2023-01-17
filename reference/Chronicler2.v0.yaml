@@ -73,7 +73,7 @@ paths:
                                   name:
                                     type: string
                             batter:
-                              type: 'null'
+                              type: {}
                             started:
                               type: boolean
                             strikes:

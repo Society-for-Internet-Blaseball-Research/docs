@@ -10,13 +10,13 @@ info:
 
     Currently there are 3 APIs:
 
-    | Name | Description | Kinded |
+    | Name | Description | Generic |
     | :-- | :-- | :-- |
     | [/game-events](Chronicler2.v0.yaml/paths/~1game-events) | Regarding events that happened during games | No |
     | [/versions](Chronicler2.v0.yaml/paths/~1versions) | Retrieve *chronological* data for a given kind of entity. | Yes |
     | [/entities](Chronicler2.v0.yaml/paths/~1entities) | Retrieve *latest* data for a given kind of entity. | Yes |
 
-    **Kinded** APIs return different kinds of data based on the value behind `?kind=` - For example, to get players you do `/versions?kind=player`. As a result, they *require* a kind to be passed.
+    **Generic** APIs return different kinds of data based on the value behind `?kind=` - For example, to get players you do `/versions?kind=player`. As a result, they *require* a kind to be passed.
 
     `/versions` should be used if you want to show how data changed over time - whereas `/entities` should be used when you only care about the *latest* data.
 

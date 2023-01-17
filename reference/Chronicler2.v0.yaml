@@ -46,6 +46,16 @@ paths:
             application/json:
               schema:
                 type: array
+                x-examples:
+                  Example 1:
+                    - game_id: 6df052eb-8f0e-432b-a6e5-98a4518a1607
+                      timestamp: '2023-01-09T15:02:50.118Z'
+                      data:
+                        changedState: {}
+                        displayDelay: 4
+                        displayOrder: 0
+                        displayText: Play Ball!
+                        displayTime: '2023-01-09T15:02:50.118Z'
                 items:
                   type: object
                   properties:
@@ -73,7 +83,9 @@ paths:
                                   name:
                                     type: string
                             batter:
-                              type: 'null'
+                              type:
+                                - object
+                                - 'null'
                             started:
                               type: boolean
                             strikes:
@@ -86,16 +98,6 @@ paths:
                           type: string
                         displayTime:
                           type: string
-                x-examples:
-                  Example 1:
-                    - game_id: 6df052eb-8f0e-432b-a6e5-98a4518a1607
-                      timestamp: '2023-01-09T15:02:50.118Z'
-                      data:
-                        changedState: {}
-                        displayDelay: 4
-                        displayOrder: 0
-                        displayText: Play Ball!
-                        displayTime: '2023-01-09T15:02:50.118Z'
       operationId: get-game-events
       description: Retrieve past game events.
       parameters:

@@ -1,6 +1,6 @@
 openapi: 3.1.0
 x-stoplight:
-  id: 4nnx31zof0m9d
+  id: yzlb4hrm70o4t
 info:
   title: Chronicler 2
   version: '0.0'
@@ -16,209 +16,6 @@ paths:
     get:
       summary: Versions
       tags: []
-      responses:
-        '200':
-          description: When `kind=game_bet_data`...
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        kind:
-                          type: string
-                        entity_id:
-                          type: string
-                        valid_from:
-                          type: string
-                        data:
-                          type: object
-                          properties:
-                            awayScore:
-                              type: integer
-                            awayTeamBetData:
-                              type: object
-                              properties:
-                                currentOdds:
-                                  type: number
-                                currentPayout:
-                                  type: integer
-                                teamWon:
-                                  type: 'null'
-                                userBetOdds:
-                                  type: 'null'
-                                userBetPayout:
-                                  type: 'null'
-                                userBetWager:
-                                  type: 'null'
-                            awayTeamInfo:
-                              type: object
-                              properties:
-                                emoji:
-                                  type: string
-                                losses:
-                                  type: integer
-                                pitcher:
-                                  type: object
-                                  properties:
-                                    id:
-                                      type: string
-                                    name:
-                                      type: string
-                                primaryColor:
-                                  type: string
-                                shorthand:
-                                  type: string
-                                teamId:
-                                  type: string
-                                wins:
-                                  type: integer
-                            complete:
-                              type: boolean
-                            favoriteTeamMatch:
-                              type: boolean
-                            gameId:
-                              type: string
-                            homeScore:
-                              type: integer
-                            homeTeamBetData:
-                              type: object
-                              properties:
-                                currentOdds:
-                                  type: number
-                                currentPayout:
-                                  type: integer
-                                teamWon:
-                                  type: 'null'
-                                userBetOdds:
-                                  type: 'null'
-                                userBetPayout:
-                                  type: 'null'
-                                userBetWager:
-                                  type: 'null'
-                            homeTeamInfo:
-                              type: object
-                              properties:
-                                emoji:
-                                  type: string
-                                losses:
-                                  type: integer
-                                pitcher:
-                                  type: object
-                                  properties:
-                                    id:
-                                      type: string
-                                    name:
-                                      type: string
-                                primaryColor:
-                                  type: string
-                                shorthand:
-                                  type: string
-                                teamId:
-                                  type: string
-                                wins:
-                                  type: integer
-                            userBetPlaced:
-                              type: boolean
-                            weather:
-                              type: string
-                x-examples:
-                  Example 1:
-                    items:
-                      - kind: game_bet_data
-                        entity_id: 44c4753d-d30f-48e0-8f0d-bc6e0001d54a
-                        valid_from: '2023-01-14T03:00:58.498835Z'
-                        data:
-                          awayScore: 0
-                          awayTeamBetData:
-                            currentOdds: 0.4851330701271406
-                            currentPayout: 0
-                            teamWon: null
-                            userBetOdds: null
-                            userBetPayout: null
-                            userBetWager: null
-                          awayTeamInfo:
-                            emoji: '0x1F531'
-                            losses: 31
-                            pitcher:
-                              id: 1abe7a14-2608-485c-af10-69cf0107c2a5
-                              name: Norman Muggins
-                            primaryColor: '#00dbc2'
-                            shorthand: ATL
-                            teamId: d9f89a8a-c563-493e-9d64-78e4f9a55d4a
-                            wins: 59
-                          complete: false
-                          favoriteTeamMatch: false
-                          gameId: 44c4753d-d30f-48e0-8f0d-bc6e0001d54a
-                          homeScore: 0
-                          homeTeamBetData:
-                            currentOdds: 0.5148669298728594
-                            currentPayout: 0
-                            teamWon: null
-                            userBetOdds: null
-                            userBetPayout: null
-                            userBetWager: null
-                          homeTeamInfo:
-                            emoji: '0x1F357'
-                            losses: 12
-                            pitcher:
-                              id: d359c61b-e142-4ead-9698-8edc8b2211f7
-                              name: Vernon Sierpinski
-                            primaryColor: '#883c17'
-                            shorthand: WWMX
-                            teamId: 57ec08cc-0411-4643-b304-0e80dbc15ac7
-                            wins: 78
-                          userBetPlaced: false
-                          weather: Horizon
-                      - kind: game_bet_data
-                        entity_id: 9f360150-a8c4-4f85-9a53-ef9216c15056
-                        valid_from: '2023-01-14T03:00:58.498835Z'
-                        data:
-                          awayScore: 0
-                          awayTeamBetData:
-                            currentOdds: 0.5158593509691408
-                            currentPayout: 0
-                            teamWon: null
-                            userBetOdds: null
-                            userBetPayout: null
-                            userBetWager: null
-                          awayTeamInfo:
-                            emoji: '0x1F45F'
-                            losses: 25
-                            pitcher:
-                              id: 7d388846-8f4c-407f-aacb-b844d2561c5e
-                              name: Kit Adamses
-                            primaryColor: '#ffce0a'
-                            shorthand: SHOE
-                            teamId: bfd38797-8404-4b38-8b82-341da28b1f83
-                            wins: 65
-                          complete: false
-                          favoriteTeamMatch: false
-                          gameId: 9f360150-a8c4-4f85-9a53-ef9216c15056
-                          homeScore: 0
-                          homeTeamBetData:
-                            currentOdds: 0.4841406490308592
-                            currentPayout: 0
-                            teamWon: null
-                            userBetOdds: null
-                            userBetPayout: null
-                            userBetWager: null
-                          homeTeamInfo:
-                            emoji: '0x1F31E'
-                            losses: 24
-                            pitcher:
-                              id: 9c23702b-f0c2-4668-8bcc-61bbdbbfd93e
-                              name: Grollis Zephyr
-                            primaryColor: '#fffbab'
-                            shorthand: SUN
-                            teamId: f02aeae2-5e6a-4098-9842-02d2273f25c7
-                            wins: 66
-                          userBetPlaced: false
-                          weather: Horizon
       operationId: get-versions
       parameters:
         - schema:
@@ -237,296 +34,12 @@ paths:
           in: query
           name: order
           description: How to sort the data.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                items:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      kind:
-                        type: string
-                      entity_id:
-                        type: string
-                      valid_from:
-                        type: string
-                      data:
-                        type: object
-                        properties:
-                          attributeRatings:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                category:
-                                  type: string
-                                name:
-                                  type: string
-                                stars:
-                                  type: integer
-                          attributes:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                value:
-                                  type: number
-                          categoryRatings:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                name:
-                                  type: string
-                                stars:
-                                  type:
-                                    - integer
-                                    - number
-                          id:
-                            type: string
-                          items:
-                            type: array
-                            items:
-                              type: object
-                              properties: {}
-                          modifications:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                modification:
-                                  type: object
-                                  properties:
-                                    backgroundColor:
-                                      type: 'null'
-                                    color:
-                                      type: 'null'
-                                    description:
-                                      type: string
-                                    icon:
-                                      type: 'null'
-                                    name:
-                                      type: string
-                                    textColor:
-                                      type: 'null'
-                                playerId:
-                                  type: string
-                          name:
-                            type: string
-                          overallRating:
-                            type: number
-                          playerHeatMaps:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                currentValue:
-                                  type: number
-                          positions:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                positionName:
-                                  type: 'null'
-                                x:
-                                  type: integer
-                                'y':
-                                  type: integer
-                          rosterSlots:
-                            type: array
-                            items:
-                              type: object
-                              properties:
-                                active:
-                                  type: boolean
-                                location:
-                                  type: string
-                                orderIndex:
-                                  type: integer
-                          team:
-                            type: object
-                            properties:
-                              emoji:
-                                type: string
-                              id:
-                                type: string
-                              name:
-                                type: string
-                              primaryColor:
-                                type: string
-                              secondaryColor:
-                                type: string
-              x-examples:
-                Example 1:
-                  items:
-                    - kind: player
-                      entity_id: 611d18e0-b972-4cdd-afc2-793c56bfe5a9
-                      valid_from: '2023-01-14T00:22:50.985943Z'
-                      data:
-                        attributeRatings:
-                          - category: batting
-                            name: sight
-                            stars: 1
-                          - category: batting
-                            name: thwack
-                            stars: 4
-                          - category: batting
-                            name: ferocity
-                            stars: 2
-                          - category: pitching
-                            name: control
-                            stars: 5
-                          - category: pitching
-                            name: stuff
-                            stars: 4.5
-                          - category: pitching
-                            name: guile
-                            stars: 3
-                          - category: defense
-                            name: reach
-                            stars: 2.5
-                          - category: defense
-                            name: magnet
-                            stars: 5
-                          - category: defense
-                            name: reflex
-                            stars: 4
-                          - category: running
-                            name: hustle
-                            stars: 3
-                          - category: running
-                            name: stealth
-                            stars: 5
-                          - category: running
-                            name: dodge
-                            stars: 4.5
-                          - category: vibes
-                            name: thrive
-                            stars: 3
-                          - category: vibes
-                            name: survive
-                            stars: 3.5
-                          - category: vibes
-                            name: drama
-                            stars: 4
-                        attributes:
-                          - name: Sight
-                            value: 0.20205997128701048
-                          - name: Thwack
-                            value: 0.8022589739139512
-                          - name: Ferocity
-                            value: 0.3700402612902868
-                          - name: Control
-                            value: 0.997983727750352
-                          - name: Stuff
-                            value: 0.8591550931896773
-                          - name: Guile
-                            value: 0.6204584180508005
-                          - name: Reach
-                            value: 0.5226412790830604
-                          - name: Magnet
-                            value: 0.957725124377194
-                          - name: Reflex
-                            value: 0.783345200776385
-                          - name: Hustle
-                            value: 0.6485716743699957
-                          - name: Stealth
-                            value: 0.9838330910036632
-                          - name: Dodge
-                            value: 0.9396337033908806
-                          - name: Thrive
-                            value: 0.5693071870877515
-                          - name: Survive
-                            value: 0.7317907758788121
-                          - name: Drama
-                            value: 0.8383035377887145
-                        categoryRatings:
-                          - name: batting
-                            stars: 2.5
-                          - name: pitching
-                            stars: 4
-                          - name: defense
-                            stars: 4
-                          - name: running
-                            stars: 4.5
-                          - name: vibes
-                            stars: 3.5
-                        id: 611d18e0-b972-4cdd-afc2-793c56bfe5a9
-                        items: []
-                        modifications:
-                          - modification:
-                              backgroundColor: null
-                              color: null
-                              description: This Player is Buried.
-                              icon: null
-                              name: Buried
-                              textColor: null
-                            playerId: 611d18e0-b972-4cdd-afc2-793c56bfe5a9
-                        name: Alston Cerveza
-                        overallRating: 3.5
-                        playerHeatMaps:
-                          - currentValue: 0.241932140638616
-                          - currentValue: 0.2350455019652843
-                          - currentValue: 0.36149094704423235
-                          - currentValue: 0.6173469399225087
-                          - currentValue: 0.8702428527627737
-                          - currentValue: 0.3818562720196157
-                          - currentValue: 0.3971095677558368
-                          - currentValue: 0.5481252038644568
-                          - currentValue: 0.49476495929790343
-                          - currentValue: 0.6453717356571578
-                          - currentValue: 0.7565624911947656
-                          - currentValue: 0.9623606617303816
-                          - currentValue: 0.7575279583119848
-                          - currentValue: 0.04478365998658307
-                          - currentValue: 0.609617229210591
-                          - currentValue: 0.15233675635027744
-                          - currentValue: 0.6860873493604354
-                          - currentValue: 0.1910905167642234
-                          - currentValue: 0.8398393321052793
-                          - currentValue: 0.05903095480029996
-                          - currentValue: 0.3434041500067211
-                          - currentValue: 0.8233984223227102
-                          - currentValue: 0.6731647448516888
-                          - currentValue: 0.0035185438826358384
-                          - currentValue: 0.4553292939579613
-                          - currentValue: 0.11952553729936376
-                          - currentValue: 0.49050420144206774
-                          - currentValue: 0.18510530069434472
-                          - currentValue: 0.6679720188020487
-                          - currentValue: 0.4904285076751761
-                          - currentValue: 0.21015743088403915
-                          - currentValue: 0.8222345701203339
-                          - currentValue: 0.7621822976884328
-                          - currentValue: 0.08699569386320782
-                          - currentValue: 0.6601135776914939
-                          - currentValue: 0.0365259975914447
-                        positions:
-                          - positionName: null
-                            x: 3
-                            'y': 2
-                          - positionName: null
-                            x: 1
-                            'y': 3
-                        rosterSlots:
-                          - active: true
-                            location: LINEUP
-                            orderIndex: 9
-                        team:
-                          emoji: '0x1F6A4'
-                          id: b63be8c2-576a-4d6e-8daf-814f8bcea96f
-                          name: Miami Dale
-                          primaryColor: '#9141ba'
-                          secondaryColor: '#cd76fa'
-        description: When `kind=player`...
-      description: Retrieve data of a certain *kind* chronologically.
+      description: |
+        Retrieve data of a certain *kind* chronologically. 
+
+        Click on a specific kind to see what this endpoint would return.
+        - [`player`](Chronicler2.v0.yaml/components/schemas/Player)
+        - [`game_bet_data`](Chronicler2.v0.yaml/components/schemas/GameBetData)
   /game-events:
     get:
       summary: Game Events
@@ -596,5 +109,446 @@ paths:
           in: query
           name: search
           description: filter for specific keywords in events
+        - schema:
+            type: string
+            enum:
+              - asc
+              - desc
+          in: query
+          name: order
+  /entities:
+    get:
+      summary: Entities
+      tags: []
+      responses: {}
+      operationId: get-entities
 components:
-  schemas: {}
+  schemas:
+    Player:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+              valid_to:
+                type: 'null'
+              data:
+                type: object
+                properties:
+                  attributeRatings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category:
+                          type: string
+                        name:
+                          type: string
+                        stars:
+                          type:
+                            - integer
+                            - number
+                  attributes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        value:
+                          type: number
+                  categoryRatings:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        stars:
+                          type:
+                            - integer
+                            - number
+                  id:
+                    type: string
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties: {}
+                  modifications:
+                    type: array
+                    items:
+                      type: object
+                      properties: {}
+                  name:
+                    type: string
+                  overallRating:
+                    type: number
+                  playerHeatMaps:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        currentValue:
+                          type: number
+                  positions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        positionName:
+                          type: 'null'
+                        x:
+                          type: integer
+                        'y':
+                          type: integer
+                  rosterSlots:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        active:
+                          type: boolean
+                        location:
+                          type: string
+                        orderIndex:
+                          type: integer
+                  team:
+                    type: object
+                    properties:
+                      emoji:
+                        type: string
+                      id:
+                        type: string
+                      name:
+                        type: string
+                      primaryColor:
+                        type: string
+                      secondaryColor:
+                        type: string
+      x-examples:
+        Example 1:
+          items:
+            - kind: player
+              entity_id: 4c86a500-d538-4b83-b321-d762533d7660
+              valid_from: '2023-01-08T20:56:53.907384Z'
+              valid_to: null
+              data:
+                attributeRatings:
+                  - category: batting
+                    name: sight
+                    stars: 4
+                  - category: batting
+                    name: thwack
+                    stars: 1
+                  - category: batting
+                    name: ferocity
+                    stars: 2.5
+                  - category: pitching
+                    name: control
+                    stars: 2
+                  - category: pitching
+                    name: stuff
+                    stars: 3.5
+                  - category: pitching
+                    name: guile
+                    stars: 4
+                  - category: defense
+                    name: reach
+                    stars: 4
+                  - category: defense
+                    name: magnet
+                    stars: 1.5
+                  - category: defense
+                    name: reflex
+                    stars: 0.5
+                  - category: running
+                    name: hustle
+                    stars: 3.5
+                  - category: running
+                    name: stealth
+                    stars: 4
+                  - category: running
+                    name: dodge
+                    stars: 4
+                  - category: vibes
+                    name: thrive
+                    stars: 2.5
+                  - category: vibes
+                    name: survive
+                    stars: 0.5
+                  - category: vibes
+                    name: drama
+                    stars: 3.5
+                attributes:
+                  - name: Sight
+                    value: 0.7655291865182458
+                  - name: Thwack
+                    value: 0.2340605934251808
+                  - name: Ferocity
+                    value: 0.5281312624109262
+                  - name: Control
+                    value: 0.3764987585816095
+                  - name: Stuff
+                    value: 0.7223366021412677
+                  - name: Guile
+                    value: 0.8337935629114297
+                  - name: Reach
+                    value: 0.7743603213074564
+                  - name: Magnet
+                    value: 0.341903543290216
+                  - name: Reflex
+                    value: 0.12067315210523556
+                  - name: Hustle
+                    value: 0.6507421211658799
+                  - name: Stealth
+                    value: 0.7676803577930377
+                  - name: Dodge
+                    value: 0.7925962512273648
+                  - name: Thrive
+                    value: 0.5306665316841898
+                  - name: Survive
+                    value: 0.05681198087583528
+                  - name: Drama
+                    value: 0.6868055337384391
+                categoryRatings:
+                  - name: batting
+                    stars: 2.5
+                  - name: pitching
+                    stars: 3
+                  - name: defense
+                    stars: 2
+                  - name: running
+                    stars: 3.5
+                  - name: vibes
+                    stars: 2
+                id: 4c86a500-d538-4b83-b321-d762533d7660
+                items: []
+                modifications: []
+                name: Allan Kranch
+                overallRating: 2.5
+                playerHeatMaps:
+                  - currentValue: 0.4273763882605576
+                  - currentValue: 0.8738482446325971
+                  - currentValue: 0.522146983473215
+                  - currentValue: 0.6481397008493898
+                  - currentValue: 0.3667245895914012
+                  - currentValue: 0.9816483301850089
+                  - currentValue: 0.09208324819495416
+                  - currentValue: 0.04371331553765867
+                  - currentValue: 0.764537776971937
+                  - currentValue: 0.6111012719134039
+                  - currentValue: 0.9218850653940964
+                  - currentValue: 0.4032933812469437
+                  - currentValue: 0.09828416885091672
+                  - currentValue: 0.34907754457130513
+                  - currentValue: 0.3947457643469898
+                  - currentValue: 0.2330353701495318
+                  - currentValue: 0.6685307590451642
+                  - currentValue: 0.07479224113390748
+                  - currentValue: 0.6203262520249236
+                  - currentValue: 0.13612128425847703
+                  - currentValue: 0.8869832670908174
+                  - currentValue: 0.725340934386332
+                  - currentValue: 0.32892452936858463
+                  - currentValue: 0.4397805917323452
+                  - currentValue: 0.8392549042823758
+                  - currentValue: 0.5425339636176347
+                  - currentValue: 0.6377966865450517
+                  - currentValue: 0.3109470261942776
+                  - currentValue: 0.8469587886230286
+                  - currentValue: 0.6469705253789475
+                  - currentValue: 0.7051412448579962
+                  - currentValue: 0.5414293547038441
+                  - currentValue: 0.11845652285579956
+                  - currentValue: 0.3729372934263792
+                  - currentValue: 0.10286519489142676
+                  - currentValue: 0.7310433529778204
+                positions:
+                  - positionName: null
+                    x: 3
+                    'y': 5
+                rosterSlots:
+                  - active: true
+                    location: ROTATION
+                    orderIndex: 0
+                team:
+                  emoji: '0x1F32E'
+                  id: 878c1bf6-0d21-4659-bfee-916c8314d69c
+                  name: LA Unlimited Tacos
+                  primaryColor: '#64376e'
+                  secondaryColor: '#b063c1'
+      description: ''
+      title: versions/Player
+      x-tags:
+        - chronicler
+        - versions
+    GameBetData:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              kind:
+                type: string
+              entity_id:
+                type: string
+              valid_from:
+                type: string
+              valid_to:
+                type: string
+              data:
+                type: object
+                properties:
+                  awayScore:
+                    type: integer
+                  awayTeamBetData:
+                    type: object
+                    properties:
+                      currentOdds:
+                        type: number
+                      currentPayout:
+                        type: integer
+                      teamWon:
+                        type: 'null'
+                      userBetOdds:
+                        type: 'null'
+                      userBetPayout:
+                        type: 'null'
+                      userBetWager:
+                        type: 'null'
+                  awayTeamInfo:
+                    type: object
+                    properties:
+                      emoji:
+                        type: string
+                      losses:
+                        type: integer
+                      pitcher:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                      primaryColor:
+                        type: string
+                      shorthand:
+                        type: string
+                      teamId:
+                        type: string
+                      wins:
+                        type: integer
+                  complete:
+                    type: boolean
+                  favoriteTeamMatch:
+                    type: boolean
+                  gameId:
+                    type: string
+                  homeScore:
+                    type: integer
+                  homeTeamBetData:
+                    type: object
+                    properties:
+                      currentOdds:
+                        type: number
+                      currentPayout:
+                        type: integer
+                      teamWon:
+                        type: 'null'
+                      userBetOdds:
+                        type: 'null'
+                      userBetPayout:
+                        type: 'null'
+                      userBetWager:
+                        type: 'null'
+                  homeTeamInfo:
+                    type: object
+                    properties:
+                      emoji:
+                        type: string
+                      losses:
+                        type: integer
+                      pitcher:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                          name:
+                            type: string
+                      primaryColor:
+                        type: string
+                      shorthand:
+                        type: string
+                      teamId:
+                        type: string
+                      wins:
+                        type: integer
+                  userBetPlaced:
+                    type: boolean
+                  weather:
+                    type: string
+      x-examples:
+        Example 1:
+          items:
+            - kind: game_bet_data
+              entity_id: 018b7c6d-ae4c-46b2-8537-66317ceaf543
+              valid_from: '2023-01-09T17:48:25.413754Z'
+              valid_to: '2023-01-09T18:02:24.740502Z'
+              data:
+                awayScore: 0
+                awayTeamBetData:
+                  currentOdds: 0.42569935724399743
+                  currentPayout: 0
+                  teamWon: null
+                  userBetOdds: null
+                  userBetPayout: null
+                  userBetWager: null
+                awayTeamInfo:
+                  emoji: '0x1F575'
+                  losses: 0
+                  pitcher:
+                    id: 718dea1a-d9a8-4c2b-933a-f0667b5250e6
+                    name: Margarito Nava
+                  primaryColor: '#67556b'
+                  shorthand: SPY
+                  teamId: 9debc64f-74b7-4ae1-a4d6-fce0144b6ea5
+                  wins: 2
+                complete: false
+                favoriteTeamMatch: false
+                gameId: 018b7c6d-ae4c-46b2-8537-66317ceaf543
+                homeScore: 0
+                homeTeamBetData:
+                  currentOdds: 0.5743006427560026
+                  currentPayout: 0
+                  teamWon: null
+                  userBetOdds: null
+                  userBetPayout: null
+                  userBetWager: null
+                homeTeamInfo:
+                  emoji: '0x1F45F'
+                  losses: 0
+                  pitcher:
+                    id: 7d388846-8f4c-407f-aacb-b844d2561c5e
+                    name: Kit Adamses
+                  primaryColor: '#ffce0a'
+                  shorthand: SHOE
+                  teamId: bfd38797-8404-4b38-8b82-341da28b1f83
+                  wins: 2
+                userBetPlaced: false
+                weather: Horizon
+      title: versions/GameBetData
+      description: ''
+      x-tags:
+        - chronicler
+        - versions
